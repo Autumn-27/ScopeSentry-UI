@@ -350,7 +350,8 @@ export default {
     subfinder: 'subfinder configuration',
     rad: 'rad configuration',
     system: 'system configuration',
-    timezone: 'Timezone'
+    timezone: 'Timezone',
+    maxTaskNum: 'Max Task Num'
   },
   form: {
     input: 'Search:'

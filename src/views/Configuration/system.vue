@@ -6,7 +6,8 @@ import { ref, reactive, onBeforeMount } from 'vue'
 import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
 const { t } = useI18n()
 const form = reactive({
-  timezone: ''
+  timezone: '',
+  MaxTaskNum: ''
 })
 onBeforeMount(async () => {
   try {
@@ -14,6 +15,7 @@ onBeforeMount(async () => {
 
     if (res.code == 200) {
       form.timezone = res.data.timezone
+      form.MaxTaskNum = res.data.MaxTaskNum
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -29,7 +31,7 @@ const confirmAdd = async () => {
 }
 const save = async () => {
   saveLoading.value = true
-  const res = await saveSystemConfigurationApi(form.timezone)
+  const res = await saveSystemConfigurationApi(form.timezone, form.MaxTaskNum)
   if (res.code == 200) {
     saveLoading.value = false
   } else {
@@ -53,6 +55,9 @@ const saveLoading = ref(false)
         <ElCol :span="6">
           <ElFormItem :label="t('configuration.timezone')">
             <ElInput v-model="form.timezone" />
+          </ElFormItem>
+          <ElFormItem :label="t('configuration.maxTaskNum')">
+            <ElInput v-model="form.MaxTaskNum" />
           </ElFormItem>
         </ElCol>
       </ElRow>

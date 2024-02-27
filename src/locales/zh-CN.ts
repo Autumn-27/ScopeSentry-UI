@@ -347,7 +347,8 @@ export default {
     subfinder: 'subfinder配置',
     rad: 'rad配置',
     system: '系统配置',
-    timezone: '时区'
+    timezone: '时区',
+    maxTaskNum: '最大任务数量'
   },
   form: {
     input: '搜索：'

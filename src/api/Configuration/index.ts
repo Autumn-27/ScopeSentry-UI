@@ -24,7 +24,8 @@ export const getSystemConfigurationApi = () => {
 }
 
 export const saveSystemConfigurationApi = (
-  timezone: string
+  timezone: string,
+  MaxTaskNum: string
 ): Promise<IResponse<configRespData>> => {
-  return request.post({ url: '/api/configuration/system/save', data: { timezone } })
+  return request.post({ url: '/api/configuration/system/save', data: { timezone, MaxTaskNum } })
 }
