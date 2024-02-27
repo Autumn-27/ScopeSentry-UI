@@ -34,7 +34,8 @@ const nodeColums = reactive<TableColumn[]>([
         {
           type: 'primary',
           round: true,
-          effect: 'plain'
+          effect: 'plain',
+          hit: true
         },
         () => cellValue
       )
@@ -49,7 +50,8 @@ const nodeColums = reactive<TableColumn[]>([
         {
           type: 'primary',
           round: true,
-          effect: 'plain'
+          effect: 'plain',
+          hit: true
         },
         () => cellValue
       )
@@ -64,7 +66,8 @@ const nodeColums = reactive<TableColumn[]>([
         {
           type: 'primary',
           round: true,
-          effect: 'plain'
+          effect: 'plain',
+          hit: true
         },
         () => cellValue + '%'
       )
@@ -79,7 +82,8 @@ const nodeColums = reactive<TableColumn[]>([
         {
           type: 'primary',
           round: true,
-          effect: 'plain'
+          effect: 'plain',
+          hit: true
         },
         () => cellValue + '%'
       )
@@ -93,7 +97,8 @@ const nodeColums = reactive<TableColumn[]>([
         ElTag,
         {
           type: cellValue === '1' ? 'success' : cellValue === '2' ? 'warning' : 'danger',
-          effect: 'plain'
+          effect: 'plain',
+          hit: true
         },
         () =>
           cellValue === '1'
