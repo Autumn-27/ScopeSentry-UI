@@ -50,17 +50,13 @@ const saveLoading = ref(false)
         </ElCol>
       </ElRow>
     </template>
-    <ElForm :model="form">
-      <ElRow>
-        <ElCol :span="6">
-          <ElFormItem :label="t('configuration.timezone')">
-            <ElInput v-model="form.timezone" />
-          </ElFormItem>
-          <ElFormItem :label="t('configuration.maxTaskNum')">
-            <ElInput v-model="form.MaxTaskNum" />
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
+    <ElForm :model="form" label-width="120px" style="max-width: 460px">
+      <ElFormItem :label="t('configuration.timezone')">
+        <ElInput v-model="form.timezone" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.maxTaskNum')">
+        <ElInput v-model="form.MaxTaskNum" />
+      </ElFormItem>
       <ElFormItem>
         <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
       </ElFormItem>

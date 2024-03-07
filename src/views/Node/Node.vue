@@ -6,7 +6,9 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
+import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
+import Configuration from './components/Configuration.vue'
 import { getNodeDataApi } from '@/api/node'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -23,7 +25,21 @@ const nodeColums = reactive<TableColumn[]>([
   },
   {
     field: 'name',
-    label: t('node.nodeName')
+    label: t('node.nodeName'),
+    minWidth: 100
+  },
+  {
+    field: 'maxTaskNum',
+    label: t('configuration.maxTaskNum'),
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return h(
+        ElTag,
+        {
+          type: 'info'
+        },
+        () => cellValue
+      )
+    }
   },
   {
     field: 'running',
@@ -32,7 +48,6 @@ const nodeColums = reactive<TableColumn[]>([
       return h(
         ElTag,
         {
-          type: 'primary',
           round: true,
           effect: 'plain',
           hit: true
@@ -48,7 +63,6 @@ const nodeColums = reactive<TableColumn[]>([
       return h(
         ElTag,
         {
-          type: 'primary',
           round: true,
           effect: 'plain',
           hit: true
@@ -61,13 +75,14 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'cpuNum',
     label: t('node.nodeUsageCpu'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      let numericValue = parseFloat(cellValue)
       return h(
         ElTag,
         {
-          type: 'primary',
           round: true,
           effect: 'plain',
-          hit: true
+          hit: true,
+          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -77,13 +92,14 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'memNum',
     label: t('node.nodeUsageMemory'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      let numericValue = parseFloat(cellValue)
       return h(
         ElTag,
         {
-          type: 'primary',
           round: true,
           effect: 'plain',
-          hit: true
+          hit: true,
+          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -97,7 +113,7 @@ const nodeColums = reactive<TableColumn[]>([
         ElTag,
         {
           type: cellValue === '1' ? 'success' : cellValue === '2' ? 'warning' : 'danger',
-          effect: 'plain',
+          effect: 'light',
           hit: true
         },
         () =>
@@ -116,12 +132,17 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
+    minWidth: '100px',
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
       return (
         <>
-          <BaseButton type="success">{t('node.log')}</BaseButton>
-          <BaseButton type="primary">{t('node.config')}</BaseButton>
+          <BaseButton type="success" size="small">
+            {t('node.log')}
+          </BaseButton>
+          <BaseButton type="primary" size="small" onClick={() => openConfig(row)}>
+            {t('common.config')}
+          </BaseButton>
         </>
       )
     }
@@ -139,6 +160,21 @@ const { loading, dataList, currentPage, pageSize } = tableState
 const { getList } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
+}
+const dialogVisible = ref(false)
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+const detailData = reactive({
+  name: '',
+  maxTaskNum: '',
+  state: ''
+})
+const openConfig = async (data) => {
+  detailData.name = data.name
+  detailData.maxTaskNum = data.maxTaskNum
+  detailData.state = data.state
+  dialogVisible.value = true
 }
 </script>
 
@@ -185,4 +221,13 @@ function tableHeaderColor() {
       />
     </div>
   </ContentWrap>
+  <Dialog
+    v-model="dialogVisible"
+    :title="$t('common.config')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="200"
+  >
+    <Configuration :closeDialog="closeDialog" :nodeConfForm="detailData" :getList="getList" />
+  </Dialog>
 </template>

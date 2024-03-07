@@ -14,6 +14,7 @@ export default {
     delete: '删除',
     new: '新建',
     state: '状态',
+    config: '设置',
     on: '开启',
     off: '关闭',
     save: '保存',
@@ -232,8 +233,7 @@ export default {
     nodeUsageLoad: '负载',
     createTime: '创建时间',
     updateTime: '更新时间',
-    log: '日志',
-    config: '设置'
+    log: '日志'
   },
   task: {
     taskName: '任务名称',

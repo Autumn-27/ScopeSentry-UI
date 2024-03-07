@@ -31,7 +31,7 @@ const props = defineProps<{
   }
 }>()
 const { pocForm } = toRefs(props)
-const localSensitiveForm = ref({ ...pocForm.value })
+const localForm = ref({ ...pocForm.value })
 
 interface RuleForm {
   name: string
@@ -76,18 +76,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       let res
       console.log('submit!')
-      if (localSensitiveForm.value.id != '') {
+      if (localForm.value.id != '') {
         res = await updatePocDataApi(
-          localSensitiveForm.value.id,
-          localSensitiveForm.value.name,
-          localSensitiveForm.value.content,
-          localSensitiveForm.value.level
+          localForm.value.id,
+          localForm.value.name,
+          localForm.value.content,
+          localForm.value.level
         )
       } else {
         res = await addPocDataApi(
-          localSensitiveForm.value.name,
-          localSensitiveForm.value.content,
-          localSensitiveForm.value.level
+          localForm.value.name,
+          localForm.value.content,
+          localForm.value.level
         )
       }
       if (res.code === 200) {
@@ -103,19 +103,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 }
 </script>
 <template>
-  <ElForm
-    :model="localSensitiveForm"
-    label-width="120px"
-    :rules="rules"
-    status-icon
-    ref="ruleFormRef"
-  >
+  <ElForm :model="localForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
     <ElFormItem :label="t('poc.pocName')" prop="name">
-      <ElInput v-model="localSensitiveForm.name" :placeholder="t('poc.nameMsg')" />
+      <ElInput v-model="localForm.name" :placeholder="t('poc.nameMsg')" />
     </ElFormItem>
     <ElFormItem :label="t('poc.content')" prop="content">
       <codemirror
-        v-model="localSensitiveForm.content"
+        v-model="localForm.content"
         :style="{ height: '600px', width: '100%' }"
         :autofocus="true"
         :indent-with-tab="true"
@@ -125,7 +119,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     </ElFormItem>
     <ElFormItem :label="t('poc.level')">
       <ElSelectV2
-        v-model="localSensitiveForm.level"
+        v-model="localForm.level"
         placeholder="Please select level"
         :options="levelOptions"
       />

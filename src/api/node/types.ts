@@ -6,4 +6,5 @@ export type NodeData = {
   cpuNum: number
   memNum: number
   updateTime: string
+  maxTaskNum: string
 }

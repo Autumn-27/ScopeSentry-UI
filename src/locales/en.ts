@@ -14,6 +14,7 @@ export default {
     delete: 'Delete',
     new: 'New',
     state: 'State',
+    config: 'Config',
     on: 'On',
     off: 'Off',
     save: 'Save',
@@ -234,8 +235,7 @@ export default {
     nodeUsageLoad: 'Load',
     createTime: 'Create Time',
     updateTime: 'Update Time',
-    log: 'Log',
-    config: 'Config'
+    log: 'Log'
   },
   task: {
     taskName: 'Task Name',
