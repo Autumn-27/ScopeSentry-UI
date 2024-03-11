@@ -93,7 +93,7 @@ const setMenuTheme = (color: string) => {
   appStore.setTheme(theme)
   appStore.setCssVarTheme()
 }
-
+setMenuTheme(unref(menuTheme))
 // 监听layout变化，重置一些主题色
 watch(
   () => layout.value,
