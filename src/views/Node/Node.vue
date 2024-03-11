@@ -2,21 +2,21 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElTag } from 'element-plus'
+import { ElCol, ElRow, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
-import { useIcon } from '@/hooks/web/useIcon'
+// import { useIcon } from '@/hooks/web/useIcon'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import Configuration from './components/Configuration.vue'
-import { getNodeDataApi } from '@/api/node'
-const searchicon = useIcon({ icon: 'iconoir:search' })
+import { getNodeDataApi, deleteNodeApi } from '@/api/node'
+// const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
-const search = ref('')
-const handleSearch = () => {
-  console.log('as')
-  getList()
-}
+// const search = ref('')
+// const handleSearch = () => {
+//   console.log('as')
+//   getList()
+// }
 const nodeColums = reactive<TableColumn[]>([
   {
     field: 'selection',
@@ -157,7 +157,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { loading, dataList, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -176,11 +176,35 @@ const openConfig = async (data) => {
   detailData.state = data.state
   dialogVisible.value = true
 }
+const delLoading = ref(false)
+const names = ref<string[]>([])
+const delSelect = async () => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  names.value = selectedRows.map((row) => row.name)
+  delLoading.value = true
+  try {
+    const res = await deleteNodeApi(names.value)
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+const confirmDelete = async () => {
+  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
+  if (confirmed) {
+    await delSelect()
+  }
+}
 </script>
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="20" style="margin-bottom: 15px">
+    <!-- <ElRow :gutter="20" style="margin-bottom: 15px">
       <ElCol :span="1.5">
         <ElText class="mx-1" style="position: relative; top: 8px">{{ t('node.nodeName') }}:</ElText>
       </ElCol>
@@ -192,12 +216,12 @@ const openConfig = async (data) => {
           >Search</ElButton
         >
       </ElCol>
-    </ElRow>
+    </ElRow> -->
     <ElRow>
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
-          <BaseButton type="danger">
-            {{ t('task.delTask') }}
+          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
+            {{ t('common.delete') }}
           </BaseButton>
         </div>
       </ElCol>
