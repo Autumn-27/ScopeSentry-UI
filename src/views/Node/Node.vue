@@ -9,7 +9,7 @@ import { useTable } from '@/hooks/web/useTable'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import Configuration from './components/Configuration.vue'
-import { getNodeDataApi, deleteNodeApi } from '@/api/node'
+import { getNodeDataApi, deleteNodeApi, getNodeLogApi } from '@/api/node'
 // const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 // const search = ref('')
@@ -82,7 +82,7 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? 'primary' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -99,7 +99,7 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? 'primary' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -137,7 +137,7 @@ const nodeColums = reactive<TableColumn[]>([
       console.log(row)
       return (
         <>
-          <BaseButton type="success" size="small">
+          <BaseButton type="success" size="small" onClick={() => openLogDialogVisible(row)}>
             {t('node.log')}
           </BaseButton>
           <BaseButton type="primary" size="small" onClick={() => openConfig(row)}>
@@ -200,6 +200,16 @@ const confirmDelete = async () => {
     await delSelect()
   }
 }
+const logDialogVisible = ref(false)
+const closeLogDialogVisible = () => {
+  logDialogVisible.value = false
+}
+const logContent = ref('')
+const openLogDialogVisible = async (data) => {
+  const res = await getNodeLogApi(data.name)
+  logContent.value = res.logs
+  logDialogVisible.value = true
+}
 </script>
 
 <template>
@@ -250,8 +260,19 @@ const confirmDelete = async () => {
     :title="$t('common.config')"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    :maxHeight="200"
+    :maxHeight="500"
   >
     <Configuration :closeDialog="closeDialog" :nodeConfForm="detailData" :getList="getList" />
+  </Dialog>
+  <Dialog
+    v-model="logDialogVisible"
+    :title="t('node.log')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <pre v-if="logContent">{{ logContent }}</pre>
+    <template #footer>
+      <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
+    </template>
   </Dialog>
 </template>
