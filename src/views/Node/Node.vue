@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h } from 'vue'
+import { ref, reactive, h, watch } from 'vue'
 import { ElCol, ElRow, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -209,6 +209,22 @@ const openLogDialogVisible = async (data) => {
   const res = await getNodeLogApi(data.name)
   logContent.value = res.logs
   logDialogVisible.value = true
+  const socket = new WebSocket('ws://127.0.0.1:8000')
+  socket.onopen = () => {
+    setInterval(() => {
+      const message = { node_name: data.name }
+      socket.send(JSON.stringify(message))
+    }, 3000)
+  }
+  socket.onmessage = (event) => {
+    logContent.value += event.data
+  }
+  const stopListening = watch(logDialogVisible, (newValue) => {
+    if (!newValue) {
+      socket.close()
+      stopListening()
+    }
+  })
 }
 </script>
 
