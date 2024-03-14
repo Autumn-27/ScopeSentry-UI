@@ -82,7 +82,7 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? 'primary' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -99,7 +99,7 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? 'primary' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
         () => cellValue + '%'
       )
@@ -285,6 +285,7 @@ const openLogDialogVisible = async (data) => {
     :title="t('node.log')"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="500"
   >
     <pre v-if="logContent">{{ logContent }}</pre>
     <template #footer>
