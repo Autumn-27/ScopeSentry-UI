@@ -1,8 +1,8 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, watch } from 'vue'
-import { ElCol, ElRow, ElTag } from 'element-plus'
+import { ref, reactive, h, watch, nextTick } from 'vue'
+import { ElCol, ElRow, ElScrollbar, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 // import { useIcon } from '@/hooks/web/useIcon'
@@ -205,6 +205,7 @@ const closeLogDialogVisible = () => {
   logDialogVisible.value = false
 }
 const logContent = ref('')
+const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
 const openLogDialogVisible = async (data) => {
   const res = await getNodeLogApi(data.name)
   logContent.value = res.logs
@@ -218,6 +219,7 @@ const openLogDialogVisible = async (data) => {
   }
   socket.onmessage = (event) => {
     logContent.value += event.data
+    scrollbarRef.value!.setScrollTop(5000)
   }
   const stopListening = watch(logDialogVisible, (newValue) => {
     if (!newValue) {
@@ -287,7 +289,9 @@ const openLogDialogVisible = async (data) => {
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
     :maxHeight="500"
   >
-    <pre v-if="logContent">{{ logContent }}</pre>
+    <ElScrollbar ref="scrollbarRef">
+      <pre v-if="logContent">{{ logContent }}</pre>
+    </ElScrollbar>
     <template #footer>
       <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
     </template>
