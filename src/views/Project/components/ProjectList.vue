@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Table } from '@/components/Table'
 import { ref } from 'vue'
+import { ElAvatar } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 const { t } = useI18n()
@@ -23,6 +24,9 @@ const actionClick = (row?: any) => {
   console.log(row)
   push(`/project-management/project-detail?id=${row.ID}`)
 }
+const getNameLast = (str) => {
+  return str.substring(str.length - 1)
+}
 </script>
 
 <template>
@@ -40,7 +44,26 @@ const actionClick = (row?: any) => {
     <template #content="row">
       <div class="flex cursor-pointer" @click="actionClick(row.id)">
         <div class="pr-16px">
-          <img :src="row.logo" class="w-48px h-48px rounded-[50%]" alt="" />
+          <template v-if="row.logo">
+            <ElAvatar
+              :src="row.logo"
+              style="width: 45px; height: 45px; line-height: 45px; font-size: 24px"
+              fit="cover"
+            />
+          </template>
+          <template v-else>
+            <ElAvatar
+              style="
+                width: 45px;
+                height: 45px;
+                line-height: 45px;
+                font-size: 24px;
+                background-color: cornflowerblue;
+              "
+            >
+              {{ row.name.charAt(0) }}
+            </ElAvatar>
+          </template>
         </div>
         <div>
           <div class="mb-12px font-700 font-size-16px">{{ row.name }}</div>
