@@ -13,19 +13,17 @@ let tabNames = ref<string[]>([])
 const groupedProjects = ref<Record<string, any[]>>({})
 const getProjectTag = async () => {
   try {
-    console.log('aaaa')
     const res = await getProjectDataApi()
     const projects = res.data
+    console.log(projects)
     allProjectData.value = res?.data || []
     groupedProjects.value = projects.reduce((acc, project) => {
-      const tagName = project.TagName
+      const tagName = project.tag
 
       if (!acc[tagName]) {
         acc[tagName] = []
       }
-
       acc[tagName].push(project)
-
       return acc
     }, {})
     tabNames.value = Object.keys(groupedProjects.value)

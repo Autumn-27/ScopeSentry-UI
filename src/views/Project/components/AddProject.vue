@@ -21,6 +21,7 @@ import {
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
+import { addProjectDataApi } from '@/api/project'
 const { t } = useI18n()
 let projectForm = reactive({
   name: '',
@@ -75,11 +76,30 @@ const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
       console.log('submit!')
       console.log(projectForm)
-      props.closeDialog()
+      const res = await addProjectDataApi(
+        projectForm.name,
+        projectForm.tag,
+        projectForm.target,
+        projectForm.scheduledTasks,
+        projectForm.subdomainScan,
+        projectForm.subdomainConfig,
+        projectForm.urlScan,
+        projectForm.sensitiveInfoScan,
+        projectForm.pageMonitoring,
+        projectForm.crawlerScan,
+        projectForm.vulScan,
+        projectForm.vulList,
+        projectForm.day,
+        projectForm.hour,
+        projectForm.minute
+      )
+      if (res.code === 200) {
+        props.closeDialog()
+      }
       saveLoading.value = false
     } else {
       console.log('error submit!', fields)
@@ -93,7 +113,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('project.projectName')" prop="name">
       <ElInput v-model="projectForm.name" :placeholder="t('project.msgProject')" />
     </ElFormItem>
-    <ElFormItem label="TAG" prop="name">
+    <ElFormItem label="TAG" prop="tag">
       <ElInput v-model="projectForm.tag" :placeholder="t('project.msgProjectTag')" />
     </ElFormItem>
     <ElFormItem :label="t('project.projectScope')" prop="target">
@@ -103,6 +123,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         type="textarea"
         :autosize="{ minRows: 6 }"
       />
+    </ElFormItem>
+    <ElFormItem label="Logo" prop="logo">
+      <ElInput v-model="projectForm.tag" placeholder="http(s)://xxxxx.xx" />
     </ElFormItem>
     <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
     <ElRow>
@@ -249,16 +272,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           </ElFormItem>
         </ElCol>
       </ElRow>
-      <ElDivider />
-      <ElRow>
-        <ElCol :span="2" :offset="8">
-          <ElFormItem>
-            <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
-              t('task.save')
-            }}</ElButton>
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
     </div>
+    <ElDivider />
+    <ElRow>
+      <ElCol :span="2" :offset="8">
+        <ElFormItem>
+          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
+            t('task.save')
+          }}</ElButton>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
   </ElForm>
 </template>

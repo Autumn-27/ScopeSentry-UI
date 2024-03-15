@@ -1,7 +1,12 @@
 export type ProjectData = {
-  ID: string
-  ProjectName: string
-  Logo: string
+  id: string
+  name: string
+  logo: string
   AssetCount: number
-  TagName: string
+  tag: string
+}
+
+export type projectRespData = {
+  code: string
+  message: string
 }

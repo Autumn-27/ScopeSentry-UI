@@ -6,11 +6,11 @@ import { useRouter } from 'vue-router'
 const { t } = useI18n()
 const { push } = useRouter()
 interface Recordable {
-  ID: string
-  ProjectName: string
-  Logo: string
+  id: string
+  name: string
+  logo: string
   AssetCount: number
-  TagName: string
+  tag: string
 }
 defineProps({
   tableDataList: {
@@ -38,12 +38,12 @@ const actionClick = (row?: any) => {
     }"
   >
     <template #content="row">
-      <div class="flex cursor-pointer" @click="actionClick(row.ID)">
+      <div class="flex cursor-pointer" @click="actionClick(row.id)">
         <div class="pr-16px">
-          <img :src="row.Logo" class="w-48px h-48px rounded-[50%]" alt="" />
+          <img :src="row.logo" class="w-48px h-48px rounded-[50%]" alt="" />
         </div>
         <div>
-          <div class="mb-12px font-700 font-size-16px">{{ row.ProjectName }}</div>
+          <div class="mb-12px font-700 font-size-16px">{{ row.name }}</div>
           <div
             class="line-clamp-3 font-size-11px"
             style="color: #b1b3b8; position: relative; top: -6px"
