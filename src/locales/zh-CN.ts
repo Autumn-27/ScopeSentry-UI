@@ -247,6 +247,8 @@ export default {
     taskTarget: '目标',
     msgTarget: '请输入域名或IP，一行一个。',
     subdomainScan: '子域名扫描',
+    nodeSelect: '节点选择',
+    nodeMsg: '请选择扫描节点',
     config: '配置',
     url: 'URL',
     msgUrl: '获取更多页面入口',

@@ -23,6 +23,7 @@ const { t } = useI18n()
 let taskForm = reactive({
   name: '',
   target: '',
+  node: [],
   subdomainScan: true,
   subdomainConfig: [],
   urlScan: true,
@@ -38,10 +39,12 @@ const props = defineProps<{
 interface RuleForm {
   name: string
   target: string
+  node: []
 }
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, message: t('task.msgTaskName'), trigger: 'blur' }],
-  target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }]
+  target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }],
+  node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }]
 })
 
 const initials = [
@@ -90,6 +93,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         :placeholder="t('task.msgTarget')"
         type="textarea"
         :autosize="{ minRows: 6 }"
+      />
+    </ElFormItem>
+    <ElFormItem :label="t('task.nodeSelect')" prop="node">
+      <ElSelectV2
+        v-model="taskForm.node"
+        filterable
+        :options="vulOptions"
+        placeholder="Please select node"
+        style="width: 100%"
+        multiple
+        tag-type="success"
+        collapse-tags
+        collapse-tags-tooltip
+        :max-collapse-tags="7"
       />
     </ElFormItem>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
