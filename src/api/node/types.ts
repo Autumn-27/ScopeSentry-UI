@@ -8,3 +8,13 @@ export type NodeData = {
   updateTime: string
   maxTaskNum: string
 }
+
+export type nodeRespData = {
+  code: string
+  message: string
+}
+
+export type nodeLogRespData = {
+  code: string
+  logs: string
+}

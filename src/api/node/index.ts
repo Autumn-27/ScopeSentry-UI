@@ -5,8 +5,16 @@ interface NodeDataResponse {
   list: NodeData[]
 }
 
+interface NodeDataOnlineResponse {
+  list: string[]
+}
+
 export const getNodeDataApi = (): Promise<IResponse<NodeDataResponse>> => {
   return request.get({ url: '/api/node/data' })
+}
+
+export const getNodeDataOnlineApi = (): Promise<IResponse<NodeDataOnlineResponse>> => {
+  return request.get({ url: '/api/node/data/online' })
 }
 
 export const updateNodeConfigDataApi = (

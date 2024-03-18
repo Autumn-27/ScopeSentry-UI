@@ -13,3 +13,8 @@ export type pocRespData = {
 export type pocContent = {
   content: string
 }
+
+export type pocNameList = {
+  id: string
+  name: string
+}

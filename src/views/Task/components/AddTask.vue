@@ -18,7 +18,8 @@ import {
   FormInstance
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import { getNodeDataOnlineApi } from '@/api/node'
 const { t } = useI18n()
 let taskForm = reactive({
   name: '',
@@ -81,6 +82,32 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+const nodeOptions = reactive<{ value: string; label: string }[]>([])
+const getNodeList = async () => {
+  const res = await getNodeDataOnlineApi()
+  console.log(res.data.list)
+  if (res.data.list.length > 0) {
+    nodeOptions.push({ value: 'All Node', label: 'All Node' })
+    res.data.list.forEach((item) => {
+      nodeOptions.push({ value: item, label: item })
+    })
+  }
+  console.log(nodeOptions)
+}
+const getPocList = async () => {
+  const res = await getNodeDataOnlineApi()
+  console.log(res.data.list)
+  if (res.data.list.length > 0) {
+    nodeOptions.push({ value: 'All Node', label: 'All Node' })
+    res.data.list.forEach((item) => {
+      nodeOptions.push({ value: item, label: item })
+    })
+  }
+  console.log(nodeOptions)
+}
+onMounted(() => {
+  getNodeList()
+})
 </script>
 <template>
   <ElForm :model="taskForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
@@ -99,7 +126,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       <ElSelectV2
         v-model="taskForm.node"
         filterable
-        :options="vulOptions"
+        :options="nodeOptions"
         placeholder="Please select node"
         style="width: 100%"
         multiple

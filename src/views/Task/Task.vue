@@ -34,7 +34,6 @@ const taskColums = reactive<TableColumn[]>([
       return h(
         ElTag,
         {
-          type: '',
           round: true,
           effect: 'dark'
         },

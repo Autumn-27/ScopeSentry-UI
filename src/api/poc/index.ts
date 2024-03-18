@@ -1,9 +1,12 @@
 import request from '@/axios'
-import type { pocData, pocRespData, pocContent } from './types'
+import type { pocData, pocRespData, pocContent, pocNameList } from './types'
 
 interface pocDataResponse {
   list: pocData[]
   total: number
+}
+interface pocDataResponse {
+  list: pocNameList[]
 }
 export const getPocDataApi = (
   search: string,
@@ -11,6 +14,10 @@ export const getPocDataApi = (
   pageSize: number
 ): Promise<IResponse<pocDataResponse>> => {
   return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize } })
+}
+
+export const getPocNameListApi = (): Promise<IResponse<pocDataResponse>> => {
+  return request.get({ url: '/api/poc/name/list' })
 }
 
 export const getPocContentApi = (id: string): Promise<IResponse<pocContent>> => {
