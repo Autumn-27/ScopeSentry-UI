@@ -15,7 +15,9 @@ export const getPocDataApi = (
 ): Promise<IResponse<pocDataResponse>> => {
   return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize } })
 }
-
+export const getPocDataAllApi = (): Promise<IResponse<pocDataResponse>> => {
+  return request.get({ url: '/api/poc/data/all' })
+}
 export const getPocNameListApi = (): Promise<IResponse<pocDataResponse>> => {
   return request.get({ url: '/api/poc/name/list' })
 }

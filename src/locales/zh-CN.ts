@@ -233,7 +233,8 @@ export default {
     nodeUsageLoad: '负载',
     createTime: '创建时间',
     updateTime: '更新时间',
-    log: '日志'
+    log: '日志',
+    onlineNodeMsg: '没有连接中的扫描节点'
   },
   task: {
     taskName: '任务名称',

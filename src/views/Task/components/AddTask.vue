@@ -15,11 +15,13 @@ import {
   ElRadio,
   ElSelectV2,
   ElButton,
-  FormInstance
+  FormInstance,
+  ElMessage
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
+import { getPocDataAllApi } from '@/api/poc'
 const { t } = useI18n()
 let taskForm = reactive({
   name: '',
@@ -48,23 +50,6 @@ const rules = reactive<FormRules<RuleForm>>({
   node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }]
 })
 
-const initials = [
-  'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j'
-]
-
-const vulOptions = Array.from({ length: 1000 }).map((_, idx) => ({
-  value: `Option${idx + 1}`,
-  label: `${initials[idx % 10]}${idx}`
-}))
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
@@ -91,22 +76,25 @@ const getNodeList = async () => {
     res.data.list.forEach((item) => {
       nodeOptions.push({ value: item, label: item })
     })
+  } else {
+    ElMessage.warning(t('node.onlineNodeMsg'))
   }
   console.log(nodeOptions)
 }
+const vulOptions = reactive<{ value: string; label: string }[]>([])
 const getPocList = async () => {
-  const res = await getNodeDataOnlineApi()
+  const res = await getPocDataAllApi()
   console.log(res.data.list)
   if (res.data.list.length > 0) {
-    nodeOptions.push({ value: 'All Node', label: 'All Node' })
+    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
     res.data.list.forEach((item) => {
-      nodeOptions.push({ value: item, label: item })
+      vulOptions.push({ value: item.id, label: item.name })
     })
   }
-  console.log(nodeOptions)
 }
 onMounted(() => {
   getNodeList()
+  getPocList()
 })
 </script>
 <template>
@@ -233,6 +221,7 @@ onMounted(() => {
             multiple
             collapse-tags
             collapse-tags-tooltip
+            tag-type="info"
             :max-collapse-tags="3"
           />
         </ElFormItem>

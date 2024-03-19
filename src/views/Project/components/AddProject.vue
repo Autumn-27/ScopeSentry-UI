@@ -26,6 +26,7 @@ const { t } = useI18n()
 let projectForm = reactive({
   name: '',
   tag: '',
+  logo: '',
   target: '',
   scheduledTasks: true,
   subdomainScan: true,
@@ -125,7 +126,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       />
     </ElFormItem>
     <ElFormItem label="Logo" prop="logo">
-      <ElInput v-model="projectForm.tag" placeholder="http(s)://xxxxx.xx" />
+      <ElInput v-model="projectForm.logo" placeholder="http(s)://xxxxx.xx" />
     </ElFormItem>
     <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
     <ElRow>

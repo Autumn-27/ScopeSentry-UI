@@ -235,7 +235,8 @@ export default {
     nodeUsageLoad: 'Load',
     createTime: 'Create Time',
     updateTime: 'Update Time',
-    log: 'Log'
+    log: 'Log',
+    onlineNodeMsg: 'No scanning node is connected'
   },
   task: {
     taskName: 'Task Name',
@@ -250,7 +251,7 @@ export default {
     msgTarget: 'Please enter the domain name or IP, one per line.',
     subdomainScan: 'Subdomain Scan',
     nodeMsg: 'Please select a scanning node',
-    nodeSelect: 'Node selection',
+    nodeSelect: 'Node Selection',
     config: 'Config',
     url: 'URL',
     msgUrl: 'Get more page entries',
