@@ -16,14 +16,28 @@ import {
   ElSelectV2,
   ElButton,
   FormInstance,
-  ElMessage
+  ElMessage,
+  CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import { getPocDataAllApi } from '@/api/poc'
 const { t } = useI18n()
-let taskForm = reactive({
+interface TaskForm {
+  name: string
+  target: string
+  node: string[]
+  subdomainScan: boolean
+  subdomainConfig: string[]
+  urlScan: boolean
+  sensitiveInfoScan: boolean
+  pageMonitoring: string
+  crawlerScan: boolean
+  vulScan: boolean
+  vulList: string[]
+}
+let taskForm: TaskForm = reactive({
   name: '',
   target: '',
   node: [],
@@ -72,7 +86,6 @@ const getNodeList = async () => {
   const res = await getNodeDataOnlineApi()
   console.log(res.data.list)
   if (res.data.list.length > 0) {
-    nodeOptions.push({ value: 'All Node', label: 'All Node' })
     res.data.list.forEach((item) => {
       nodeOptions.push({ value: item, label: item })
     })
@@ -96,6 +109,29 @@ onMounted(() => {
   getNodeList()
   getPocList()
 })
+const nodeCheckAll = ref(false)
+const indeterminate = ref(false)
+watch(taskForm.node, (val) => {
+  if (val.length === 0) {
+    nodeCheckAll.value = false
+    indeterminate.value = false
+  } else if (val.length === nodeOptions.length) {
+    nodeCheckAll.value = true
+    indeterminate.value = false
+  } else {
+    indeterminate.value = true
+  }
+})
+const handleCheckAll = (val: CheckboxValueType) => {
+  indeterminate.value = false
+  if (val) {
+    nodeOptions.forEach((option) => {
+      return taskForm.node.push(option.value)
+    })
+  } else {
+    taskForm.node = []
+  }
+}
 </script>
 <template>
   <ElForm :model="taskForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
@@ -116,13 +152,23 @@ onMounted(() => {
         filterable
         :options="nodeOptions"
         placeholder="Please select node"
-        style="width: 100%"
+        style="width: 80%"
         multiple
         tag-type="success"
         collapse-tags
         collapse-tags-tooltip
         :max-collapse-tags="7"
-      />
+      >
+        <template #header>
+          <el-checkbox
+            v-model="nodeCheckAll"
+            :indeterminate="indeterminate"
+            @change="handleCheckAll"
+          >
+            All
+          </el-checkbox>
+        </template>
+      </ElSelectV2>
     </ElFormItem>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('subdomain.subdomainName')
