@@ -86,10 +86,12 @@ const getNodeList = async () => {
   const res = await getNodeDataOnlineApi()
   console.log(res.data.list)
   if (res.data.list.length > 0) {
+    isCheckboxDisabledNode.value = false
     res.data.list.forEach((item) => {
       nodeOptions.push({ value: item, label: item })
     })
   } else {
+    isCheckboxDisabledNode.value = true
     ElMessage.warning(t('node.onlineNodeMsg'))
   }
   console.log(nodeOptions)
@@ -111,6 +113,7 @@ onMounted(() => {
 })
 const nodeCheckAll = ref(false)
 const indeterminate = ref(false)
+const isCheckboxDisabledNode = ref(false)
 watch(taskForm.node, (val) => {
   if (val.length === 0) {
     nodeCheckAll.value = false
@@ -162,6 +165,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         <template #header>
           <el-checkbox
             v-model="nodeCheckAll"
+            :disabled="isCheckboxDisabledNode"
             :indeterminate="indeterminate"
             @change="handleCheckAll"
           >
