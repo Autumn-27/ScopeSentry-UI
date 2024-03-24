@@ -6,3 +6,8 @@ export type TaskData = {
   CreateTime: string
   EndTime: string
 }
+
+export type taskRespData = {
+  code: string
+  message: string
+}

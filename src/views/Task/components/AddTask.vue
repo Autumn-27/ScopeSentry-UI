@@ -23,6 +23,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import { getPocDataAllApi } from '@/api/poc'
+import { addTaskApi } from '@/api/task'
 const { t } = useI18n()
 interface TaskForm {
   name: string
@@ -52,6 +53,7 @@ let taskForm: TaskForm = reactive({
 })
 const props = defineProps<{
   closeDialog: () => void
+  getList: () => void
 }>()
 interface RuleForm {
   name: string
@@ -69,11 +71,28 @@ const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
       console.log('submit!')
       console.log(taskForm)
-      props.closeDialog()
+      let res = await addTaskApi(
+        taskForm.name,
+        taskForm.target,
+        taskForm.node,
+        nodeCheckAll.value,
+        taskForm.subdomainScan,
+        taskForm.subdomainConfig,
+        taskForm.urlScan,
+        taskForm.sensitiveInfoScan,
+        taskForm.pageMonitoring,
+        taskForm.crawlerScan,
+        taskForm.vulScan,
+        taskForm.vulList
+      )
+      if (res.code === 200) {
+        props.getList()
+        props.closeDialog()
+      }
       saveLoading.value = false
     } else {
       console.log('error submit!', fields)
@@ -279,7 +298,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     </ElRow>
     <ElDivider />
     <ElRow>
-      <ElCol :span="2" :offset="8">
+      <ElCol :span="2" :offset="7">
         <ElFormItem>
           <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
             t('task.save')
