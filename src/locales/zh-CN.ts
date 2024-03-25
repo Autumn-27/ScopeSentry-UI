@@ -12,6 +12,7 @@ export default {
     login: '登录',
     edit: '编辑',
     delete: '删除',
+    view: '查看',
     new: '新建',
     state: '状态',
     config: '设置',

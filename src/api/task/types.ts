@@ -1,10 +1,10 @@
 export type TaskData = {
   ID: string
-  TaskName: string
-  TaskCount: string
-  TaskProgress: string
-  CreateTime: string
-  EndTime: string
+  name: string
+  taskNum: string
+  progress: string
+  creatTime: string
+  endTime: string
 }
 
 export type taskRespData = {

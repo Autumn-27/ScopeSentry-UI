@@ -13,6 +13,7 @@ export default {
     edit: 'Edit',
     delete: 'Delete',
     new: 'New',
+    view: 'View',
     state: 'State',
     config: 'Config',
     on: 'On',

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h } from 'vue'
@@ -8,6 +8,7 @@ import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
 import { getTaskDataApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
+import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
@@ -25,17 +26,18 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'name',
-    label: t('task.taskName')
+    label: t('task.taskName'),
+    minWidth: 30
   },
   {
     field: 'taskNum',
     label: t('task.taskCount'),
+    minWidth: 20,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
         {
-          round: true,
-          effect: 'dark'
+          type: 'info'
         },
         () => cellValue
       )
@@ -44,6 +46,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'progress',
     label: t('task.taskProgress'),
+    minWidth: 40,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(ElProgress, {
         percentage: cellValue,
@@ -56,11 +59,32 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'creatTime',
-    label: t('task.createTime')
+    label: t('task.createTime'),
+    minWidth: 40
   },
   {
     field: 'endTime',
-    label: t('task.endTime')
+    label: t('task.endTime'),
+    minWidth: 40,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      if (cellValue == '') {
+        return '-'
+      }
+    }
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    minWidth: 40,
+    formatter: (row, __: TableColumn, _: number) => {
+      console.log(row)
+      return (
+        <>
+          <BaseButton type="primary">{t('common.view')}</BaseButton>
+          <BaseButton type="danger">{t('common.delete')}</BaseButton>
+        </>
+      )
+    }
   }
 ])
 const { tableRegister, tableState, tableMethods } = useTable({
@@ -82,7 +106,10 @@ const dialogVisible = ref(false)
 const addTask = async () => {
   dialogVisible.value = true
 }
+
+let DialogTitle = t('task.addTask')
 const closeDialog = () => {
+  DialogTitle = t('task.addTask')
   dialogVisible.value = false
 }
 </script>
@@ -137,7 +164,7 @@ const closeDialog = () => {
   </ContentWrap>
   <Dialog
     v-model="dialogVisible"
-    :title="t('task.addTask')"
+    :title="DialogTitle"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
