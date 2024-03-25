@@ -24,11 +24,11 @@ const taskColums = reactive<TableColumn[]>([
     width: '55'
   },
   {
-    field: 'TaskName',
+    field: 'name',
     label: t('task.taskName')
   },
   {
-    field: 'TaskCount',
+    field: 'taskNum',
     label: t('task.taskCount'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
@@ -42,7 +42,7 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'TaskProgress',
+    field: 'progress',
     label: t('task.taskProgress'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(ElProgress, {
@@ -55,11 +55,11 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'CreateTime',
+    field: 'creatTime',
     label: t('task.createTime')
   },
   {
-    field: 'EndTime',
+    field: 'endTime',
     label: t('task.endTime')
   }
 ])
