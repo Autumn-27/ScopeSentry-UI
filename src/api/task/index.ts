@@ -1,5 +1,6 @@
 import request from '@/axios'
-import type { TaskData, taskRespData } from './types'
+import type { TaskData, taskRespData, TaskContentData } from './types'
+import type { commonRespData } from '../common/types'
 
 interface TaskDataResponse {
   list: TaskData[]
@@ -44,4 +45,12 @@ export const addTaskApi = (
       vulList
     }
   })
+}
+
+export const getTaskContentApi = (id: string): Promise<IResponse<TaskContentData>> => {
+  return request.post({ url: '/api/task/content', data: { id } })
+}
+
+export const deleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/task/delete', data: { ids } })
 }

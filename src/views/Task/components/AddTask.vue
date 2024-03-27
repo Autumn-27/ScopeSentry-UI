@@ -20,41 +20,34 @@ import {
   CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import { getPocDataAllApi } from '@/api/poc'
 import { addTaskApi } from '@/api/task'
 const { t } = useI18n()
-interface TaskForm {
-  name: string
-  target: string
-  node: string[]
-  subdomainScan: boolean
-  subdomainConfig: string[]
-  urlScan: boolean
-  sensitiveInfoScan: boolean
-  pageMonitoring: string
-  crawlerScan: boolean
-  vulScan: boolean
-  vulList: string[]
-}
-let taskForm: TaskForm = reactive({
-  name: '',
-  target: '',
-  node: [],
-  subdomainScan: true,
-  subdomainConfig: [],
-  urlScan: true,
-  sensitiveInfoScan: true,
-  pageMonitoring: 'JS',
-  crawlerScan: true,
-  vulScan: false,
-  vulList: []
-})
+
 const props = defineProps<{
   closeDialog: () => void
   getList: () => void
+  vTaskForm: {
+    name: string
+    target: string
+    node: string[]
+    subdomainScan: boolean
+    subdomainConfig: string[]
+    urlScan: boolean
+    sensitiveInfoScan: boolean
+    pageMonitoring: string
+    crawlerScan: boolean
+    vulScan: boolean
+    vulList: string[]
+  }
+  create: boolean
 }>()
+
+const { vTaskForm } = toRefs(props)
+const taskForm = ref({ ...vTaskForm.value })
+
 interface RuleForm {
   name: string
   target: string
@@ -76,18 +69,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       console.log('submit!')
       console.log(taskForm)
       let res = await addTaskApi(
-        taskForm.name,
-        taskForm.target,
-        taskForm.node,
+        taskForm.value.name,
+        taskForm.value.target,
+        taskForm.value.node,
         nodeCheckAll.value,
-        taskForm.subdomainScan,
-        taskForm.subdomainConfig,
-        taskForm.urlScan,
-        taskForm.sensitiveInfoScan,
-        taskForm.pageMonitoring,
-        taskForm.crawlerScan,
-        taskForm.vulScan,
-        taskForm.vulList
+        taskForm.value.subdomainScan,
+        taskForm.value.subdomainConfig,
+        taskForm.value.urlScan,
+        taskForm.value.sensitiveInfoScan,
+        taskForm.value.pageMonitoring,
+        taskForm.value.crawlerScan,
+        taskForm.value.vulScan,
+        taskForm.value.vulList
       )
       if (res.code === 200) {
         props.getList()
@@ -133,7 +126,7 @@ onMounted(() => {
 const nodeCheckAll = ref(false)
 const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
-watch(taskForm.node, (val) => {
+watch(taskForm.value.node, (val) => {
   if (val.length === 0) {
     nodeCheckAll.value = false
     indeterminate.value = false
@@ -148,15 +141,22 @@ const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
     nodeOptions.forEach((option) => {
-      return taskForm.node.push(option.value)
+      return taskForm.value.node.push(option.value)
     })
   } else {
-    taskForm.node = []
+    taskForm.value.node = []
   }
 }
 </script>
 <template>
-  <ElForm :model="taskForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
+  <ElForm
+    :model="taskForm"
+    label-width="120px"
+    :rules="rules"
+    status-icon
+    ref="ruleFormRef"
+    :disabled="create ? false : true"
+  >
     <ElFormItem :label="t('task.taskName')" prop="name">
       <ElInput v-model="taskForm.name" :placeholder="t('task.msgTaskName')" />
     </ElFormItem>
@@ -165,7 +165,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         v-model="taskForm.target"
         :placeholder="t('task.msgTarget')"
         type="textarea"
-        :autosize="{ minRows: 6 }"
+        rows="10"
       />
     </ElFormItem>
     <ElFormItem :label="t('task.nodeSelect')" prop="node">

@@ -6,7 +6,7 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'elem
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi } from '@/api/task'
+import { getTaskDataApi, getTaskContentApi, deleteTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
@@ -80,8 +80,12 @@ const taskColums = reactive<TableColumn[]>([
       console.log(row)
       return (
         <>
-          <BaseButton type="primary">{t('common.view')}</BaseButton>
-          <BaseButton type="danger">{t('common.delete')}</BaseButton>
+          <BaseButton type="success" onClick={() => getTaskContent(row)}>
+            {t('common.view')}
+          </BaseButton>
+          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
+            {t('common.delete')}
+          </BaseButton>
         </>
       )
     }
@@ -98,19 +102,110 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
 const dialogVisible = ref(false)
 const addTask = async () => {
   dialogVisible.value = true
+  DialogTitle = t('task.addTask')
+  Create.value = true
+  taskForm.name = ''
+  taskForm.target = ''
+  taskForm.node = []
+  taskForm.subdomainScan = true
+  taskForm.subdomainConfig = []
+  taskForm.urlScan = true
+  taskForm.sensitiveInfoScan = true
+  taskForm.pageMonitoring = 'JS'
+  taskForm.crawlerScan = true
+  taskForm.vulScan = false
+  taskForm.vulList = []
 }
 
 let DialogTitle = t('task.addTask')
 const closeDialog = () => {
-  DialogTitle = t('task.addTask')
   dialogVisible.value = false
+}
+let taskForm = reactive({
+  name: '',
+  target: '',
+  node: [],
+  subdomainScan: true,
+  subdomainConfig: [],
+  urlScan: true,
+  sensitiveInfoScan: true,
+  pageMonitoring: 'JS',
+  crawlerScan: true,
+  vulScan: false,
+  vulList: []
+})
+
+let Create = ref(true)
+const getTaskContent = async (data) => {
+  const res = await getTaskContentApi(data.id)
+  if (res.code === 200) {
+    const result = res.data
+    taskForm.name = result.name
+    taskForm.target = result.target
+    taskForm.node = result.node
+    taskForm.subdomainScan = result.subdomainScan
+    taskForm.subdomainConfig = result.subdomainConfig
+    taskForm.urlScan = result.urlScan
+    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
+    taskForm.pageMonitoring = result.pageMonitoring
+    taskForm.crawlerScan = result.crawlerScan
+    taskForm.vulScan = result.vulScan
+    taskForm.vulList = result.vulList
+  }
+  dialogVisible.value = true
+  Create.value = false
+  DialogTitle = t('common.view')
+}
+const confirmDeleteSelect = async () => {
+  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
+  if (confirmed) {
+    await delSelect()
+  }
+}
+
+const confirmDelete = async (data) => {
+  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
+  if (confirmed) {
+    await del(data)
+  }
+}
+const delLoading = ref(false)
+const del = async (data) => {
+  delLoading.value = true
+  try {
+    const res = await deleteTaskApi([data.id])
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+const ids = ref<string[]>([])
+const delSelect = async () => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.id)
+  delLoading.value = true
+  try {
+    const res = await deleteTaskApi(ids.value)
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
 }
 </script>
 
@@ -133,7 +228,7 @@ const closeDialog = () => {
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
           <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
-          <BaseButton type="danger">
+          <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('task.delTask') }}
           </BaseButton>
         </div>
@@ -168,6 +263,6 @@ const closeDialog = () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <AddTask :closeDialog="closeDialog" :getList="getList" />
+    <AddTask :closeDialog="closeDialog" :getList="getList" :vTaskForm="taskForm" :create="Create" />
   </Dialog>
 </template>
