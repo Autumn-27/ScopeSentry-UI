@@ -246,6 +246,7 @@ export default {
     createTime: 'Create Time',
     endTime: 'End Time',
     addTask: 'Add Task',
+    retest: 'Retest',
     delTask: 'DelTask Task',
     msgTaskName: 'Please enter the task name',
     taskTarget: 'Target',

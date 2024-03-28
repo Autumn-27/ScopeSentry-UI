@@ -244,6 +244,7 @@ export default {
     createTime: '创建时间',
     endTime: '结束时间',
     addTask: '新建任务',
+    retest: '重新测试',
     delTask: '删除任务',
     msgTaskName: '请输入任务名称',
     taskTarget: '目标',

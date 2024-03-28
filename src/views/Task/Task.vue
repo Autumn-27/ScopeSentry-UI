@@ -1,12 +1,12 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h } from 'vue'
+import { ref, reactive, h, computed } from 'vue'
 import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, getTaskContentApi, deleteTaskApi } from '@/api/task'
+import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
@@ -78,11 +78,21 @@ const taskColums = reactive<TableColumn[]>([
     minWidth: 40,
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
+      const retestButton = h(
+        BaseButton,
+        {
+          type: 'warning',
+          disabled: row.progress == 100 ? false : true,
+          onClick: () => confirmRetest(row)
+        },
+        t('task.retest')
+      )
       return (
         <>
           <BaseButton type="success" onClick={() => getTaskContent(row)}>
             {t('common.view')}
           </BaseButton>
+          {retestButton}
           <BaseButton type="danger" onClick={() => confirmDelete(row)}>
             {t('common.delete')}
           </BaseButton>
@@ -204,6 +214,21 @@ const delSelect = async () => {
   } catch (error) {
     console.error('Error deleting data:', error)
     delLoading.value = false
+    getList()
+  }
+}
+const confirmRetest = async (data) => {
+  const confirmed = window.confirm('Are you sure you want to retest?')
+  if (confirmed) {
+    await retestTask(data)
+  }
+}
+const retestTask = async (data) => {
+  try {
+    await retestTaskApi(data.id)
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
     getList()
   }
 }
