@@ -24,6 +24,7 @@ import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import { getPocDataAllApi } from '@/api/poc'
 import { addTaskApi } from '@/api/task'
+import { getPortDictDataApi } from '@/api/DictionaryManagement'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -34,6 +35,7 @@ const props = defineProps<{
     target: string
     node: string[]
     subdomainScan: boolean
+    duplicates: boolean
     subdomainConfig: string[]
     urlScan: boolean
     sensitiveInfoScan: boolean
@@ -41,6 +43,8 @@ const props = defineProps<{
     crawlerScan: boolean
     vulScan: boolean
     vulList: string[]
+    portScan: boolean
+    ports: string
   }
   create: boolean
 }>()
@@ -80,7 +84,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         taskForm.value.pageMonitoring,
         taskForm.value.crawlerScan,
         taskForm.value.vulScan,
-        taskForm.value.vulList
+        taskForm.value.vulList,
+        taskForm.value.portScan,
+        taskForm.value.ports
       )
       if (res.code === 200) {
         props.getList()
@@ -108,6 +114,15 @@ const getNodeList = async () => {
   }
   console.log(nodeOptions)
 }
+const portOptions = reactive<{ value: string; label: string }[]>([])
+const getPortList = async () => {
+  const res = await getPortDictDataApi('', 1, 10000)
+  if (res.data.list.length > 0) {
+    res.data.list.forEach((item) => {
+      portOptions.push({ value: item.id, label: item.name })
+    })
+  }
+}
 const vulOptions = reactive<{ value: string; label: string }[]>([])
 const getPocList = async () => {
   const res = await getPocDataAllApi()
@@ -122,6 +137,7 @@ const getPocList = async () => {
 onMounted(() => {
   getNodeList()
   getPocList()
+  getPortList()
 })
 const nodeCheckAll = ref(false)
 const indeterminate = ref(false)
@@ -198,6 +214,18 @@ const handleCheckAll = (val: CheckboxValueType) => {
     }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
+        <ElFormItem :label="t('task.duplicates')">
+          <ElSwitch
+            v-model="taskForm.duplicates"
+            inline-prompt
+            :active-text="t('common.true')"
+            :inactive-text="t('common.false')"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElRow>
+      <ElCol :span="6">
         <ElFormItem :label="t('task.subdomainScan')">
           <ElSwitch
             v-model="taskForm.subdomainScan"
@@ -213,6 +241,32 @@ const handleCheckAll = (val: CheckboxValueType) => {
             <ElCheckbox label="Subfinder" name="subdomainConfig" :checked="true" />
             <ElCheckbox label="Ksubdomain" name="subdomainConfig" :checked="true" />
           </ElCheckboxGroup>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('task.portScan')
+    }}</ElDivider>
+    <ElRow>
+      <ElCol :span="6">
+        <ElFormItem :label="t('task.portScan')">
+          <ElSwitch
+            v-model="taskForm.portScan"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12">
+        <ElFormItem :label="t('task.portSelect')" prop="portScan" v-if="taskForm.portScan">
+          <ElSelectV2
+            v-model="taskForm.ports"
+            filterable
+            :options="portOptions"
+            placeholder="Please select port"
+            style="width: 80%"
+          />
         </ElFormItem>
       </ElCol>
     </ElRow>

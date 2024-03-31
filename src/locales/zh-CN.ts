@@ -8,6 +8,8 @@ export default {
     endTimeText: '结束时间',
     changePassword: '修改密码',
     submit: '提交',
+    true: '是',
+    false: '否',
     newPassword: '新密码',
     login: '登录',
     edit: '编辑',
@@ -253,6 +255,8 @@ export default {
     nodeSelect: '节点选择',
     nodeMsg: '请选择扫描节点',
     config: '配置',
+    portScan: '端口扫描',
+    portSelect: '选择端口',
     url: 'URL',
     msgUrl: '获取更多页面入口',
     sensitiveInfoScan: '扫描敏感信息',
@@ -262,7 +266,8 @@ export default {
     msgCrawler: '爬虫获取get以及post参数，建议开启URL扫描获取更多网站入口。',
     vulScan: '漏洞扫描',
     vulList: '漏洞列表',
-    save: '保存'
+    save: '保存',
+    duplicates: '子域名去重扫描'
   },
   asset: {
     assetName: '资产',

@@ -24,4 +24,6 @@ export type TaskContentData = {
   crawlerScan: boolean
   vulScan: boolean
   vulList: []
+  portScan: boolean
+  ports: string
 }

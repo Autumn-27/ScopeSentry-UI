@@ -19,6 +19,8 @@ export default {
     on: 'On',
     off: 'Off',
     save: 'Save',
+    true: 'true',
+    false: 'false',
     required: 'This is required',
     loginOut: 'Login out',
     document: 'Document',
@@ -264,7 +266,10 @@ export default {
       'The crawler obtains get and post parameters. It is recommended to enable URL scanning to obtain more website entries.',
     vulScan: 'Vulnerability Scan',
     vulList: 'Vul List',
-    save: 'Save'
+    save: 'Save',
+    duplicates: 'Subdomain deduplication scanning',
+    portScan: 'Port Scan',
+    portSelect: 'Select Port'
   },
   asset: {
     assetName: 'Asset',

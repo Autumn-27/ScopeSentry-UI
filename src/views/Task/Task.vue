@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, computed } from 'vue'
+import { ref, reactive, h } from 'vue'
 import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -143,13 +143,16 @@ let taskForm = reactive({
   target: '',
   node: [],
   subdomainScan: true,
+  duplicates: true,
   subdomainConfig: [],
   urlScan: true,
   sensitiveInfoScan: true,
   pageMonitoring: 'JS',
   crawlerScan: true,
   vulScan: false,
-  vulList: []
+  vulList: [],
+  portScan: true,
+  ports: ''
 })
 
 let Create = ref(true)
@@ -168,6 +171,8 @@ const getTaskContent = async (data) => {
     taskForm.crawlerScan = result.crawlerScan
     taskForm.vulScan = result.vulScan
     taskForm.vulList = result.vulList
+    taskForm.portScan = result.portScan
+    taskForm.ports = result.ports
   }
   dialogVisible.value = true
   Create.value = false
