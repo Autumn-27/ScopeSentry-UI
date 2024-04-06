@@ -240,6 +240,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
           <ElCheckboxGroup v-model="taskForm.subdomainConfig">
             <ElCheckbox label="Subfinder" name="subdomainConfig" :checked="true" />
             <ElCheckbox label="Ksubdomain" name="subdomainConfig" :checked="true" />
+            <ElCheckbox label="waybackurl" name="waybackurl" :checked="true" />
           </ElCheckboxGroup>
         </ElFormItem>
       </ElCol>
@@ -299,6 +300,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
       <ElCol :span="12" :offset="6">
         <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="taskForm.urlScan">
           <ElRadioGroup v-model="taskForm.pageMonitoring">
+            <ElRadio label="None" name="pageMonitoring" />
             <ElTooltip effect="dark" :content="t('task.msgPageMonitoringAll')" placement="top">
               <ElRadio label="All" name="pageMonitoring" :checked="true" />
             </ElTooltip>
