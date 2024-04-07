@@ -80,6 +80,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         taskForm.value.subdomainScan,
         taskForm.value.subdomainConfig,
         taskForm.value.urlScan,
+        taskForm.value.duplicates,
         taskForm.value.sensitiveInfoScan,
         taskForm.value.pageMonitoring,
         taskForm.value.crawlerScan,
