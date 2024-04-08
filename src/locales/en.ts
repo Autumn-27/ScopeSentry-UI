@@ -269,7 +269,10 @@ export default {
     save: 'Save',
     duplicates: 'Subdomain deduplication scanning',
     portScan: 'Port Scan',
-    portSelect: 'Select Port'
+    portSelect: 'Select Port',
+    selectNodeMsg:
+      'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
+    duplicatesMsg: '历史已经查询到了子域名将会跳过'
   },
   asset: {
     assetName: 'Asset',

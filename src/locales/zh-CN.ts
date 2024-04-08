@@ -267,7 +267,10 @@ export default {
     vulScan: '漏洞扫描',
     vulList: '漏洞列表',
     save: '保存',
-    duplicates: '子域名去重扫描'
+    duplicates: '子域名去重扫描',
+    selectNodeMsg:
+      '只有通过点击All选择节点当有新节点注册时才会自动将任务添加到新节点，否则任务只会在当前选择节点中运行！',
+    duplicatesMsg: '历史已经查询到了子域名将会跳过'
   },
   asset: {
     assetName: '资产',

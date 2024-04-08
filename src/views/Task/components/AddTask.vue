@@ -143,24 +143,16 @@ onMounted(() => {
 const nodeCheckAll = ref(false)
 const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
-watch(taskForm.value.node, (val) => {
-  if (val.length === 0) {
-    nodeCheckAll.value = false
-    indeterminate.value = false
-  } else if (val.length === nodeOptions.length) {
-    nodeCheckAll.value = true
-    indeterminate.value = false
-  } else {
-    indeterminate.value = true
-  }
-})
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
+    nodeCheckAll.value = true
     nodeOptions.forEach((option) => {
+      taskForm.value.node = []
       return taskForm.value.node.push(option.value)
     })
   } else {
+    nodeCheckAll.value = false
     taskForm.value.node = []
   }
 }
@@ -185,44 +177,48 @@ const handleCheckAll = (val: CheckboxValueType) => {
         rows="10"
       />
     </ElFormItem>
-    <ElFormItem :label="t('task.nodeSelect')" prop="node">
-      <ElSelectV2
-        v-model="taskForm.node"
-        filterable
-        :options="nodeOptions"
-        placeholder="Please select node"
-        style="width: 80%"
-        multiple
-        tag-type="success"
-        collapse-tags
-        collapse-tags-tooltip
-        :max-collapse-tags="7"
-      >
-        <template #header>
-          <el-checkbox
-            v-model="nodeCheckAll"
-            :disabled="isCheckboxDisabledNode"
-            :indeterminate="indeterminate"
-            @change="handleCheckAll"
-          >
-            All
-          </el-checkbox>
-        </template>
-      </ElSelectV2>
-    </ElFormItem>
+    <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+      <ElFormItem :label="t('task.nodeSelect')" prop="node">
+        <ElSelectV2
+          v-model="taskForm.node"
+          filterable
+          :options="nodeOptions"
+          placeholder="Please select node"
+          style="width: 80%"
+          multiple
+          tag-type="success"
+          collapse-tags
+          collapse-tags-tooltip
+          :max-collapse-tags="7"
+        >
+          <template #header>
+            <el-checkbox
+              v-model="nodeCheckAll"
+              :disabled="isCheckboxDisabledNode"
+              :indeterminate="indeterminate"
+              @change="handleCheckAll"
+            >
+              All
+            </el-checkbox>
+          </template>
+        </ElSelectV2>
+      </ElFormItem>
+    </ElTooltip>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('subdomain.subdomainName')
     }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
-        <ElFormItem :label="t('task.duplicates')">
-          <ElSwitch
-            v-model="taskForm.duplicates"
-            inline-prompt
-            :active-text="t('common.true')"
-            :inactive-text="t('common.false')"
-          />
-        </ElFormItem>
+        <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+          <ElFormItem :label="t('task.duplicates')">
+            <ElSwitch
+              v-model="taskForm.duplicates"
+              inline-prompt
+              :active-text="t('common.true')"
+              :inactive-text="t('common.false')"
+            />
+          </ElFormItem>
+        </ElTooltip>
       </ElCol>
     </ElRow>
     <ElRow>

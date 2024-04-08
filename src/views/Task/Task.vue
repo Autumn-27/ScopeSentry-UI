@@ -151,7 +151,7 @@ let taskForm = reactive({
   crawlerScan: true,
   vulScan: false,
   vulList: [],
-  portScan: true,
+  portScan: false,
   ports: ''
 })
 
