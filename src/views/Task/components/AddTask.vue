@@ -209,7 +209,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
-        <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+        <ElTooltip :content="t('task.duplicatesMsg')" placement="top">
           <ElFormItem :label="t('task.duplicates')">
             <ElSwitch
               v-model="taskForm.duplicates"

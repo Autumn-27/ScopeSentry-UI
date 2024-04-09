@@ -272,7 +272,7 @@ export default {
     portSelect: 'Select Port',
     selectNodeMsg:
       'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
-    duplicatesMsg: '历史已经查询到了子域名将会跳过'
+    duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.'
   },
   asset: {
     assetName: 'Asset',
