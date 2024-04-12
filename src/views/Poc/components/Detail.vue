@@ -27,7 +27,7 @@ const props = defineProps<{
     id: string
     name: string
     content: string
-    level: string
+    level: number
   }
 }>()
 const { pocForm } = toRefs(props)
@@ -43,27 +43,27 @@ const rules = reactive<FormRules<RuleForm>>({
 })
 const levelOptions = [
   {
-    value: 'critical',
+    value: 6,
     label: 'critical'
   },
   {
-    value: 'high',
+    value: 5,
     label: 'high'
   },
   {
-    value: 'info',
+    value: 4,
     label: 'info'
   },
   {
-    value: 'low',
+    value: 3,
     label: 'low'
   },
   {
-    value: 'medium',
+    value: 2,
     label: 'medium'
   },
   {
-    value: 'unkown',
+    value: 1,
     label: 'unkown'
   }
 ]
@@ -122,6 +122,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         v-model="localForm.level"
         placeholder="Please select level"
         :options="levelOptions"
+        value-key="value"
       />
     </ElFormItem>
     <ElDivider />

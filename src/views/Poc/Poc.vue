@@ -33,28 +33,28 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'level',
     label: t('poc.level'),
     minWidth: 50,
-    formatter: (_: Recordable, __: TableColumn, levelValue: string) => {
+    formatter: (_: Recordable, __: TableColumn, levelValue: number) => {
       if (levelValue == null) {
         return <div></div>
       }
       let color = ''
       let flag = ''
-      if (levelValue === '6') {
+      if (levelValue === 6) {
         color = 'red'
         flag = t('poc.critical')
-      } else if (levelValue === '5') {
+      } else if (levelValue === 5) {
         color = 'orange'
         flag = t('poc.high')
-      } else if (levelValue === '4') {
+      } else if (levelValue === 4) {
         color = 'yellow'
         flag = t('poc.medium')
-      } else if (levelValue === '3') {
+      } else if (levelValue === 3) {
         color = 'blue'
         flag = t('poc.low')
-      } else if (levelValue === '2') {
+      } else if (levelValue === 2) {
         color = 'green'
         flag = t('poc.info')
-      } else if (levelValue === '1') {
+      } else if (levelValue === 1) {
         color = 'gray'
         flag = t('poc.unknown')
       }
@@ -113,20 +113,28 @@ function tableHeaderColor() {
 let pocForm = reactive({
   id: '',
   name: '',
-  level: '',
+  level: 0,
   content: ''
 })
 const addPoc = async () => {
   pocForm.id = ''
   pocForm.name = ''
-  pocForm.level = ''
+  pocForm.level = 0
   pocForm.content = ''
   dialogVisible.value = true
+}
+const dictionary = {
+  1: 'unknown',
+  2: 'medium',
+  3: 'low',
+  4: 'info',
+  5: 'high',
+  6: 'critical'
 }
 const edit = async (data) => {
   pocForm.id = data.id
   pocForm.name = data.name
-  pocForm.level = data.level
+  pocForm.level = dictionary[data.level]
   const res = await getPocContentApi(pocForm.id)
   pocForm.content = res.data.content
   dialogVisible.value = true

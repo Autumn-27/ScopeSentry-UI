@@ -272,7 +272,8 @@ export default {
     portSelect: 'Select Port',
     selectNodeMsg:
       'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
-    duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.'
+    duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.',
+    waybackUrlMsg: 'Get URL from Wayback Machine.'
   },
   asset: {
     assetName: 'Asset',

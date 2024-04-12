@@ -27,4 +27,5 @@ export type TaskContentData = {
   portScan: boolean
   ports: string
   dirScan: boolean
+  waybackurl: boolean
 }

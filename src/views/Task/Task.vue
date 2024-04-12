@@ -133,6 +133,7 @@ const addTask = async () => {
   taskForm.vulScan = false
   taskForm.vulList = []
   taskForm.dirScan = true
+  taskForm.waybackurl = true
 }
 
 let DialogTitle = t('task.addTask')
@@ -154,7 +155,8 @@ let taskForm = reactive({
   vulList: [],
   portScan: false,
   ports: '',
-  dirScan: true
+  dirScan: true,
+  waybackurl: true
 })
 
 let Create = ref(true)
@@ -176,6 +178,7 @@ const getTaskContent = async (data) => {
     taskForm.portScan = result.portScan
     taskForm.ports = result.ports
     taskForm.dirScan = result.dirScan
+    taskForm.waybackurl = result.waybackurl
   }
   dialogVisible.value = true
   Create.value = false

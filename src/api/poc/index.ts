@@ -29,7 +29,7 @@ export const getPocContentApi = (id: string): Promise<IResponse<pocContent>> => 
 export const addPocDataApi = (
   name: string,
   content: string,
-  level: string
+  level: number
 ): Promise<IResponse<pocRespData>> => {
   return request.post({ url: '/api/poc/add', data: { name, content, level } })
 }
@@ -38,7 +38,7 @@ export const updatePocDataApi = (
   id: string,
   name: string,
   content: string,
-  level: string
+  level: number
 ): Promise<IResponse<pocRespData>> => {
   return request.post({ url: '/api/poc/update', data: { id, name, content, level } })
 }

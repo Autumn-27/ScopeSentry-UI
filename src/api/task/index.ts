@@ -29,8 +29,9 @@ export const addTaskApi = (
   vulScan: boolean,
   vulList: string[],
   portScan: boolean,
-  ports: string
-  dirScan: boolean
+  ports: string,
+  dirScan: boolean,
+  waybackurl: boolean
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -50,7 +51,8 @@ export const addTaskApi = (
       vulList,
       portScan,
       ports,
-      dirScan
+      dirScan,
+      waybackurl
     }
   })
 }

@@ -46,6 +46,7 @@ const props = defineProps<{
     portScan: boolean
     ports: string
     dirScan: boolean
+    waybackurl: boolean
   }
   create: boolean
 }>()
@@ -89,7 +90,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         taskForm.value.vulList,
         taskForm.value.portScan,
         taskForm.value.ports,
-        taskForm.value.dirScan
+        taskForm.value.dirScan,
+        taskForm.value.waybackurl
       )
       if (res.code === 200) {
         props.getList()
@@ -239,7 +241,6 @@ const handleCheckAll = (val: CheckboxValueType) => {
           <ElCheckboxGroup v-model="taskForm.subdomainConfig">
             <ElCheckbox label="Subfinder" name="subdomainConfig" :checked="true" />
             <ElCheckbox label="Ksubdomain" name="subdomainConfig" :checked="true" />
-            <ElCheckbox label="waybackurl" name="waybackurl" :checked="true" />
           </ElCheckboxGroup>
         </ElFormItem>
       </ElCol>
@@ -271,6 +272,17 @@ const handleCheckAll = (val: CheckboxValueType) => {
       </ElCol>
     </ElRow>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('dirScan.dirScanName')
+    }}</ElDivider>
+    <ElFormItem :label="t('dirScan.dirScanName')">
+      <ElSwitch
+        v-model="taskForm.dirScan"
+        inline-prompt
+        :active-text="t('common.switchAction')"
+        :inactive-text="t('common.switchInactive')"
+      />
+    </ElFormItem>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('crawler.crawlerName')
     }}</ElDivider>
     <ElRow>
@@ -286,7 +298,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
           </ElFormItem>
         </ElTooltip>
       </ElCol>
-      <ElCol :span="12">
+      <ElCol :span="6">
         <ElFormItem :label="t('task.sensitiveInfoScan')" prop="type" v-if="taskForm.urlScan">
           <ElSwitch
             v-model="taskForm.sensitiveInfoScan"
@@ -295,6 +307,18 @@ const handleCheckAll = (val: CheckboxValueType) => {
             :inactive-text="t('common.switchInactive')"
           />
         </ElFormItem>
+      </ElCol>
+      <ElCol :span="6">
+        <ElTooltip effect="dark" :content="t('task.waybackUrlMsg')" placement="top">
+          <ElFormItem label="waybackurl" prop="type" v-if="taskForm.urlScan">
+            <ElSwitch
+              v-model="taskForm.waybackurl"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElFormItem>
+        </ElTooltip>
       </ElCol>
       <ElCol :span="12" :offset="6">
         <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="taskForm.urlScan">
