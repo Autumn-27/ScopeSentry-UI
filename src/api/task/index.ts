@@ -30,6 +30,7 @@ export const addTaskApi = (
   vulList: string[],
   portScan: boolean,
   ports: string
+  dirScan: boolean
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -48,7 +49,8 @@ export const addTaskApi = (
       vulScan,
       vulList,
       portScan,
-      ports
+      ports,
+      dirScan
     }
   })
 }

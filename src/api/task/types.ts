@@ -26,4 +26,5 @@ export type TaskContentData = {
   vulList: []
   portScan: boolean
   ports: string
+  dirScan: boolean
 }

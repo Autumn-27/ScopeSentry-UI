@@ -45,6 +45,7 @@ const props = defineProps<{
     vulList: string[]
     portScan: boolean
     ports: string
+    dirScan: boolean
   }
   create: boolean
 }>()
@@ -87,7 +88,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         taskForm.value.vulScan,
         taskForm.value.vulList,
         taskForm.value.portScan,
-        taskForm.value.ports
+        taskForm.value.ports,
+        taskForm.value.dirScan
       )
       if (res.code === 200) {
         props.getList()
