@@ -283,7 +283,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Configuration/system.vue'),
         name: 'system configuration',
         meta: {
-          title: t('configuration.system'),
+          title: t('router.system'),
           icon: 'uil:setting',
           noCache: true
         }
@@ -293,7 +293,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Configuration/Subfinder.vue'),
         name: 'subfinder configuration',
         meta: {
-          title: t('configuration.subfinder'),
+          title: t('router.subfinder'),
           icon: 'ri:tools-line',
           noCache: true
         }
@@ -303,7 +303,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Configuration/rad.vue'),
         name: 'rad configuration',
         meta: {
-          title: t('configuration.rad'),
+          title: t('router.rad'),
           icon: 'game-icons:web-spit',
           noCache: true
         }

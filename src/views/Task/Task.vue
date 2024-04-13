@@ -70,6 +70,7 @@ const taskColums = reactive<TableColumn[]>([
       if (cellValue == '') {
         return '-'
       }
+      return cellValue
     }
   },
   {
@@ -272,6 +273,18 @@ const retestTask = async (data) => {
     </ElRow>
     <div style="position: relative; top: 12px">
       <Table
+        :tooltip-options="{
+          offset: 1,
+          showArrow: false,
+          effect: 'dark',
+          enterable: false,
+          showAfter: 0,
+          popperOptions: {},
+          popperClass: 'test',
+          placement: 'bottom',
+          hideAfter: 0,
+          disabled: true
+        }"
         v-model:pageSize="pageSize"
         v-model:currentPage="currentPage"
         :columns="taskColums"
