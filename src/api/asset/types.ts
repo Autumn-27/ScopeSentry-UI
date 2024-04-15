@@ -1,6 +1,6 @@
 export type AssetData = {
   id: string
-  host: string
+  domain: string
   ip: string
   port: number
   service: string

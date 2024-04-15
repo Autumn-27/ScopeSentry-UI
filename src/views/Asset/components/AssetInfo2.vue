@@ -16,7 +16,9 @@ import {
   ElTooltip,
   ElText,
   ElCollapse,
-  ElCollapseItem
+  ElCollapseItem,
+  ElIcon,
+  ElLink
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -113,22 +115,24 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 4
   },
   {
     field: 'domain',
     label: t('asset.domain'),
     minWidth: 50,
-    formatter: (_, __: TableColumn, domainValue: string) => {
+    formatter: (row, __: TableColumn, domainValue: string) => {
       return (
         <div class="flex">
           <Icon
             icon="material-symbols-light:bring-your-own-ip"
-            style={'top: 4px; position:relative'}
-            size={18}
+            style={'transform: translateY(35%)'}
+            size={16}
             color="#409eff"
           />
-          <div>{domainValue}</div>
+          <ElLink href={row.url} underline={false}>
+            {domainValue}
+          </ElLink>
         </div>
       )
     }
@@ -137,16 +141,18 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'ip',
     label: t('asset.IP'),
     minWidth: 40,
-    formatter: (_, __: TableColumn, ipValue: string) => {
+    formatter: (row, __: TableColumn, ipValue: string) => {
       return (
         <div class="flex">
           <Icon
             icon="arcticons:ip-tools"
-            style={'top: 2px; position:relative'}
-            size={18}
+            style={'transform: translateY(30%)'}
+            size={15}
             color="red"
           />
-          <div>{ipValue}</div>
+          <ElLink href={row.url} underline={false}>
+            {ipValue}
+          </ElLink>
         </div>
       )
     }
@@ -198,15 +204,19 @@ const crudSchemas = reactive<CrudSchema[]>([
         color = '#ff5252'
       }
       return (
-        <div class="flex">
-          <Icon
-            icon="clarity:circle-solid"
-            color={color}
-            size={10}
-            style={'top: 6px; position:relative'}
-          />
-          <div style={'left: 1px'}>{statusValue}</div>
-        </div>
+        <ElRow gutter={10}>
+          <ElCol span={2}>
+            <Icon
+              icon="clarity:circle-solid"
+              color={color}
+              size={6}
+              style={'transform: translateY(-35%)'}
+            />
+          </ElCol>
+          <ElCol span={18}>
+            <ElText>{statusValue}</ElText>
+          </ElCol>
+        </ElRow>
       )
     }
   },
@@ -214,11 +224,11 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'banner',
     label: t('asset.banner'),
     fit: 'true',
-    formatter: (_: Recordable, __: TableColumn, bannerValue: string) => {
+    formatter: (row: Recordable, __: TableColumn, bannerValue: string) => {
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
       return (
-        <ElScrollbar>
+        <ElScrollbar height="100px">
           <div class="scrollbar-demo-item">{elements}</div>
         </ElScrollbar>
       )
@@ -275,7 +285,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 60
+    minWidth: 50
   },
   {
     field: 'action',
@@ -313,6 +323,9 @@ const { getList } = tableMethods
 // getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
+}
+function rowstyle() {
+  return { maxheight: '10px' }
 }
 const activeNames = ref(['1', '2', '3', '4', '5'])
 </script>
@@ -421,6 +434,7 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
           stripe
           :border="true"
           :loading="loading"
+          :rowStyle="rowstyle"
           :resizable="true"
           :pagination="{
             total: total,
