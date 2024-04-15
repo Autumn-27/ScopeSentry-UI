@@ -116,7 +116,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'Domain',
+    field: 'domain',
     label: t('asset.domain'),
     minWidth: 50,
     formatter: (_, __: TableColumn, domainValue: string) => {
@@ -134,7 +134,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'IP',
+    field: 'ip',
     label: t('asset.IP'),
     minWidth: 40,
     formatter: (_, __: TableColumn, ipValue: string) => {
@@ -152,7 +152,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'Port',
+    field: 'port',
     label: t('asset.port') + '/' + t('asset.service'),
     minWidth: 30,
     formatter: (raw, __: TableColumn, statusValue: number) => {
@@ -177,17 +177,17 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'Title',
+    field: 'title',
     label: t('asset.title'),
     minWidth: 50
   },
   {
-    field: 'Status',
+    field: 'status',
     label: t('asset.status'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
-        return <div></div>
+        return <div>-</div>
       }
       let color = ''
       if (statusValue < 300) {
@@ -211,7 +211,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'Banner',
+    field: 'banner',
     label: t('asset.banner'),
     fit: 'true',
     formatter: (_: Recordable, __: TableColumn, bannerValue: string) => {
@@ -226,7 +226,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 100
   },
   {
-    field: 'Products',
+    field: 'products',
     label: t('asset.products'),
     minWidth: 60,
     formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
@@ -273,7 +273,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'Time',
+    field: 'time',
     label: t('asset.time'),
     minWidth: 60
   },
@@ -283,7 +283,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="primary" onClick={() => action(row.ID)}>
+          <BaseButton type="primary" onClick={() => action(row.id)}>
             {t('asset.detail')}
           </BaseButton>
         </>
@@ -299,7 +299,7 @@ const action = (id: string) => {
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    await getAssetstatistics()
+    getAssetstatistics()
     const { currentPage, pageSize } = tableState
     const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value)
     return {

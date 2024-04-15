@@ -1,14 +1,14 @@
 export type AssetData = {
-  ID: string
-  Host: string
-  IP: string
-  Port: number
-  Service: string
-  Title: string
-  Status: number
-  header: string
-  Products: string[]
-  Time: String
+  id: string
+  host: string
+  ip: string
+  port: number
+  service: string
+  title: string
+  status: number
+  banner: string
+  products: string[]
+  time: String
 }
 
 export type AssetStatistics = {
