@@ -9,6 +9,7 @@ export type AssetData = {
   banner: string
   products: string[]
   time: String
+  icon: string
 }
 
 export type AssetStatistics = {

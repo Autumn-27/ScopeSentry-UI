@@ -162,7 +162,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.port') + '/' + t('asset.service'),
     minWidth: 30,
     formatter: (raw, __: TableColumn, statusValue: number) => {
-      if (raw.Service == null) {
+      if (raw.service == null) {
         return <div>{statusValue}</div>
       } else {
         return (
@@ -175,7 +175,7 @@ const crudSchemas = reactive<CrudSchema[]>([
               size="small"
               style={'top: 2px; left:6px; position:relative'}
             >
-              {raw.Service}
+              {raw.service}
             </ElTag>
           </div>
         )
@@ -185,12 +185,29 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'title',
     label: t('asset.title'),
-    minWidth: 50
+    minWidth: 50,
+    formatter: (_: Recordable, __: TableColumn, title: string) => {
+      return (
+        <ElRow gutter={10}>
+          <ElCol span={2}>
+            <Icon
+              icon="clarity:circle-solid"
+              color={color}
+              size={6}
+              style={'transform: translateY(-35%)'}
+            />
+          </ElCol>
+          <ElCol span={18}>
+            <ElText>{title}</ElText>
+          </ElCol>
+        </ElRow>
+      )
+    }
   },
   {
     field: 'status',
     label: t('asset.status'),
-    minWidth: 30,
+    minWidth: 25,
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
         return <div>-</div>

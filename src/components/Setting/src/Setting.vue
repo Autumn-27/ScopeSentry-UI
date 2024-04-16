@@ -64,6 +64,7 @@ const setHeaderTheme = (color: string) => {
 const menuTheme = ref(appStore.getTheme.leftMenuBgColor || '')
 
 const setMenuTheme = (color: string) => {
+  console.log(color)
   const primaryColor = useCssVar('--el-color-primary', document.documentElement)
   const isDarkColor = colorIsDark(color)
   const theme: Recordable = {
