@@ -17,7 +17,8 @@ import {
   ElText,
   ElCollapse,
   ElCollapseItem,
-  ElIcon,
+  ElBadge,
+  ElPagination,
   ElLink
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
@@ -162,7 +163,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.port') + '/' + t('asset.service'),
     minWidth: 30,
     formatter: (raw, __: TableColumn, statusValue: number) => {
-      if (raw.service == null) {
+      if (raw.service == '') {
         return <div>{statusValue}</div>
       } else {
         return (
@@ -186,19 +187,31 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'title',
     label: t('asset.title'),
     minWidth: 50,
-    formatter: (_: Recordable, __: TableColumn, title: string) => {
+    formatter: (row: Recordable, __: TableColumn, title: string) => {
+      if (title == null || title == '') {
+        title = ''
+      }
+      if (row.icon == '' || row.icon == null) {
+        return (
+          <ElRow gutter={10}>
+            <ElCol span={24}>
+              <ElText size="small" class="w-200px mb-2" truncated>
+                {title}
+              </ElText>
+            </ElCol>
+          </ElRow>
+        )
+      }
+      const st = 'data:image/png;base64,' + row.icon
       return (
-        <ElRow gutter={10}>
+        <ElRow gutter={20}>
           <ElCol span={2}>
-            <Icon
-              icon="clarity:circle-solid"
-              color={color}
-              size={6}
-              style={'transform: translateY(-35%)'}
-            />
+            <img src={st} alt="Icon" style="width: 20px; height: 20px" />
           </ElCol>
           <ElCol span={18}>
-            <ElText>{title}</ElText>
+            <ElText size="small" class="w-200px mb-2" truncated>
+              {title}
+            </ElText>
           </ElCol>
         </ElRow>
       )
@@ -423,18 +436,17 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
             <template #title>
               <ElText tag="b" size="small">icon</ElText>
             </template>
-            <ElRow v-for="(iconItem, index) in AssetstatisticsData.Icon" :key="index">
-              <ElCol :span="12">
-                <ElTooltip :content="iconItem.icon_hash" placement="top-start">
-                  <img
-                    :src="'data:image/png;base64,' + iconItem.value"
-                    alt="Icon"
-                    style="width: 30px; height: 30px"
-                  />
-                </ElTooltip>
-              </ElCol>
-              <ElCol :span="12" style="text-align: end">
-                <ElText size="small">{{ iconItem.number }}</ElText>
+            <ElRow style="margin-top: 10px; margin-left: 10px">
+              <ElCol :span="8" v-for="(iconItem, index) in AssetstatisticsData.Icon" :key="index">
+                <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
+                  <ElTooltip :content="iconItem.icon_hash" placement="top-start">
+                    <img
+                      :src="'data:image/png;base64,' + iconItem.value"
+                      alt="Icon"
+                      style="width: 30px; height: 30px"
+                    />
+                  </ElTooltip>
+                </ElBadge>
               </ElCol>
             </ElRow>
           </ElCollapseItem>
@@ -442,41 +454,54 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
       </ElCard>
     </ElCol>
     <ElCol :span="21">
-      <ElCard>
-        <Table
-          v-model:pageSize="pageSize"
-          v-model:currentPage="currentPage"
-          :columns="allSchemas.tableColumns"
-          :data="dataList"
-          stripe
-          :border="true"
-          :loading="loading"
-          :rowStyle="rowstyle"
-          :resizable="true"
-          :pagination="{
-            total: total,
-            pageSizes: [10, 20, 50, 100, 200, 500, 1000]
-          }"
-          @register="tableRegister"
-          :headerCellStyle="tableHeaderColor"
-          :tooltip-options="{
-            offset: 1,
-            showArrow: false,
-            effect: 'dark',
-            enterable: false,
-            showAfter: 0,
-            popperOptions: {},
-            popperClass: 'test',
-            placement: 'bottom',
-            hideAfter: 0,
-            disabled: false
-          }"
-          :style="{
-            fontFamily:
-              '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-          }"
-        />
-      </ElCard>
+      <ElRow>
+        <ElCol :span="24">
+          <ElCard style="">
+            <ElScrollbar height="700px">
+              <Table
+                v-model:pageSize="pageSize"
+                v-model:currentPage="currentPage"
+                :columns="allSchemas.tableColumns"
+                :data="dataList"
+                stripe
+                :border="true"
+                :loading="loading"
+                :rowStyle="rowstyle"
+                :resizable="true"
+                @register="tableRegister"
+                :headerCellStyle="tableHeaderColor"
+                :tooltip-options="{
+                  offset: 1,
+                  showArrow: false,
+                  effect: 'dark',
+                  enterable: false,
+                  showAfter: 0,
+                  popperOptions: {},
+                  popperClass: 'test',
+                  placement: 'bottom',
+                  hideAfter: 0,
+                  disabled: false
+                }"
+                :style="{
+                  fontFamily:
+                    '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+                }"
+              />
+            </ElScrollbar>
+          </ElCard>
+        </ElCol>
+        <ElCol ::span="24">
+          <ElCard>
+            <ElPagination
+              v-model:pageSize="pageSize"
+              v-model:currentPage="currentPage"
+              :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+            />
+          </ElCard>
+        </ElCol>
+      </ElRow>
     </ElCol>
   </ElRow>
 </template>
