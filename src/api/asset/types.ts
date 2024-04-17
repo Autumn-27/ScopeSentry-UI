@@ -39,12 +39,12 @@ export type AssetDetail = {
 }
 
 export type SubdomainData = {
-  ID: string
-  Domain: string
-  RecordType: string
-  RecordValue: string[]
-  IP: string[]
-  Time: string
+  id: string
+  host: string
+  type: string
+  value: string[]
+  ip: string[]
+  time: string
 }
 
 export type URLData = {

@@ -71,29 +71,19 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'Method',
+    field: 'method',
     label: 'Method',
     minWidth: 15
   },
   {
-    field: 'URL',
+    field: 'url',
     label: 'URL',
     minWidth: 60
   },
   {
-    field: 'GetParameter',
-    label: t('crawler.getParameter'),
-    minWidth: 60
-  },
-  {
-    field: 'PostParameter',
+    field: 'body',
     label: t('crawler.postParameter'),
     minWidth: 60
-  },
-  {
-    field: 'Time',
-    label: t('asset.time'),
-    minWidth: 30
   }
 ])
 

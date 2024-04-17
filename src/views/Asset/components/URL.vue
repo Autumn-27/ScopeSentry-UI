@@ -71,29 +71,29 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'URL',
+    field: 'url',
     label: 'URL',
-    minWidth: 50
+    minWidth: 70
   },
   {
-    field: 'Source',
+    field: 'source',
     label: t('URL.source'),
+    minWidth: 60
+  },
+  {
+    field: 'type',
+    label: t('URL.type'),
     minWidth: 30
   },
   {
-    field: 'Type',
-    label: t('URL.type'),
-    minWidth: 50
-  },
-  {
-    field: 'Input',
+    field: 'input',
     label: t('URL.input'),
-    minWidth: 50
+    minWidth: 60
   },
   {
-    field: 'Time',
+    field: 'time',
     label: t('asset.time'),
-    minWidth: 60
+    minWidth: 30
   }
 ])
 
