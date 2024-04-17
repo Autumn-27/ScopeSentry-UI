@@ -119,7 +119,6 @@ function tableHeaderColor() {
 }
 const dialogVisible = ref(false)
 const addTask = async () => {
-  dialogVisible.value = true
   DialogTitle = t('task.addTask')
   Create.value = true
   taskForm.name = ''
@@ -135,6 +134,7 @@ const addTask = async () => {
   taskForm.vulList = []
   taskForm.dirScan = true
   taskForm.waybackurl = true
+  dialogVisible.value = true
 }
 
 let DialogTitle = t('task.addTask')
