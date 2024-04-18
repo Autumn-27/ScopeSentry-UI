@@ -456,7 +456,7 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
     <ElCol :span="21">
       <ElRow>
         <ElCol :span="24">
-          <ElCard style="">
+          <ElCard>
             <ElScrollbar height="700px">
               <Table
                 v-model:pageSize="pageSize"
@@ -464,6 +464,7 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
                 :columns="allSchemas.tableColumns"
                 :data="dataList"
                 stripe
+                max-height="700"
                 :border="true"
                 :loading="loading"
                 :rowStyle="rowstyle"

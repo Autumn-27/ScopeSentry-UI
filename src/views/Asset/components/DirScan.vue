@@ -7,7 +7,7 @@ import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard } from 'element-plus'
+import { ElCard, ElPagination } from 'element-plus'
 import { Table } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getDirScanApi } from '@/api/asset'
@@ -130,28 +130,40 @@ function tableHeaderColor() {
       @register="searchRegister"
     />
   </ContentWrap>
-  <ElCard>
-    <Table
-      v-model:pageSize="pageSize"
-      v-model:currentPage="currentPage"
-      :columns="allSchemas.tableColumns"
-      :data="dataList"
-      stripe
-      :border="true"
-      :loading="loading"
-      :resizable="true"
-      :pagination="{
-        total: total,
-        pageSizes: [10, 20, 50, 100, 200, 500, 1000]
-      }"
-      @register="tableRegister"
-      :headerCellStyle="tableHeaderColor"
-      :style="{
-        fontFamily:
-          '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-      }"
-    />
-  </ElCard>
+  <ElRow>
+    <ElCol>
+      <ElCard>
+        <Table
+          v-model:pageSize="pageSize"
+          v-model:currentPage="currentPage"
+          :columns="allSchemas.tableColumns"
+          :data="dataList"
+          stripe
+          :border="true"
+          :loading="loading"
+          :resizable="true"
+          max-height="700"
+          @register="tableRegister"
+          :headerCellStyle="tableHeaderColor"
+          :style="{
+            fontFamily:
+              '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+          }"
+        />
+      </ElCard>
+    </ElCol>
+    <ElCol ::span="24">
+      <ElCard>
+        <ElPagination
+          v-model:pageSize="pageSize"
+          v-model:currentPage="currentPage"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        />
+      </ElCard>
+    </ElCol>
+  </ElRow>
 </template>
 
 <style lang="less" scoped>

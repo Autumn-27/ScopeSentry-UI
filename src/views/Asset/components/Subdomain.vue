@@ -146,24 +146,23 @@ function tableHeaderColor() {
   <ElRow>
     <ElCol>
       <ElCard style="height: min-content">
-        <ElScrollbar height="700px">
-          <Table
-            v-model:pageSize="pageSize"
-            v-model:currentPage="currentPage"
-            :columns="allSchemas.tableColumns"
-            :data="dataList"
-            stripe
-            :border="true"
-            :loading="loading"
-            :resizable="true"
-            @register="tableRegister"
-            :headerCellStyle="tableHeaderColor"
-            :style="{
-              fontFamily:
-                '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-            }"
-          />
-        </ElScrollbar>
+        <Table
+          v-model:pageSize="pageSize"
+          v-model:currentPage="currentPage"
+          :columns="allSchemas.tableColumns"
+          :data="dataList"
+          stripe
+          max-height="700"
+          :border="true"
+          :loading="loading"
+          :resizable="true"
+          @register="tableRegister"
+          :headerCellStyle="tableHeaderColor"
+          :style="{
+            fontFamily:
+              '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+          }"
+        />
       </ElCard>
     </ElCol>
     <ElCol ::span="24">
