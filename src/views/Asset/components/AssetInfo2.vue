@@ -457,7 +457,7 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
       <ElRow>
         <ElCol :span="24">
           <ElCard>
-            <ElScrollbar height="700px">
+            <ElScrollbar height="100%">
               <Table
                 v-model:pageSize="pageSize"
                 v-model:currentPage="currentPage"
