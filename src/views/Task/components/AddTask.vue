@@ -72,8 +72,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      console.log(taskForm)
       let res = await addTaskApi(
         taskForm.value.name,
         taskForm.value.target,

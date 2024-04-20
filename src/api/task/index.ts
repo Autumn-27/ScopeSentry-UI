@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { TaskData, taskRespData, TaskContentData } from './types'
+import type { TaskData, taskRespData, TaskContentData, TaskProgessInfo } from './types'
 import type { commonRespData } from '../common/types'
 
 interface TaskDataResponse {
@@ -67,4 +67,12 @@ export const deleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>>
 
 export const retestTaskApi = (id: string): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/task/retest', data: { id } })
+}
+
+interface TaskProgessInforesp {
+  list: TaskProgessInfo[]
+  total: number
+}
+export const getTaskProgressApi = (id: string): Promise<IResponse<TaskProgessInforesp>> => {
+  return request.post({ url: '/api/task/progress/info', data: { id } })
 }

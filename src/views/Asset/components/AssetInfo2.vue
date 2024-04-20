@@ -358,6 +358,16 @@ function rowstyle() {
   return { maxheight: '10px' }
 }
 const activeNames = ref(['1', '2', '3', '4', '5'])
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 </script>
 
 <template>
@@ -457,38 +467,36 @@ const activeNames = ref(['1', '2', '3', '4', '5'])
       <ElRow>
         <ElCol :span="24">
           <ElCard>
-            <ElScrollbar height="100%">
-              <Table
-                v-model:pageSize="pageSize"
-                v-model:currentPage="currentPage"
-                :columns="allSchemas.tableColumns"
-                :data="dataList"
-                stripe
-                max-height="700"
-                :border="true"
-                :loading="loading"
-                :rowStyle="rowstyle"
-                :resizable="true"
-                @register="tableRegister"
-                :headerCellStyle="tableHeaderColor"
-                :tooltip-options="{
-                  offset: 1,
-                  showArrow: false,
-                  effect: 'dark',
-                  enterable: false,
-                  showAfter: 0,
-                  popperOptions: {},
-                  popperClass: 'test',
-                  placement: 'bottom',
-                  hideAfter: 0,
-                  disabled: false
-                }"
-                :style="{
-                  fontFamily:
-                    '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-                }"
-              />
-            </ElScrollbar>
+            <Table
+              v-model:pageSize="pageSize"
+              v-model:currentPage="currentPage"
+              :columns="allSchemas.tableColumns"
+              :data="dataList"
+              stripe
+              :max-height="maxHeight"
+              :border="true"
+              :loading="loading"
+              :rowStyle="rowstyle"
+              :resizable="true"
+              @register="tableRegister"
+              :headerCellStyle="tableHeaderColor"
+              :tooltip-options="{
+                offset: 1,
+                showArrow: false,
+                effect: 'dark',
+                enterable: false,
+                showAfter: 0,
+                popperOptions: {},
+                popperClass: 'test',
+                placement: 'bottom',
+                hideAfter: 0,
+                disabled: false
+              }"
+              :style="{
+                fontFamily:
+                  '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+              }"
+            />
           </ElCard>
         </ElCol>
         <ElCol ::span="24">

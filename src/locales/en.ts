@@ -256,6 +256,8 @@ export default {
     delTask: 'DelTask Task',
     msgTaskName: 'Please enter the task name',
     taskTarget: 'Target',
+    subdomainTakeover: 'Subdomain Takeover',
+    assetMapping: 'Asset Mapping',
     msgTarget: 'Please enter the domain name or IP, one per line.',
     subdomainScan: 'Subdomain Scan',
     nodeMsg: 'Please select a scanning node',

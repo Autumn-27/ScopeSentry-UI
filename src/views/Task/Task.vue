@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h } from 'vue'
+import { ref, reactive, h, onMounted } from 'vue'
 import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -10,6 +10,7 @@ import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from 
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
+import ProgressInfo from './components/ProgressInfo.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -97,11 +98,24 @@ const taskColums = reactive<TableColumn[]>([
           <BaseButton type="danger" onClick={() => confirmDelete(row)}>
             {t('common.delete')}
           </BaseButton>
+          <BaseButton type="primary" onClick={() => getProgressInfo(row.id)}>
+            {t('task.taskProgress')}
+          </BaseButton>
         </>
       )
     }
   }
 ])
+
+const progressDialogVisible = ref(false)
+let getProgressInfoID = ''
+const getProgressInfo = async (id) => {
+  getProgressInfoID = id
+  progressDialogVisible.value = true
+}
+const progresscloseDialog = () => {
+  progressDialogVisible.value = false
+}
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
@@ -314,4 +328,14 @@ const retestTask = async (data) => {
   >
     <AddTask :closeDialog="closeDialog" :getList="getList" :vTaskForm="taskForm" :create="Create" />
   </Dialog>
+  <Dialog
+    v-model="progressDialogVisible"
+    :title="t('task.taskProgress')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    width="70%"
+    max-height="700"
+  >
+    <ProgressInfo :closeDialog="progresscloseDialog" :getProgressInfoID="getProgressInfoID"
+  /></Dialog>
 </template>

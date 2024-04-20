@@ -104,6 +104,17 @@ const { getList } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 </script>
 
 <template>
@@ -128,7 +139,7 @@ function tableHeaderColor() {
           v-model:currentPage="currentPage"
           :columns="allSchemas.tableColumns"
           :data="dataList"
-          max-height="700"
+          :max-height="maxHeight"
           stripe
           :border="true"
           :loading="loading"

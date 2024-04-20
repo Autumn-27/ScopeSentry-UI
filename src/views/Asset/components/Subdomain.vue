@@ -48,7 +48,16 @@ const loadAll = () => {
 
 onMounted(() => {
   restaurants.value = loadAll()
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
 })
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 
 const isGrid = ref(true)
 const layout = ref('inline')
@@ -152,7 +161,7 @@ function tableHeaderColor() {
           :columns="allSchemas.tableColumns"
           :data="dataList"
           stripe
-          max-height="700"
+          :max-height="maxHeight"
           :border="true"
           :loading="loading"
           :resizable="true"

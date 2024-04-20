@@ -253,6 +253,8 @@ export default {
     delTask: '删除任务',
     msgTaskName: '请输入任务名称',
     taskTarget: '目标',
+    subdomainTakeover: '子域名接管',
+    assetMapping: '资产测绘',
     msgTarget: '请输入域名或IP，一行一个。',
     subdomainScan: '子域名扫描',
     nodeSelect: '节点选择',

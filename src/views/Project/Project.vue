@@ -57,7 +57,7 @@ const closeDialog = () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <AddProject :closeDialog="closeDialog" />
+    <AddProject :closeDialog="closeDialog" projectid="" />
   </Dialog>
 </template>
 <style>

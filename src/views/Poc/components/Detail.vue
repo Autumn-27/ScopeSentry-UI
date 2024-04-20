@@ -75,7 +75,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       let res
-      console.log('submit!')
       if (localForm.value.id != '') {
         res = await updatePocDataApi(
           localForm.value.id,

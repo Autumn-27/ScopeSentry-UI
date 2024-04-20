@@ -29,3 +29,15 @@ export type TaskContentData = {
   dirScan: boolean
   waybackurl: boolean
 }
+
+export type TaskProgessInfo = {
+  subdomain: string[]
+  subdomainTakeover: string[]
+  portScan: string[]
+  assetMapping: string[]
+  urlScan: string[]
+  crawler: string[]
+  dirScan: string[]
+  vulnerability: string[]
+  all: string[]
+}

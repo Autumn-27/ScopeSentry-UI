@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useDesign } from '@/hooks/web/useDesign'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { ContextMenuSchema } from './types'
+import { string } from 'vue-types'
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('context-menu')
@@ -25,6 +26,10 @@ const props = defineProps({
   tagItem: {
     type: Object as PropType<RouteLocationNormalizedLoaded>,
     default: () => ({})
+  },
+  id: {
+    type: String,
+    default: ''
   }
 })
 
@@ -33,14 +38,15 @@ const command = (item: ContextMenuSchema) => {
 }
 
 const visibleChange = (visible: boolean) => {
-  emit('visibleChange', visible, props.tagItem)
+  emit('visibleChange', visible, props.tagItem, props.id)
 }
 
 const elDropdownMenuRef = ref<ComponentRef<typeof ElDropdown>>()
 
 defineExpose({
   elDropdownMenuRef,
-  tagItem: props.tagItem
+  tagItem: props.tagItem,
+  id: props.id
 })
 </script>
 

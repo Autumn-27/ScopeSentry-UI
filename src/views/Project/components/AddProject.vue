@@ -22,6 +22,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { addProjectDataApi } from '@/api/project'
+import { getPocDataAllApi } from '@/api/poc'
 const { t } = useI18n()
 let projectForm = reactive({
   name: '',
@@ -39,10 +40,12 @@ let projectForm = reactive({
   vulList: [],
   day: 0,
   hour: 0,
-  minute: 0
+  minute: 0,
+  waybackurl: true
 })
 const props = defineProps<{
   closeDialog: () => void
+  projectid: string
 }>()
 interface RuleForm {
   name: string
@@ -55,23 +58,17 @@ const rules = reactive<FormRules<RuleForm>>({
   target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }]
 })
 
-const initials = [
-  'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j'
-]
-
-const vulOptions = Array.from({ length: 1000 }).map((_, idx) => ({
-  value: `Option${idx + 1}`,
-  label: `${initials[idx % 10]}${idx}`
-}))
+const vulOptions = reactive<{ value: string; label: string }[]>([])
+const getPocList = async () => {
+  const res = await getPocDataAllApi()
+  console.log(res.data.list)
+  if (res.data.list.length > 0) {
+    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
+    res.data.list.forEach((item) => {
+      vulOptions.push({ value: item.id, label: item.name })
+    })
+  }
+}
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
@@ -79,12 +76,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      console.log(projectForm)
       const res = await addProjectDataApi(
         projectForm.name,
         projectForm.tag,
         projectForm.target,
+        projectForm.logo,
         projectForm.scheduledTasks,
         projectForm.subdomainScan,
         projectForm.subdomainConfig,
@@ -108,6 +104,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+getPocList()
+
+const getProjectInfo = async () => {
+  if (props.projectid != '') {
+  }
+}
+getProjectInfo()
 </script>
 <template>
   <ElForm :model="projectForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
@@ -231,6 +234,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
               </ElTooltip>
             </ElRadioGroup>
           </ElFormItem>
+        </ElCol>
+        <ElCol :span="6">
+          <ElTooltip effect="dark" :content="t('task.waybackUrlMsg')" placement="top">
+            <ElFormItem label="waybackurl" prop="type" v-if="projectForm.urlScan">
+              <ElSwitch
+                v-model="projectForm.waybackurl"
+                inline-prompt
+                :active-text="t('common.switchAction')"
+                :inactive-text="t('common.switchInactive')"
+              />
+            </ElFormItem>
+          </ElTooltip>
         </ElCol>
       </ElRow>
       <ElFormItem :label="t('crawler.crawlerName')" prop="type">
