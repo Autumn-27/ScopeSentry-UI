@@ -45,9 +45,11 @@ const closeDialog = () => {
   <ContentWrap>
     <ElButton type="primary" @click="addProject">{{ t('project.addProject') }}</ElButton>
     <ElTabs class="demo-tabs" style="position: relative; top: 10px">
-      <ElTabPane label="All"><ProjectList :tableDataList="allProjectData" /></ElTabPane>
+      <ElTabPane label="All"
+        ><ProjectList :tableDataList="allProjectData" :getProjectTag="getProjectTag"
+      /></ElTabPane>
       <ElTabPane v-for="tagName in tabNames" :label="tagName" :key="tagName"
-        ><ProjectList :tableDataList="groupedProjects[tagName]"
+        ><ProjectList :tableDataList="groupedProjects[tagName]" :getProjectTag="getProjectTag"
       /></ElTabPane>
     </ElTabs>
   </ContentWrap>

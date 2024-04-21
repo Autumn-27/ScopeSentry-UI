@@ -18,5 +18,6 @@
   "god.tsconfig": "./tsconfig.json",
   "files.watcherExclude": {
     "**/target": true
-  }
+  },
+  "editor.fontSize": 15
 }

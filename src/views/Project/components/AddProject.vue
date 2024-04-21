@@ -21,7 +21,7 @@ import {
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
-import { addProjectDataApi } from '@/api/project'
+import { addProjectDataApi, getProjectContentDataApi } from '@/api/project'
 import { getPocDataAllApi } from '@/api/poc'
 const { t } = useI18n()
 let projectForm = reactive({
@@ -108,6 +108,23 @@ getPocList()
 
 const getProjectInfo = async () => {
   if (props.projectid != '') {
+    const res = await getProjectContentDataApi(props.projectid)
+    projectForm.name = res.data.name
+    projectForm.tag = res.data.tag
+    projectForm.target = res.data.target
+    projectForm.logo = res.data.logo
+    projectForm.scheduledTasks = res.data.scheduledTasks
+    projectForm.subdomainScan = res.data.subdomainScan
+    projectForm.subdomainConfig = res.data.subdomainConfig
+    projectForm.urlScan = res.data.urlScan
+    projectForm.sensitiveInfoScan = res.data.sensitiveInfoScan
+    projectForm.pageMonitoring = res.data.pageMonitoring
+    projectForm.crawlerScan = res.data.crawlerScan
+    projectForm.vulScan = res.data.vulScan
+    projectForm.vulList = res.data.vulList
+    projectForm.day = res.data.day
+    projectForm.hour = res.data.hour
+    projectForm.minute = res.data.minute
   }
 }
 getProjectInfo()
@@ -213,7 +230,7 @@ getProjectInfo()
             </ElFormItem>
           </ElTooltip>
         </ElCol>
-        <ElCol :span="12">
+        <ElCol :span="6">
           <ElFormItem :label="t('task.sensitiveInfoScan')" prop="type" v-if="projectForm.urlScan">
             <ElSwitch
               v-model="projectForm.sensitiveInfoScan"
@@ -221,18 +238,6 @@ getProjectInfo()
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"
             />
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12" :offset="6">
-          <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="projectForm.urlScan">
-            <ElRadioGroup v-model="projectForm.pageMonitoring">
-              <ElTooltip effect="dark" :content="t('task.msgPageMonitoringAll')" placement="top">
-                <ElRadio label="All" name="pageMonitoring" :checked="true" />
-              </ElTooltip>
-              <ElTooltip effect="dark" :content="t('task.msgPageMonitoringJs')" placement="top">
-                <ElRadio label="JS" name="pageMonitoring" />
-              </ElTooltip>
-            </ElRadioGroup>
           </ElFormItem>
         </ElCol>
         <ElCol :span="6">
@@ -246,6 +251,18 @@ getProjectInfo()
               />
             </ElFormItem>
           </ElTooltip>
+        </ElCol>
+        <ElCol :span="12" :offset="6">
+          <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="projectForm.urlScan">
+            <ElRadioGroup v-model="projectForm.pageMonitoring">
+              <ElTooltip effect="dark" :content="t('task.msgPageMonitoringAll')" placement="top">
+                <ElRadio label="All" name="pageMonitoring" :checked="true" />
+              </ElTooltip>
+              <ElTooltip effect="dark" :content="t('task.msgPageMonitoringJs')" placement="top">
+                <ElRadio label="JS" name="pageMonitoring" />
+              </ElTooltip>
+            </ElRadioGroup>
+          </ElFormItem>
         </ElCol>
       </ElRow>
       <ElFormItem :label="t('crawler.crawlerName')" prop="type">

@@ -10,3 +10,22 @@ export type projectRespData = {
   code: string
   message: string
 }
+
+export type projectContent = {
+  name: string
+  tag: string
+  target: string
+  logo: string
+  scheduledTasks: boolean
+  subdomainScan: boolean
+  subdomainConfig: []
+  urlScan: boolean
+  sensitiveInfoScan: boolean
+  pageMonitoring: string
+  crawlerScan: boolean
+  vulScan: boolean
+  vulList: []
+  day: number
+  hour: number
+  minute: number
+}

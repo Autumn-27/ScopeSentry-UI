@@ -8,7 +8,10 @@ import { RouteLocationNormalizedLoaded, useRouter } from 'vue-router'
 import { useTemplateRefsList } from '@vueuse/core'
 import { Dialog } from '@/components/Dialog'
 import { defineProps } from 'vue'
+import { ElMessageBox } from 'element-plus'
+import { deleteProjectApi } from '@/api/project'
 import AddProject from './AddProject.vue'
+import type { Action } from 'element-plus'
 const { t } = useI18n()
 const { push } = useRouter()
 interface Recordable {
@@ -18,14 +21,14 @@ interface Recordable {
   AssetCount: number
   tag: string
 }
-defineProps({
+const props = defineProps({
   tableDataList: {
     type: Array as () => Recordable[],
     default: () => []
   },
-  id: {
-    type: String,
-    default: ''
+  getProjectTag: {
+    type: Function as unknown as () => () => Promise<void>,
+    required: true
   }
 })
 const loading = ref(false)
@@ -53,6 +56,15 @@ const closeDialog = () => {
 }
 const edit = async () => {
   dialogVisible.value = true
+}
+const del = () => {
+  ElMessageBox.alert('Are you sure you want to delete the selected data?', '', {
+    confirmButtonText: 'YES',
+    callback: async () => {
+      await deleteProjectApi(ProjectId)
+      props.getProjectTag()
+    }
+  })
 }
 </script>
 
@@ -82,7 +94,9 @@ const edit = async () => {
           {
             icon: 'material-symbols:delete-outline',
             label: t('common.delete'),
-            command: () => {}
+            command: () => {
+              del()
+            }
           }
         ]"
         :id="row.id"
@@ -90,7 +104,7 @@ const edit = async () => {
       >
         <div class="flex cursor-pointer" @click="actionClick(row.id)">
           <div class="pr-16px">
-            <template v-if="row.logo">
+            <template v-if="row.logo != ''">
               <ElAvatar
                 :src="row.logo"
                 style="width: 45px; height: 45px; line-height: 45px; font-size: 24px"

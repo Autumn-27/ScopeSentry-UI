@@ -1,5 +1,6 @@
 import request from '@/axios'
-import { ProjectData, projectRespData } from './types'
+import { ProjectData, projectRespData, projectContent } from './types'
+import { commonRespData } from '../common/types'
 
 export const getProjectDataApi = (): Promise<IResponse<ProjectData[]>> => {
   return request.get({ url: '/api/project/data' })
@@ -44,4 +45,12 @@ export const addProjectDataApi = (
       minute
     }
   })
+}
+
+export const getProjectContentDataApi = (id: string): Promise<IResponse<projectContent>> => {
+  return request.post({ url: '/api/project/content', data: { id } })
+}
+
+export const deleteProjectApi = (id: string): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/project/delete', data: { id } })
 }
