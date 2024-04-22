@@ -140,6 +140,8 @@ export default {
   router: {
     assetinfo: 'Asset Information',
     taskManagement: 'Task',
+    scanTask: 'Scan Tasks',
+    scheduledTask: 'Scheduled Tasks',
     nodeManagement: 'Node',
     projectDetail: 'Project Detail',
     vulFingerprint: 'Vul-Fingerprint',

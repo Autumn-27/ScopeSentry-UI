@@ -111,15 +111,28 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/task-management',
     component: Layout,
     name: 'TaskManagement',
-    meta: {},
+    meta: {
+      title: t('router.taskManagement'),
+      icon: 'bi:list-task'
+    },
     children: [
       {
-        path: 'index',
+        path: 'ScanTask',
         component: () => import('@/views/Task/Task.vue'),
-        name: 'TaskManagement',
+        name: 'ScanTask',
         meta: {
-          title: t('router.taskManagement'),
-          icon: 'bi:list-task',
+          title: t('router.scanTask'),
+          icon: 'emojione:eye',
+          noCache: true
+        }
+      },
+      {
+        path: 'ScheduledTask',
+        component: () => import('@/views/Node/Node.vue'),
+        name: 'ScheduledTask',
+        meta: {
+          title: t('router.scheduledTask'),
+          icon: 'mdi:invoice-scheduled-outline',
           noCache: true
         }
       }

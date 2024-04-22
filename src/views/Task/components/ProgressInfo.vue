@@ -5,6 +5,7 @@ import { Table, TableColumn } from '@/components/Table'
 import { getTaskProgressApi } from '@/api/task'
 import { useTable } from '@/hooks/web/useTable'
 import { ElTag, ElTooltip, ElTooltipProps } from 'element-plus'
+import { Icon } from '@/components/Icon'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -22,6 +23,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('subdomain.subdomainName'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -44,6 +48,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('task.subdomainTakeover'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -66,6 +73,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('task.portScan'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -88,6 +98,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('task.assetMapping'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -110,6 +123,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('task.url'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -132,6 +148,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('crawler.crawlerName'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -154,6 +173,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('dirScan.dirScanName'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -176,6 +198,9 @@ const progressColums = reactive<TableColumn[]>([
     label: t('task.vulScan'),
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -198,6 +223,9 @@ const progressColums = reactive<TableColumn[]>([
     label: 'All',
     minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
       if (cellValue[0] == '') {
         return '-'
       }
@@ -239,5 +267,3 @@ const { dataList, total } = tableState
     }"
   />
 </template>
-, effectimport popper from 'element-plus/es/components/popper' import ElTooltip from
-'element-plus/es/components/tooltip' import { round } from 'lodash-es' import { type } from 'os'

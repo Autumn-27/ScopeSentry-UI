@@ -139,6 +139,8 @@ export default {
   router: {
     assetinfo: '资产信息',
     taskManagement: '任务管理',
+    scanTask: '扫描任务',
+    scheduledTask: '计划任务',
     nodeManagement: '节点管理',
     projectManagement: '项目管理',
     projectDetail: '项目信息',

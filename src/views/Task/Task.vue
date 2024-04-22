@@ -127,6 +127,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
+pageSize.value = 50
 const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -258,6 +259,16 @@ const retestTask = async (data) => {
     getList()
   }
 }
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 </script>
 
 <template>
@@ -306,10 +317,11 @@ const retestTask = async (data) => {
         stripe
         :border="true"
         :loading="loading"
+        :max-height="maxHeight"
         :resizable="true"
         :pagination="{
           total: total,
-          pageSizes: [10, 20, 50, 100, 200, 500, 1000]
+          pageSizes: [50, 100, 200, 500, 1000]
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
