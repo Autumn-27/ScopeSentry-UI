@@ -127,7 +127,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-pageSize.value = 50
+pageSize.value = 20
 const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -267,7 +267,7 @@ const maxHeight = ref(0)
 
 const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.7
+  maxHeight.value = screenHeight * 0.75
 }
 </script>
 
@@ -321,7 +321,7 @@ const setMaxHeight = () => {
         :resizable="true"
         :pagination="{
           total: total,
-          pageSizes: [50, 100, 200, 500, 1000]
+          pageSizes: [20, 30, 50, 100, 200, 500, 1000]
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"

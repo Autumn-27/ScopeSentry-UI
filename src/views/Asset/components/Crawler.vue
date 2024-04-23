@@ -100,6 +100,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList } = tableMethods
+pageSize.value = 20
 // getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -158,7 +159,7 @@ const setMaxHeight = () => {
         <ElPagination
           v-model:pageSize="pageSize"
           v-model:currentPage="currentPage"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-sizes="[20, 50, 100, 200, 500, 1000]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         />
