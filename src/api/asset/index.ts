@@ -74,12 +74,12 @@ interface SensitiveDataResponse {
   list: SensitiveData[]
   total: number
 }
-export const getSensitiveApi = (
+export const getSensitiveResultApi = (
   search: string,
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<SensitiveDataResponse>> => {
-  return request.post({ url: '/api/sensitive/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/sensitive/result/data', data: { search, pageIndex, pageSize } })
 }
 
 interface DirScanDataResponse {

@@ -67,10 +67,12 @@ export type CrawlerData = {
 
 export type SensitiveData = {
   ID: string
-  Info: string
-  Name: string
-  URL: String
-  Time: string
+  url: string
+  color: string
+  name: String
+  time: string
+  body: string
+  match: string[]
 }
 
 export type DirScanData = {

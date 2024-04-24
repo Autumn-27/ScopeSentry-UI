@@ -2,15 +2,18 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Search } from '@/components/Search'
+import { Dialog } from '@/components/Dialog'
 import { reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination } from 'element-plus'
-import { Table } from '@/components/Table'
+import { ElCard, ElPagination, ElScrollbar, ElRow, ElCol } from 'element-plus'
+import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getCrawlerApi, getSensitiveApi, getURLApi } from '@/api/asset'
+import { getCrawlerApi, getSensitiveResultApi, getURLApi } from '@/api/asset'
+import { Icon } from '@iconify/vue'
+import { BaseButton } from '@/components/Button'
 
 const { t } = useI18n()
 const { searchRegister } = useSearch()
@@ -71,24 +74,56 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'Info',
-    label: 'Info',
-    minWidth: 60
-  },
-  {
-    field: 'Name',
-    label: t('sensitiveInformation.sensitiveName'),
-    minWidth: 50
-  },
-  {
-    field: 'URL',
+    field: 'url',
     label: 'URL',
-    minWidth: 60
+    minWidth: 30
   },
   {
-    field: 'Time',
+    field: 'name',
+    label: t('sensitiveInformation.sensitiveName'),
+    minWidth: 20
+  },
+  {
+    field: 'color',
+    label: 'Level',
+    minWidth: 5,
+    formatter: (row, __: TableColumn, cellValue: string) => {
+      return (
+        <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
+      )
+    }
+  },
+  {
+    field: 'match',
+    label: 'Info',
+    minWidth: 60,
+    formatter: (row, __: TableColumn, cellValue: string[]) => {
+      const elements = cellValue.map((line, index) => <div key={index}>{line}</div>)
+      return (
+        <ElScrollbar height="100px">
+          <div class="scrollbar-demo-item">{elements}</div>
+        </ElScrollbar>
+      )
+    }
+  },
+  {
+    field: 'time',
     label: t('asset.time'),
     minWidth: 30
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="primary" onClick={() => action(row.body)}>
+            {t('asset.detail')}
+          </BaseButton>
+        </>
+      )
+    },
+    minWidth: 10
   }
 ])
 
@@ -96,7 +131,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getSensitiveApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getSensitiveResultApi(searchParams.value, currentPage.value, pageSize.value)
     return {
       list: res.data.list,
       total: res.data.total
@@ -108,6 +143,23 @@ const { getList } = tableMethods
 // getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
+}
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
+const DialogVisible = ref(false)
+const body = ref('')
+const action = (newBody: any) => {
+  DialogVisible.value = true
+  body.value = newBody
 }
 </script>
 
@@ -135,7 +187,7 @@ function tableHeaderColor() {
           :data="dataList"
           stripe
           :border="true"
-          max-height="700"
+          :max-height="maxHeight"
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
@@ -159,6 +211,18 @@ function tableHeaderColor() {
       </ElCard>
     </ElCol>
   </ElRow>
+  <Dialog
+    v-model="DialogVisible"
+    :title="t('asset.detail')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    width="70%"
+    max-height="700"
+  >
+    <ElScrollbar :max-height="maxHeight">
+      <div :style="{ whiteSpace: 'pre-line' }">{{ body }}</div>
+    </ElScrollbar>
+  </Dialog>
 </template>
 
 <style lang="less" scoped>
