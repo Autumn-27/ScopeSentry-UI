@@ -297,7 +297,8 @@ export default {
     assetDetail: '资产详情',
     assetTotalNum: '资产总数',
     responseHeader: '响应头',
-    responseBody: '响应体'
+    responseBody: '响应体',
+    historyDiff: '历史变更'
   },
   subdomain: {
     subdomainName: '子域名',
@@ -334,8 +335,8 @@ export default {
   },
   PageMonitoring: {
     pageMonitoringName: '页面监控',
-    oldResponseBodyMD5: '原始响应体MD5',
-    currentResponseBodyMD5: '当前响应体MD5'
+    oldResponseBody: '原始响应体',
+    currentResponseBody: '当前响应体'
   },
   project: {
     addProject: '新建项目',

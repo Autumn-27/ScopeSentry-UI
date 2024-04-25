@@ -103,5 +103,5 @@ export const getPageMonitoringApi = (
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<PageMonitoringDataResponse>> => {
-  return request.post({ url: '/api/pagemonitoring/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/page/monitoring/result', data: { search, pageIndex, pageSize } })
 }

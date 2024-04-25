@@ -300,7 +300,8 @@ export default {
     assetDetail: 'Asset Detail',
     assetTotalNum: 'Total Assets',
     responseHeader: 'Response Header',
-    responseBody: 'Response Body'
+    responseBody: 'Response Body',
+    historyDiff: 'Historical changes'
   },
   subdomain: {
     subdomainName: 'Subdomain',
@@ -337,8 +338,8 @@ export default {
   },
   PageMonitoring: {
     pageMonitoringName: 'Page Monitoring',
-    oldResponseBodyMD5: 'Old ResponseBody MD5',
-    currentResponseBodyMD5: 'Current ResponseBody MD5'
+    oldResponseBody: 'Old ResponseBody',
+    currentResponseBody: 'Current ResponseBody'
   },
   project: {
     addProject: 'Add Project',

@@ -2,21 +2,26 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Search } from '@/components/Search'
+import { Dialog } from '@/components/Dialog'
 import { reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination } from 'element-plus'
-import { Table } from '@/components/Table'
-import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import {
-  getCrawlerApi,
-  getDirScanApi,
-  getPageMonitoringApi,
-  getSensitiveApi,
-  getURLApi
-} from '@/api/asset'
+  ElCard,
+  ElPagination,
+  ElScrollbar,
+  ElDivider,
+  ElLink,
+  ElCol,
+  ElRow,
+  ElText
+} from 'element-plus'
+import { Table, TableColumn } from '@/components/Table'
+import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
+import { getPageMonitoringApi } from '@/api/asset'
+import { BaseButton } from '@/components/Button'
 
 const { t } = useI18n()
 const { searchRegister } = useSearch()
@@ -77,27 +82,88 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'URL',
-    label: 'URL',
-    minWidth: 60
+    field: 'url',
+    label: 'url',
+    minWidth: 30,
+    formatter: (_, __: TableColumn, domainValue: string) => {
+      return (
+        <ElLink href={domainValue} underline={false}>
+          {domainValue}
+        </ElLink>
+      )
+    }
   },
   {
-    field: 'OldResponseBodyMD5',
-    label: t('PageMonitoring.oldResponseBodyMD5'),
-    minWidth: 50
+    field: 'response1',
+    label: t('PageMonitoring.oldResponseBody'),
+    minWidth: 30,
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="success" onClick={() => action(row.response1, row.hash1)}>
+            {t('common.view')}
+          </BaseButton>
+        </>
+      )
+    }
   },
   {
-    field: 'CurrentResponseBodyMD5',
-    label: t('PageMonitoring.currentResponseBodyMD5'),
-    minWidth: 60
+    field: 'respone2',
+    label: t('PageMonitoring.currentResponseBody'),
+    minWidth: 30,
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="success" onClick={() => action(row.response2, row.hash2)}>
+            {t('common.view')}
+          </BaseButton>
+        </>
+      )
+    }
   },
   {
-    field: 'Time',
-    label: t('asset.time'),
-    minWidth: 30
+    field: 'diff',
+    label: 'diff',
+    formatter: (_, __: TableColumn, bannerValue: string) => {
+      const lines = bannerValue.split('\n')
+      const elements = lines.map((line, index) => <div key={index}>{line}</div>)
+      return (
+        <ElScrollbar minSize={10} maxHeight={200}>
+          <div class="scrollbar-demo-item">{elements}</div>
+        </ElScrollbar>
+      )
+    }
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    minWidth: 30,
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="success" onClick={() => historyDiffAction(row.history_diff)}>
+            {t('asset.historyDiff')}
+          </BaseButton>
+        </>
+      )
+    }
   }
 ])
-
+const DialogVisible = ref(false)
+const body = ref('')
+const hash = ref('')
+const action = (newBody: any, newHash: string) => {
+  DialogVisible.value = true
+  body.value = newBody
+  hash.value = newHash
+}
+const HistoryDiffDialogVisible = ref(false)
+const historyDiff = ref<string[]>([])
+const historyDiffAction = (data: string[]) => {
+  console.log(data)
+  historyDiff.value = data
+  HistoryDiffDialogVisible.value = true
+}
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
@@ -114,6 +180,17 @@ const { getList } = tableMethods
 // getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
+}
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
 }
 </script>
 
@@ -139,13 +216,25 @@ function tableHeaderColor() {
           v-model:currentPage="currentPage"
           :columns="allSchemas.tableColumns"
           :data="dataList"
-          max-height="700"
+          :max-height="maxHeight"
           stripe
           :border="true"
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
           :headerCellStyle="tableHeaderColor"
+          :tooltipOptions="{
+            disabled: true,
+            showArrow: false,
+            effect: 'dark',
+            enterable: false,
+            offset: 0,
+            placement: 'top',
+            popperClass: '',
+            popperOptions: {},
+            showAfter: 0,
+            hideAfter: 0
+          }"
           :style="{
             fontFamily:
               '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
@@ -165,6 +254,35 @@ function tableHeaderColor() {
       </ElCard>
     </ElCol>
   </ElRow>
+  <Dialog
+    v-model="DialogVisible"
+    title="ResponseBody"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    width="70%"
+    :max-height="maxHeight"
+  >
+    <ElScrollbar :max-height="maxHeight">
+      <div :style="{ color: 'red' }">Hash: {{ hash }}</div>
+      <ElDivider />
+      <div :style="{ whiteSpace: 'pre-line' }">{{ body }}</div>
+    </ElScrollbar>
+  </Dialog>
+  <Dialog
+    v-model="HistoryDiffDialogVisible"
+    title="Historical changes"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    width="70%"
+    :max-height="maxHeight"
+  >
+    <div>
+      <div v-for="(diff, index) in historyDiff" :key="index" :style="{ whiteSpace: 'pre-line' }">
+        <ElText>{{ diff }}</ElText>
+        <ElDivider style="background: #e99696" />
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <style lang="less" scoped>
