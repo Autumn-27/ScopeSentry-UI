@@ -6,6 +6,7 @@ import { ElCol, ElRow, ElScrollbar, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 // import { useIcon } from '@/hooks/web/useIcon'
+import { onMounted } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import Configuration from './components/Configuration.vue'
@@ -228,6 +229,17 @@ const openLogDialogVisible = async (data) => {
     }
   })
 }
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 </script>
 
 <template>
@@ -278,7 +290,7 @@ const openLogDialogVisible = async (data) => {
     :title="$t('common.config')"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    :maxHeight="500"
+    :maxHeight="maxHeight"
   >
     <Configuration :closeDialog="closeDialog" :nodeConfForm="detailData" :getList="getList" />
   </Dialog>
@@ -287,7 +299,7 @@ const openLogDialogVisible = async (data) => {
     :title="t('node.log')"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    :maxHeight="500"
+    :maxHeight="maxHeight"
   >
     <ElScrollbar ref="scrollbarRef">
       <pre v-if="logContent">{{ logContent }}</pre>

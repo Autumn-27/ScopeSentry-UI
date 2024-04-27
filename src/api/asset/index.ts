@@ -8,7 +8,9 @@ import {
   CrawlerData,
   SensitiveData,
   DirScanData,
-  PageMonitoringData
+  PageMonitoringData,
+  SubdomaintakerData,
+  SensitiveBody
 } from './types'
 
 interface AssetDataResponse {
@@ -82,6 +84,10 @@ export const getSensitiveResultApi = (
   return request.post({ url: '/api/sensitive/result/data', data: { search, pageIndex, pageSize } })
 }
 
+export const getSensitiveResultBodyApi = (id: string): Promise<IResponse<SensitiveBody>> => {
+  return request.post({ url: '/api/sensitive/result/body', data: { id } })
+}
+
 interface DirScanDataResponse {
   list: DirScanData[]
   total: number
@@ -104,4 +110,16 @@ export const getPageMonitoringApi = (
   pageSize: number
 ): Promise<IResponse<PageMonitoringDataResponse>> => {
   return request.post({ url: '/api/page/monitoring/result', data: { search, pageIndex, pageSize } })
+}
+
+interface SubdomaintakerDataResponse {
+  list: SubdomaintakerData[]
+  total: number
+}
+export const getSubdomaintakerApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number
+): Promise<IResponse<SubdomaintakerDataResponse>> => {
+  return request.post({ url: '/api/subdomaintaker/data', data: { search, pageIndex, pageSize } })
 }

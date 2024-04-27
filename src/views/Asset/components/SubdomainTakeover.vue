@@ -2,18 +2,15 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Search } from '@/components/Search'
-import { Dialog } from '@/components/Dialog'
-import { reactive, ref } from 'vue'
+import { h, reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElScrollbar, ElRow, ElCol } from 'element-plus'
+import { ElCard, ElPagination, ElRow, ElCol, ElScrollbar } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getSensitiveResultApi, getSensitiveResultBodyApi } from '@/api/asset'
-import { Icon } from '@iconify/vue'
-import { BaseButton } from '@/components/Button'
+import { getSubdomaintakerApi } from '@/api/asset'
 
 const { t } = useI18n()
 const { searchRegister } = useSearch()
@@ -51,7 +48,16 @@ const loadAll = () => {
 
 onMounted(() => {
   restaurants.value = loadAll()
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
 })
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
 
 const isGrid = ref(true)
 const layout = ref('inline')
@@ -74,56 +80,31 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'url',
-    label: 'URL',
+    field: 'host',
+    label: 'Domain',
+    minWidth: 50
+  },
+  {
+    field: 'value',
+    label: t('subdomain.recordValue'),
     minWidth: 30
   },
   {
-    field: 'name',
-    label: t('sensitiveInformation.sensitiveName'),
-    minWidth: 20
+    field: 'type',
+    label: 'Type',
+    minWidth: 50
   },
   {
-    field: 'color',
-    label: 'Level',
-    minWidth: 5,
-    formatter: (row, __: TableColumn, cellValue: string) => {
+    field: 'response',
+    label: 'Response',
+    minWidth: 50,
+    formatter: (_: Recordable, __: TableColumn, Value: string) => {
       return (
-        <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
-      )
-    }
-  },
-  {
-    field: 'match',
-    label: 'Info',
-    minWidth: 60,
-    formatter: (row, __: TableColumn, cellValue: string[]) => {
-      const elements = cellValue.map((line, index) => <div key={index}>{line}</div>)
-      return (
-        <ElScrollbar height="100px">
-          <div class="scrollbar-demo-item">{elements}</div>
+        <ElScrollbar max-height="100">
+          <div style="whiteSpace: 'pre-line'">{Value}</div>
         </ElScrollbar>
       )
     }
-  },
-  {
-    field: 'time',
-    label: t('asset.time'),
-    minWidth: 30
-  },
-  {
-    field: 'action',
-    label: t('tableDemo.action'),
-    formatter: (row, __: TableColumn, _: number) => {
-      return (
-        <>
-          <BaseButton type="primary" onClick={() => action(row.id)}>
-            {t('asset.detail')}
-          </BaseButton>
-        </>
-      )
-    },
-    minWidth: 10
   }
 ])
 
@@ -131,7 +112,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getSensitiveResultApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getSubdomaintakerApi(searchParams.value, currentPage.value, pageSize.value)
     return {
       list: res.data.list,
       total: res.data.total
@@ -139,28 +120,10 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
+pageSize.value = 20
 const { getList } = tableMethods
-// getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
-}
-onMounted(() => {
-  setMaxHeight()
-  window.addEventListener('resize', setMaxHeight)
-})
-
-const maxHeight = ref(0)
-
-const setMaxHeight = () => {
-  const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.7
-}
-const DialogVisible = ref(false)
-const body = ref('')
-const action = async (id) => {
-  const res = await getSensitiveResultBodyApi(id)
-  body.value = res.data.body
-  DialogVisible.value = true
 }
 </script>
 
@@ -180,15 +143,15 @@ const action = async (id) => {
   </ContentWrap>
   <ElRow>
     <ElCol>
-      <ElCard>
+      <ElCard style="height: min-content">
         <Table
           v-model:pageSize="pageSize"
           v-model:currentPage="currentPage"
           :columns="allSchemas.tableColumns"
           :data="dataList"
           stripe
-          :border="true"
           :max-height="maxHeight"
+          :border="true"
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
@@ -217,29 +180,20 @@ const action = async (id) => {
         <ElPagination
           v-model:pageSize="pageSize"
           v-model:currentPage="currentPage"
-          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+          :page-sizes="[20, 50, 100, 200, 500, 1000]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         />
       </ElCard>
     </ElCol>
   </ElRow>
-  <Dialog
-    v-model="DialogVisible"
-    :title="t('asset.detail')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    width="70%"
-    :max-height="maxHeight"
-  >
-    <ElScrollbar :max-height="maxHeight">
-      <div :style="{ whiteSpace: 'pre-line' }">{{ body }}</div>
-    </ElScrollbar>
-  </Dialog>
 </template>
 
 <style lang="less" scoped>
 .el-button {
   margin-top: 10px;
+}
+:deep(.el-table .cell.el-tooltip) {
+  white-space: pre-line;
 }
 </style>

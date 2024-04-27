@@ -75,6 +75,10 @@ export type SensitiveData = {
   match: string[]
 }
 
+export type SensitiveBody = {
+  body: string
+}
+
 export type DirScanData = {
   ID: string
   URL: string
@@ -90,4 +94,11 @@ export type PageMonitoringData = {
   OldResponseBodyMD5: string
   CurrentResponseBodyMD5: String
   Time: string
+}
+
+export type SubdomaintakerData = {
+  host: string
+  type: string
+  value: string
+  response: string
 }

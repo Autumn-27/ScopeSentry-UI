@@ -362,7 +362,7 @@ export default {
     low: '低',
     info: '信息',
     unknown: '未知',
-    nameMsg: '请输入POC名称',
+    nameMsg: '请输入POC名称,POC名称和POC内容中的name应保持一致。',
     contentMsg: '请输入poc内容'
   },
   configuration: {

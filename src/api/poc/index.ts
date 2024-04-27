@@ -5,9 +5,6 @@ interface pocDataResponse {
   list: pocData[]
   total: number
 }
-interface pocDataResponse {
-  list: pocNameList[]
-}
 export const getPocDataApi = (
   search: string,
   pageIndex: number,

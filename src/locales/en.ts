@@ -366,7 +366,8 @@ export default {
     low: 'Low',
     info: 'Info',
     unknown: 'Unknown',
-    nameMsg: 'Please enter poc name',
+    nameMsg:
+      'Please enter the POC name. The POC name and the name in the POC content should be consistent.',
     contentMsg: 'Please enter poc content'
   },
   configuration: {
