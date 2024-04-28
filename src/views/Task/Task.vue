@@ -172,7 +172,9 @@ let taskForm = reactive({
   portScan: false,
   ports: '',
   dirScan: true,
-  waybackurl: true
+  waybackurl: true,
+  scheduledTasks: true,
+  hour: 24
 })
 
 let Create = ref(true)
@@ -195,6 +197,8 @@ const getTaskContent = async (data) => {
     taskForm.ports = result.ports
     taskForm.dirScan = result.dirScan
     taskForm.waybackurl = result.waybackurl
+    taskForm.scheduledTasks = result.scheduledTasks
+    taskForm.hour = result.hour
   }
   dialogVisible.value = true
   Create.value = false

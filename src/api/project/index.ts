@@ -20,9 +20,10 @@ export const addProjectDataApi = (
   crawlerScan: boolean,
   vulScan: boolean,
   vulList: any[],
-  day: number,
   hour: number,
-  minute: number
+  portScan: boolean,
+  ports: string,
+  dirScan: boolean
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/add',
@@ -40,9 +41,10 @@ export const addProjectDataApi = (
       crawlerScan,
       vulScan,
       vulList,
-      day,
       hour,
-      minute
+      portScan,
+      ports,
+      dirScan
     }
   })
 }

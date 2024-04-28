@@ -23,6 +23,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi } from '@/api/project'
 import { getPocDataAllApi } from '@/api/poc'
+import { getPortDictDataApi } from '@/api/DictionaryManagement'
 const { t } = useI18n()
 let projectForm = reactive({
   name: '',
@@ -38,14 +39,16 @@ let projectForm = reactive({
   crawlerScan: true,
   vulScan: false,
   vulList: [],
-  day: 0,
-  hour: 0,
-  minute: 0,
-  waybackurl: true
+  hour: 1,
+  waybackurl: true,
+  portScan: true,
+  ports: '',
+  dirScan: false
 })
 const props = defineProps<{
   closeDialog: () => void
   projectid: string
+  getProjectData: () => void
 }>()
 interface RuleForm {
   name: string
@@ -90,9 +93,10 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         projectForm.crawlerScan,
         projectForm.vulScan,
         projectForm.vulList,
-        projectForm.day,
         projectForm.hour,
-        projectForm.minute
+        projectForm.portScan,
+        projectForm.ports,
+        projectForm.dirScan
       )
       if (res.code === 200) {
         props.closeDialog()
@@ -103,6 +107,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       saveLoading.value = false
     }
   })
+  props.getProjectData()
 }
 getPocList()
 
@@ -122,12 +127,23 @@ const getProjectInfo = async () => {
     projectForm.crawlerScan = res.data.crawlerScan
     projectForm.vulScan = res.data.vulScan
     projectForm.vulList = res.data.vulList
-    projectForm.day = res.data.day
     projectForm.hour = res.data.hour
-    projectForm.minute = res.data.minute
+    projectForm.portScan = res.data.portScan
+    projectForm.ports = res.data.ports
+    projectForm.dirScan = res.data.dirScan
   }
 }
 getProjectInfo()
+const portOptions = reactive<{ value: string; label: string }[]>([])
+const getPortList = async () => {
+  const res = await getPortDictDataApi('', 1, 10000)
+  if (res.data.list.length > 0) {
+    res.data.list.forEach((item) => {
+      portOptions.push({ value: item.id, label: item.name })
+    })
+  }
+}
+getPortList()
 </script>
 <template>
   <ElForm :model="projectForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
@@ -163,30 +179,14 @@ getProjectInfo()
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" v-if="projectForm.scheduledTasks">
-        <ElFormItem :label="t('project.cycle')" prop="type" v-if="projectForm.subdomainScan">
-          <ElInputNumber
-            v-model="projectForm.day"
-            :min="0"
-            controls-position="right"
-            size="small"
-            style="position: relative; width: 20%"
-          /><ElText style="position: relative; left: 6px">Day</ElText>
+        <ElFormItem :label="t('project.cycle')" prop="type">
           <ElInputNumber
             v-model="projectForm.hour"
             :min="0"
             :max="23"
             controls-position="right"
             size="small"
-            style="position: relative; width: 20%; left: 16px"
-          /><ElText style="position: relative; left: 24px">Hour</ElText>
-          <ElInputNumber
-            v-model="projectForm.minute"
-            :min="0"
-            :max="59"
-            controls-position="right"
-            size="small"
-            style="position: relative; width: 20%; left: 32px"
-          /><ElText style="position: relative; left: 38px">Minute</ElText>
+          /><ElText style="position: relative; left: 16px">Hour</ElText>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -214,6 +214,43 @@ getProjectInfo()
           </ElFormItem>
         </ElCol>
       </ElRow>
+      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+        t('task.portScan')
+      }}</ElDivider>
+      <ElRow>
+        <ElCol :span="6">
+          <ElFormItem :label="t('task.portScan')">
+            <ElSwitch
+              v-model="projectForm.portScan"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="t('task.portSelect')" prop="portScan" v-if="projectForm.portScan">
+            <ElSelectV2
+              v-model="projectForm.ports"
+              filterable
+              :options="portOptions"
+              placeholder="Please select port"
+              style="width: 80%"
+            />
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+        t('dirScan.dirScanName')
+      }}</ElDivider>
+      <ElFormItem :label="t('dirScan.dirScanName')">
+        <ElSwitch
+          v-model="projectForm.dirScan"
+          inline-prompt
+          :active-text="t('common.switchAction')"
+          :inactive-text="t('common.switchInactive')"
+        />
+      </ElFormItem>
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
         t('crawler.crawlerName')
       }}</ElDivider>
@@ -255,6 +292,7 @@ getProjectInfo()
         <ElCol :span="12" :offset="6">
           <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="projectForm.urlScan">
             <ElRadioGroup v-model="projectForm.pageMonitoring">
+              <ElRadio label="None" name="pageMonitoring" />
               <ElTooltip effect="dark" :content="t('task.msgPageMonitoringAll')" placement="top">
                 <ElRadio label="All" name="pageMonitoring" :checked="true" />
               </ElTooltip>

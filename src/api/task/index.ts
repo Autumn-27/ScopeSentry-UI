@@ -1,5 +1,11 @@
 import request from '@/axios'
-import type { TaskData, taskRespData, TaskContentData, TaskProgessInfo } from './types'
+import type {
+  TaskData,
+  taskRespData,
+  TaskContentData,
+  TaskProgessInfo,
+  ScheduledTaskData
+} from './types'
 import type { commonRespData } from '../common/types'
 
 interface TaskDataResponse {
@@ -31,7 +37,9 @@ export const addTaskApi = (
   portScan: boolean,
   ports: string,
   dirScan: boolean,
-  waybackurl: boolean
+  waybackurl: boolean,
+  scheduledTasks: boolean,
+  hour: number
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -52,7 +60,9 @@ export const addTaskApi = (
       portScan,
       ports,
       dirScan,
-      waybackurl
+      waybackurl,
+      scheduledTasks,
+      hour
     }
   })
 }
@@ -75,4 +85,17 @@ interface TaskProgessInforesp {
 }
 export const getTaskProgressApi = (id: string): Promise<IResponse<TaskProgessInforesp>> => {
   return request.post({ url: '/api/task/progress/info', data: { id } })
+}
+
+interface ScheduledTaskDataResponse {
+  list: ScheduledTaskData[]
+  total: number
+}
+
+export const getScheduledTaskDataApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number
+): Promise<IResponse<ScheduledTaskDataResponse>> => {
+  return request.post({ url: '/api/scheduled/task/data', data: { search, pageIndex, pageSize } })
 }

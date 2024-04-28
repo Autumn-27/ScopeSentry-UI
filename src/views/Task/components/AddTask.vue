@@ -17,7 +17,9 @@ import {
   ElButton,
   FormInstance,
   ElMessage,
-  CheckboxValueType
+  ElInputNumber,
+  CheckboxValueType,
+  ElText
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
@@ -47,6 +49,8 @@ const props = defineProps<{
     ports: string
     dirScan: boolean
     waybackurl: boolean
+    scheduledTasks: boolean
+    hour: number
   }
   create: boolean
 }>()
@@ -89,7 +93,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         taskForm.value.portScan,
         taskForm.value.ports,
         taskForm.value.dirScan,
-        taskForm.value.waybackurl
+        taskForm.value.waybackurl,
+        taskForm.value.scheduledTasks,
+        taskForm.value.hour
       )
       if (res.code === 200) {
         props.getList()
@@ -206,6 +212,30 @@ const handleCheckAll = (val: CheckboxValueType) => {
         </ElSelectV2>
       </ElFormItem>
     </ElTooltip>
+    <ElRow>
+      <ElCol :span="6">
+        <ElFormItem :label="t('project.scheduledTasks')">
+          <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
+            <ElSwitch
+              v-model="taskForm.scheduledTasks"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElTooltip>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" v-if="taskForm.scheduledTasks">
+        <ElFormItem :label="t('project.cycle')" prop="type">
+          <ElInputNumber
+            v-model="taskForm.hour"
+            :min="1"
+            controls-position="right"
+            size="small"
+          /><ElText style="position: relative; left: 16px">Hour</ElText>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('subdomain.subdomainName')
     }}</ElDivider>

@@ -28,6 +28,8 @@ export type TaskContentData = {
   ports: string
   dirScan: boolean
   waybackurl: boolean
+  scheduledTasks: boolean
+  hour: number
 }
 
 export type TaskProgessInfo = {
@@ -40,4 +42,13 @@ export type TaskProgessInfo = {
   dirScan: string[]
   vulnerability: string[]
   all: string[]
+}
+
+export type ScheduledTaskData = {
+  ID: string
+  name: string
+  taskType: string
+  lastTime: string
+  nextTime: string
+  state: string
 }

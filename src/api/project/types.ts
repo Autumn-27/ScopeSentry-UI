@@ -28,4 +28,7 @@ export type projectContent = {
   day: number
   hour: number
   minute: number
+  portScan: boolean
+  ports: string
+  dirScan: boolean
 }

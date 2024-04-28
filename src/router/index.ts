@@ -128,7 +128,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       },
       {
         path: 'ScheduledTask',
-        component: () => import('@/views/Node/Node.vue'),
+        component: () => import('@/views/Task/ScheduledTask.vue'),
         name: 'ScheduledTask',
         meta: {
           title: t('router.scheduledTask'),
