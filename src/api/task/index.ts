@@ -66,6 +66,54 @@ export const addTaskApi = (
     }
   })
 }
+export const updateTaskApi = (
+  id: string,
+  name: string,
+  target: string,
+  node: string[],
+  allNode: boolean,
+  subdomainScan: boolean,
+  subdomainConfig: string[],
+  urlScan: boolean,
+  duplicates: boolean,
+  sensitiveInfoScan: boolean,
+  pageMonitoring: string,
+  crawlerScan: boolean,
+  vulScan: boolean,
+  vulList: string[],
+  portScan: boolean,
+  ports: string,
+  dirScan: boolean,
+  waybackurl: boolean,
+  scheduledTasks: boolean,
+  hour: number
+): Promise<IResponse<taskRespData>> => {
+  return request.post({
+    url: '/api/task/update',
+    data: {
+      id,
+      name,
+      target,
+      node,
+      allNode,
+      subdomainScan,
+      subdomainConfig,
+      urlScan,
+      duplicates,
+      sensitiveInfoScan,
+      pageMonitoring,
+      crawlerScan,
+      vulScan,
+      vulList,
+      portScan,
+      ports,
+      dirScan,
+      waybackurl,
+      scheduledTasks,
+      hour
+    }
+  })
+}
 
 export const getTaskContentApi = (id: string): Promise<IResponse<TaskContentData>> => {
   return request.post({ url: '/api/task/content', data: { id } })
@@ -98,4 +146,8 @@ export const getScheduledTaskDataApi = (
   pageSize: number
 ): Promise<IResponse<ScheduledTaskDataResponse>> => {
   return request.post({ url: '/api/scheduled/task/data', data: { search, pageIndex, pageSize } })
+}
+
+export const scheduledDeleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/scheduled/task/delete', data: { ids } })
 }

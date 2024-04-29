@@ -6,16 +6,11 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'elem
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import {
-  getScheduledTaskDataApi,
-  getTaskContentApi,
-  deleteTaskApi,
-  retestTaskApi
-} from '@/api/task'
+import { getScheduledTaskDataApi, getTaskContentApi, scheduledDeleteTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
-import ProgressInfo from './components/ProgressInfo.vue'
+import AddProject from '../Project/components/AddProject.vue'
 import { Icon } from '@iconify/vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
@@ -124,15 +119,6 @@ const taskColums = reactive<TableColumn[]>([
   }
 ])
 
-const progressDialogVisible = ref(false)
-let getProgressInfoID = ''
-const getProgressInfo = async (id) => {
-  getProgressInfoID = id
-  progressDialogVisible.value = true
-}
-const progresscloseDialog = () => {
-  progressDialogVisible.value = false
-}
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
@@ -150,25 +136,6 @@ function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
 const dialogVisible = ref(false)
-const addTask = async () => {
-  DialogTitle = t('task.addTask')
-  Create.value = true
-  taskForm.name = ''
-  taskForm.target = ''
-  taskForm.node = []
-  taskForm.subdomainScan = true
-  taskForm.subdomainConfig = []
-  taskForm.urlScan = true
-  taskForm.sensitiveInfoScan = true
-  taskForm.pageMonitoring = 'JS'
-  taskForm.crawlerScan = true
-  taskForm.vulScan = false
-  taskForm.vulList = []
-  taskForm.dirScan = true
-  taskForm.waybackurl = true
-  dialogVisible.value = true
-}
-
 let DialogTitle = t('task.addTask')
 const closeDialog = () => {
   dialogVisible.value = false
@@ -176,47 +143,61 @@ const closeDialog = () => {
 let taskForm = reactive({
   name: '',
   target: '',
-  node: [],
+  node: [] as string[],
   subdomainScan: true,
   duplicates: true,
-  subdomainConfig: [],
+  subdomainConfig: [] as string[],
   urlScan: true,
   sensitiveInfoScan: true,
   pageMonitoring: 'JS',
   crawlerScan: true,
   vulScan: false,
-  vulList: [],
+  vulList: [] as string[],
   portScan: false,
   ports: '',
   dirScan: true,
-  waybackurl: true
+  waybackurl: true,
+  scheduledTasks: true,
+  hour: 24,
+  allNode: false
 })
-
+let ProjectId = ''
+let TaskId = ''
 let Create = ref(true)
 const getTaskContent = async (data) => {
-  const res = await getTaskContentApi(data.id)
-  if (res.code === 200) {
-    const result = res.data
-    taskForm.name = result.name
-    taskForm.target = result.target
-    taskForm.node = result.node
-    taskForm.subdomainScan = result.subdomainScan
-    taskForm.subdomainConfig = result.subdomainConfig
-    taskForm.urlScan = result.urlScan
-    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
-    taskForm.pageMonitoring = result.pageMonitoring
-    taskForm.crawlerScan = result.crawlerScan
-    taskForm.vulScan = result.vulScan
-    taskForm.vulList = result.vulList
-    taskForm.portScan = result.portScan
-    taskForm.ports = result.ports
-    taskForm.dirScan = result.dirScan
-    taskForm.waybackurl = result.waybackurl
+  console.log(data)
+  if (data.type == 'Scan') {
+    TaskId = data.id
+    const res = await getTaskContentApi(data.id)
+    if (res.code === 200) {
+      const result = res.data
+      taskForm.name = result.name
+      taskForm.target = result.target
+      taskForm.node = result.node
+      taskForm.subdomainScan = result.subdomainScan
+      taskForm.subdomainConfig = result.subdomainConfig
+      taskForm.urlScan = result.urlScan
+      taskForm.sensitiveInfoScan = result.sensitiveInfoScan
+      taskForm.pageMonitoring = result.pageMonitoring
+      taskForm.crawlerScan = result.crawlerScan
+      taskForm.vulScan = result.vulScan
+      taskForm.vulList = result.vulList
+      taskForm.portScan = result.portScan
+      taskForm.ports = result.ports
+      taskForm.dirScan = result.dirScan
+      taskForm.waybackurl = result.waybackurl
+      taskForm.scheduledTasks = result.scheduledTasks
+      taskForm.hour = result.hour
+      taskForm.allNode = result.allNode
+      dialogVisible.value = true
+    }
+  } else {
+    ProjectId = data.id
+    projectDialogVisible.value = true
   }
-  dialogVisible.value = true
-  Create.value = false
-  DialogTitle = t('common.view')
+  DialogTitle = t('common.edit')
 }
+
 const confirmDeleteSelect = async () => {
   const confirmed = window.confirm('Are you sure you want to delete the selected data?')
   if (confirmed) {
@@ -234,7 +215,7 @@ const delLoading = ref(false)
 const del = async (data) => {
   delLoading.value = true
   try {
-    const res = await deleteTaskApi([data.id])
+    const res = await scheduledDeleteTaskApi([data.id])
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -251,28 +232,13 @@ const delSelect = async () => {
   ids.value = selectedRows.map((row) => row.id)
   delLoading.value = true
   try {
-    const res = await deleteTaskApi(ids.value)
+    const res = await scheduledDeleteTaskApi(ids.value)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
   } catch (error) {
     console.error('Error deleting data:', error)
     delLoading.value = false
-    getList()
-  }
-}
-const confirmRetest = async (data) => {
-  const confirmed = window.confirm('Are you sure you want to retest?')
-  if (confirmed) {
-    await retestTask(data)
-  }
-}
-const retestTask = async (data) => {
-  try {
-    await retestTaskApi(data.id)
-    getList()
-  } catch (error) {
-    console.error('Error deleting data:', error)
     getList()
   }
 }
@@ -286,6 +252,11 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.75
 }
+const projectDialogVisible = ref(false)
+const closeProjectDialog = () => {
+  projectDialogVisible.value = false
+}
+const emptyFunction = () => {}
 </script>
 
 <template>
@@ -306,7 +277,6 @@ const setMaxHeight = () => {
     <ElRow>
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
-          <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('task.delTask') }}
           </BaseButton>
@@ -348,23 +318,33 @@ const setMaxHeight = () => {
         }"
       />
     </div>
+    <Dialog
+      v-model="dialogVisible"
+      :title="DialogTitle"
+      center
+      style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    >
+      <AddTask
+        :closeDialog="closeDialog"
+        :getList="getList"
+        :vTaskForm="taskForm"
+        :create="Create"
+        :taskid="TaskId"
+        :schedule="true"
+      />
+    </Dialog>
+    <Dialog
+      v-model="projectDialogVisible"
+      :title="t('common.edit')"
+      center
+      style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    >
+      <AddProject
+        :closeDialog="closeProjectDialog"
+        :projectid="ProjectId"
+        :getProjectData="emptyFunction"
+        :schedule="false"
+      />
+    </Dialog>
   </ContentWrap>
-  <Dialog
-    v-model="dialogVisible"
-    :title="DialogTitle"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
-    <AddTask :closeDialog="closeDialog" :getList="getList" :vTaskForm="taskForm" :create="Create" />
-  </Dialog>
-  <Dialog
-    v-model="progressDialogVisible"
-    :title="t('task.taskProgress')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    width="70%"
-    max-height="700"
-  >
-    <ProgressInfo :closeDialog="progresscloseDialog" :getProgressInfoID="getProgressInfoID"
-  /></Dialog>
 </template>

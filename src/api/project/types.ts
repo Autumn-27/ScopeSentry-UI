@@ -31,4 +31,6 @@ export type projectContent = {
   portScan: boolean
   ports: string
   dirScan: boolean
+  allNode: boolean
+  node: string[]
 }

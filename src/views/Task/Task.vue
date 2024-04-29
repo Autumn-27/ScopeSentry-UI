@@ -159,7 +159,7 @@ const closeDialog = () => {
 let taskForm = reactive({
   name: '',
   target: '',
-  node: [],
+  node: [] as string[],
   subdomainScan: true,
   duplicates: true,
   subdomainConfig: [],
@@ -174,7 +174,8 @@ let taskForm = reactive({
   dirScan: true,
   waybackurl: true,
   scheduledTasks: true,
-  hour: 24
+  hour: 24,
+  allNode: false
 })
 
 let Create = ref(true)
@@ -199,6 +200,7 @@ const getTaskContent = async (data) => {
     taskForm.waybackurl = result.waybackurl
     taskForm.scheduledTasks = result.scheduledTasks
     taskForm.hour = result.hour
+    taskForm.allNode = result.allNode
   }
   dialogVisible.value = true
   Create.value = false
@@ -342,7 +344,14 @@ const setMaxHeight = () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <AddTask :closeDialog="closeDialog" :getList="getList" :vTaskForm="taskForm" :create="Create" />
+    <AddTask
+      :closeDialog="closeDialog"
+      :getList="getList"
+      :vTaskForm="taskForm"
+      :create="Create"
+      taskid=""
+      :schedule="false"
+    />
   </Dialog>
   <Dialog
     v-model="progressDialogVisible"

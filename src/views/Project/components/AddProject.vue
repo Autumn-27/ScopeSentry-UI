@@ -17,13 +17,16 @@ import {
   ElButton,
   FormInstance,
   ElInputNumber,
-  ElText
+  ElText,
+  ElMessage,
+  CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi } from '@/api/project'
 import { getPocDataAllApi } from '@/api/poc'
 import { getPortDictDataApi } from '@/api/DictionaryManagement'
+import { getNodeDataOnlineApi } from '@/api/node'
 const { t } = useI18n()
 let projectForm = reactive({
   name: '',
@@ -43,12 +46,15 @@ let projectForm = reactive({
   waybackurl: true,
   portScan: true,
   ports: '',
-  dirScan: false
+  dirScan: false,
+  node: [] as string[],
+  allNode: false
 })
 const props = defineProps<{
   closeDialog: () => void
   projectid: string
   getProjectData: () => void
+  schedule: boolean
 }>()
 interface RuleForm {
   name: string
@@ -96,7 +102,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         projectForm.hour,
         projectForm.portScan,
         projectForm.ports,
-        projectForm.dirScan
+        projectForm.dirScan,
+        projectForm.allNode,
+        projectForm.node
       )
       if (res.code === 200) {
         props.closeDialog()
@@ -131,6 +139,8 @@ const getProjectInfo = async () => {
     projectForm.portScan = res.data.portScan
     projectForm.ports = res.data.ports
     projectForm.dirScan = res.data.dirScan
+    projectForm.allNode = res.data.allNode
+    projectForm.node = res.data.node
   }
 }
 getProjectInfo()
@@ -144,6 +154,37 @@ const getPortList = async () => {
   }
 }
 getPortList()
+const indeterminate = ref(false)
+const isCheckboxDisabledNode = ref(false)
+const nodeOptions = reactive<{ value: string; label: string }[]>([])
+const getNodeList = async () => {
+  const res = await getNodeDataOnlineApi()
+  console.log(res.data.list)
+  if (res.data.list.length > 0) {
+    isCheckboxDisabledNode.value = false
+    res.data.list.forEach((item) => {
+      nodeOptions.push({ value: item, label: item })
+    })
+  } else {
+    isCheckboxDisabledNode.value = true
+    ElMessage.warning(t('node.onlineNodeMsg'))
+  }
+  console.log(nodeOptions)
+}
+getNodeList()
+const handleCheckAll = (val: CheckboxValueType) => {
+  indeterminate.value = false
+  if (val) {
+    projectForm.allNode = true
+    projectForm.node = []
+    nodeOptions.forEach((option) => {
+      return projectForm.node.push(option.value)
+    })
+  } else {
+    projectForm.allNode = false
+    projectForm.node = []
+  }
+}
 </script>
 <template>
   <ElForm :model="projectForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
@@ -164,6 +205,7 @@ getPortList()
     <ElFormItem label="Logo" prop="logo">
       <ElInput v-model="projectForm.logo" placeholder="http(s)://xxxxx.xx" />
     </ElFormItem>
+
     <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
@@ -190,6 +232,33 @@ getPortList()
         </ElFormItem>
       </ElCol>
     </ElRow>
+    <ElTooltip :content="t('task.selectNodeMsg')" placement="top" v-if="projectForm.scheduledTasks">
+      <ElFormItem :label="t('task.nodeSelect')" prop="node">
+        <ElSelectV2
+          v-model="projectForm.node"
+          filterable
+          :options="nodeOptions"
+          placeholder="Please select node"
+          style="width: 80%"
+          multiple
+          tag-type="success"
+          collapse-tags
+          collapse-tags-tooltip
+          :max-collapse-tags="7"
+        >
+          <template #header>
+            <el-checkbox
+              v-model="projectForm.allNode"
+              :disabled="isCheckboxDisabledNode"
+              :indeterminate="indeterminate"
+              @change="handleCheckAll"
+            >
+              All
+            </el-checkbox>
+          </template>
+        </ElSelectV2>
+      </ElFormItem>
+    </ElTooltip>
     <div v-if="projectForm.scheduledTasks">
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
         t('subdomain.subdomainName')

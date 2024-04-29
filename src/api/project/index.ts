@@ -23,7 +23,9 @@ export const addProjectDataApi = (
   hour: number,
   portScan: boolean,
   ports: string,
-  dirScan: boolean
+  dirScan: boolean,
+  allNode: boolean,
+  node: string[]
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/add',
@@ -44,7 +46,9 @@ export const addProjectDataApi = (
       hour,
       portScan,
       ports,
-      dirScan
+      dirScan,
+      allNode,
+      node
     }
   })
 }

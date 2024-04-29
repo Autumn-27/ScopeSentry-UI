@@ -25,7 +25,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import { getPocDataAllApi } from '@/api/poc'
-import { addTaskApi } from '@/api/task'
+import { addTaskApi, updateTaskApi } from '@/api/task'
 import { getPortDictDataApi } from '@/api/DictionaryManagement'
 const { t } = useI18n()
 
@@ -51,8 +51,11 @@ const props = defineProps<{
     waybackurl: boolean
     scheduledTasks: boolean
     hour: number
+    allNode: boolean
   }
   create: boolean
+  schedule: boolean
+  taskid: string
 }>()
 
 const { vTaskForm } = toRefs(props)
@@ -76,30 +79,59 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      let res = await addTaskApi(
-        taskForm.value.name,
-        taskForm.value.target,
-        taskForm.value.node,
-        nodeCheckAll.value,
-        taskForm.value.subdomainScan,
-        taskForm.value.subdomainConfig,
-        taskForm.value.urlScan,
-        taskForm.value.duplicates,
-        taskForm.value.sensitiveInfoScan,
-        taskForm.value.pageMonitoring,
-        taskForm.value.crawlerScan,
-        taskForm.value.vulScan,
-        taskForm.value.vulList,
-        taskForm.value.portScan,
-        taskForm.value.ports,
-        taskForm.value.dirScan,
-        taskForm.value.waybackurl,
-        taskForm.value.scheduledTasks,
-        taskForm.value.hour
-      )
-      if (res.code === 200) {
-        props.getList()
-        props.closeDialog()
+      if (props.taskid === '') {
+        let res = await addTaskApi(
+          taskForm.value.name,
+          taskForm.value.target,
+          taskForm.value.node,
+          taskForm.value.allNode,
+          taskForm.value.subdomainScan,
+          taskForm.value.subdomainConfig,
+          taskForm.value.urlScan,
+          taskForm.value.duplicates,
+          taskForm.value.sensitiveInfoScan,
+          taskForm.value.pageMonitoring,
+          taskForm.value.crawlerScan,
+          taskForm.value.vulScan,
+          taskForm.value.vulList,
+          taskForm.value.portScan,
+          taskForm.value.ports,
+          taskForm.value.dirScan,
+          taskForm.value.waybackurl,
+          taskForm.value.scheduledTasks,
+          taskForm.value.hour
+        )
+        if (res.code === 200) {
+          props.getList()
+          props.closeDialog()
+        }
+      } else {
+        let res = await updateTaskApi(
+          props.taskid,
+          taskForm.value.name,
+          taskForm.value.target,
+          taskForm.value.node,
+          taskForm.value.allNode,
+          taskForm.value.subdomainScan,
+          taskForm.value.subdomainConfig,
+          taskForm.value.urlScan,
+          taskForm.value.duplicates,
+          taskForm.value.sensitiveInfoScan,
+          taskForm.value.pageMonitoring,
+          taskForm.value.crawlerScan,
+          taskForm.value.vulScan,
+          taskForm.value.vulList,
+          taskForm.value.portScan,
+          taskForm.value.ports,
+          taskForm.value.dirScan,
+          taskForm.value.waybackurl,
+          taskForm.value.scheduledTasks,
+          taskForm.value.hour
+        )
+        if (res.code === 200) {
+          props.getList()
+          props.closeDialog()
+        }
       }
       saveLoading.value = false
     } else {
@@ -111,7 +143,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
 const getNodeList = async () => {
   const res = await getNodeDataOnlineApi()
-  console.log(res.data.list)
   if (res.data.list.length > 0) {
     isCheckboxDisabledNode.value = false
     res.data.list.forEach((item) => {
@@ -121,7 +152,6 @@ const getNodeList = async () => {
     isCheckboxDisabledNode.value = true
     ElMessage.warning(t('node.onlineNodeMsg'))
   }
-  console.log(nodeOptions)
 }
 const portOptions = reactive<{ value: string; label: string }[]>([])
 const getPortList = async () => {
@@ -135,7 +165,6 @@ const getPortList = async () => {
 const vulOptions = reactive<{ value: string; label: string }[]>([])
 const getPocList = async () => {
   const res = await getPocDataAllApi()
-  console.log(res.data.list)
   if (res.data.list.length > 0) {
     vulOptions.push({ value: 'All Poc', label: 'All Poc' })
     res.data.list.forEach((item) => {
@@ -148,19 +177,18 @@ onMounted(() => {
   getPocList()
   getPortList()
 })
-const nodeCheckAll = ref(false)
 const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
-    nodeCheckAll.value = true
+    taskForm.value.allNode = true
+    taskForm.value.node = []
     nodeOptions.forEach((option) => {
-      taskForm.value.node = []
       return taskForm.value.node.push(option.value)
     })
   } else {
-    nodeCheckAll.value = false
+    taskForm.value.allNode = false
     taskForm.value.node = []
   }
 }
@@ -201,7 +229,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         >
           <template #header>
             <el-checkbox
-              v-model="nodeCheckAll"
+              v-model="taskForm.allNode"
               :disabled="isCheckboxDisabledNode"
               :indeterminate="indeterminate"
               @change="handleCheckAll"
@@ -239,7 +267,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('subdomain.subdomainName')
     }}</ElDivider>
-    <ElRow>
+    <ElRow v-if="!$props.schedule">
       <ElCol :span="6">
         <ElTooltip :content="t('task.duplicatesMsg')" placement="top">
           <ElFormItem :label="t('task.duplicates')">

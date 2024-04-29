@@ -30,6 +30,7 @@ export type TaskContentData = {
   waybackurl: boolean
   scheduledTasks: boolean
   hour: number
+  allNode: boolean
 }
 
 export type TaskProgessInfo = {
