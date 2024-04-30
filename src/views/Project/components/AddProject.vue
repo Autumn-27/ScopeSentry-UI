@@ -23,7 +23,7 @@ import {
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
-import { addProjectDataApi, getProjectContentDataApi } from '@/api/project'
+import { addProjectDataApi, getProjectContentDataApi, updateProjectDataApi } from '@/api/project'
 import { getPocDataAllApi } from '@/api/poc'
 import { getPortDictDataApi } from '@/api/DictionaryManagement'
 import { getNodeDataOnlineApi } from '@/api/node'
@@ -85,31 +85,60 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const res = await addProjectDataApi(
-        projectForm.name,
-        projectForm.tag,
-        projectForm.target,
-        projectForm.logo,
-        projectForm.scheduledTasks,
-        projectForm.subdomainScan,
-        projectForm.subdomainConfig,
-        projectForm.urlScan,
-        projectForm.sensitiveInfoScan,
-        projectForm.pageMonitoring,
-        projectForm.crawlerScan,
-        projectForm.vulScan,
-        projectForm.vulList,
-        projectForm.hour,
-        projectForm.portScan,
-        projectForm.ports,
-        projectForm.dirScan,
-        projectForm.allNode,
-        projectForm.node
-      )
-      if (res.code === 200) {
-        props.closeDialog()
+      if (props.projectid == '') {
+        const res = await addProjectDataApi(
+          projectForm.name,
+          projectForm.tag,
+          projectForm.target,
+          projectForm.logo,
+          projectForm.scheduledTasks,
+          projectForm.subdomainScan,
+          projectForm.subdomainConfig,
+          projectForm.urlScan,
+          projectForm.sensitiveInfoScan,
+          projectForm.pageMonitoring,
+          projectForm.crawlerScan,
+          projectForm.vulScan,
+          projectForm.vulList,
+          projectForm.hour,
+          projectForm.portScan,
+          projectForm.ports,
+          projectForm.dirScan,
+          projectForm.allNode,
+          projectForm.node
+        )
+        if (res.code === 200) {
+          props.closeDialog()
+        }
+        saveLoading.value = false
+      } else {
+        const res = await updateProjectDataApi(
+          props.projectid,
+          projectForm.name,
+          projectForm.tag,
+          projectForm.target,
+          projectForm.logo,
+          projectForm.scheduledTasks,
+          projectForm.subdomainScan,
+          projectForm.subdomainConfig,
+          projectForm.urlScan,
+          projectForm.sensitiveInfoScan,
+          projectForm.pageMonitoring,
+          projectForm.crawlerScan,
+          projectForm.vulScan,
+          projectForm.vulList,
+          projectForm.hour,
+          projectForm.portScan,
+          projectForm.ports,
+          projectForm.dirScan,
+          projectForm.allNode,
+          projectForm.node
+        )
+        if (res.code === 200) {
+          props.closeDialog()
+        }
+        saveLoading.value = false
       }
-      saveLoading.value = false
     } else {
       console.log('error submit!', fields)
       saveLoading.value = false
