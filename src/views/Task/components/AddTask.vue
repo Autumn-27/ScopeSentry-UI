@@ -68,8 +68,7 @@ interface RuleForm {
 }
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, message: t('task.msgTaskName'), trigger: 'blur' }],
-  target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }],
-  node: [{ message: t('task.nodeMsg'), trigger: 'blur' }]
+  target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }]
 })
 
 const saveLoading = ref(false)

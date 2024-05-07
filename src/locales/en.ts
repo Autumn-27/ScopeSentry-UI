@@ -256,8 +256,10 @@ export default {
     typeTask: 'Task Type',
     endTime: 'End Time',
     addTask: 'Add Task',
+    addURL: 'Add URL',
+    delURL: 'Delete URL',
     retest: 'Retest',
-    delTask: 'DelTask Task',
+    delTask: 'Delete Task',
     lastTime: 'Last Run',
     nextTime: 'Next Run',
     taskCycle: 'Task Cycle',
@@ -280,13 +282,15 @@ export default {
     vulScan: 'Vulnerability Scan',
     vulList: 'Vul List',
     save: 'Save',
+    data: 'Data',
     duplicates: 'Subdomain deduplication scanning',
     portScan: 'Port Scan',
     portSelect: 'Select Port',
     selectNodeMsg:
       'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
     duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.',
-    waybackUrlMsg: 'Get URL from Wayback Machine.'
+    waybackUrlMsg: 'Get URL from Wayback Machine.',
+    addPageMonitTask: 'New Page Monitoring'
   },
   asset: {
     assetName: 'Asset',

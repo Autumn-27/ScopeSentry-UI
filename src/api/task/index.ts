@@ -151,3 +151,44 @@ export const getScheduledTaskDataApi = (
 export const scheduledDeleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/scheduled/task/delete', data: { ids } })
 }
+
+export const getScheduledTaskPageMonitDataApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number
+): Promise<IResponse<ScheduledTaskDataResponse>> => {
+  return request.post({
+    url: '/api/scheduled/task/pagemonit/data',
+    data: { search, pageIndex, pageSize }
+  })
+}
+
+export const deleteScheduledTaskPageMonitApi = (
+  ids: string[]
+): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/scheduled/task/pagemonit/delete', data: { ids } })
+}
+
+export const updateScheduledTaskPageMonitApi = (
+  hour: number,
+  node: string[],
+  allNode: boolean
+): Promise<IResponse<taskRespData>> => {
+  return request.post({
+    url: '/api/scheduled/task/pagemonit/update',
+    data: {
+      hour,
+      node,
+      allNode
+    }
+  })
+}
+
+export const addScheduledTaskPageMonitApi = (url: string): Promise<IResponse<taskRespData>> => {
+  return request.post({
+    url: '/api/scheduled/task/pagemonit/add',
+    data: {
+      url
+    }
+  })
+}

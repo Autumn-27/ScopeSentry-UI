@@ -2,16 +2,36 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElInput,
+  ElRow,
+  ElText,
+  ElTabs,
+  ElTabPane,
+  ElForm,
+  ElFormItem,
+  ElInputNumber,
+  ElMessage,
+  CheckboxValueType
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getScheduledTaskDataApi, getTaskContentApi, scheduledDeleteTaskApi } from '@/api/task'
+import {
+  getScheduledTaskDataApi,
+  getTaskContentApi,
+  scheduledDeleteTaskApi,
+  updateScheduledTaskPageMonitApi
+} from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
 import AddProject from '../Project/components/AddProject.vue'
 import { Icon } from '@iconify/vue'
+import PageMonit from './components/PageMonit.vue'
+import { getNodeDataOnlineApi } from '@/api/node'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -100,7 +120,7 @@ const taskColums = reactive<TableColumn[]>([
       return (
         <>
           {row.id === 'page_monitoring' ? (
-            <BaseButton type="success" onClick={() => getTaskContent(row)}>
+            <BaseButton type="success" onClick={() => getPageMonitContent(row)}>
               {t('common.edit')}
             </BaseButton>
           ) : (
@@ -257,6 +277,51 @@ const closeProjectDialog = () => {
   projectDialogVisible.value = false
 }
 const emptyFunction = () => {}
+const pageMontDialogVisible = ref(false)
+const ConfigPageMonitSaveLoading = ref(false)
+const pageMontForm = reactive({
+  hour: 24,
+  allNode: true,
+  node: [] as string[]
+})
+const submitConfigPageMonitForm = async () => {
+  ConfigPageMonitSaveLoading.value = true
+  await updateScheduledTaskPageMonitApi(pageMontForm.hour, pageMontForm.node, pageMontForm.allNode)
+  ConfigPageMonitSaveLoading.value = false
+}
+const getPageMonitContent = async (data) => {
+  pageMontForm.hour = data.cycle
+  pageMontDialogVisible.value = true
+}
+const nodeOptions = reactive<{ value: string; label: string }[]>([])
+const indeterminate = ref(false)
+const isCheckboxDisabledNode = ref(false)
+const handleCheckAll = (val: CheckboxValueType) => {
+  indeterminate.value = false
+  if (val) {
+    pageMontForm.allNode = true
+    pageMontForm.node = []
+    nodeOptions.forEach((option) => {
+      return pageMontForm.node.push(option.value)
+    })
+  } else {
+    pageMontForm.allNode = false
+    pageMontForm.node = []
+  }
+}
+const getNodeList = async () => {
+  const res = await getNodeDataOnlineApi()
+  if (res.data.list.length > 0) {
+    isCheckboxDisabledNode.value = false
+    res.data.list.forEach((item) => {
+      nodeOptions.push({ value: item, label: item })
+    })
+  } else {
+    isCheckboxDisabledNode.value = true
+    ElMessage.warning(t('node.onlineNodeMsg'))
+  }
+}
+getNodeList()
 </script>
 
 <template>
@@ -345,6 +410,67 @@ const emptyFunction = () => {}
         :getProjectData="emptyFunction"
         :schedule="false"
       />
+    </Dialog>
+    <Dialog
+      v-model="pageMontDialogVisible"
+      :title="t('common.edit')"
+      center
+      style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    >
+      <ElTabs type="card">
+        <ElTabPane :label="t('router.configuration')">
+          <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+            <ElFormItem :label="t('task.nodeSelect')" prop="node">
+              <ElSelectV2
+                v-model="taskForm.node"
+                filterable
+                :options="nodeOptions"
+                placeholder="Please select node"
+                style="width: 80%"
+                multiple
+                tag-type="success"
+                collapse-tags
+                collapse-tags-tooltip
+                :max-collapse-tags="7"
+              >
+                <template #header>
+                  <el-checkbox
+                    v-model="taskForm.allNode"
+                    :disabled="isCheckboxDisabledNode"
+                    :indeterminate="indeterminate"
+                    @change="handleCheckAll"
+                  >
+                    All
+                  </el-checkbox>
+                </template>
+              </ElSelectV2>
+            </ElFormItem>
+          </ElTooltip>
+          <ElForm :model="pageMontForm" label-width="100px" status-icon ref="ruleFormRef">
+            <ElFormItem :label="t('project.cycle')" prop="type">
+              <ElInputNumber
+                v-model="pageMontForm.hour"
+                :min="1"
+                controls-position="right"
+                size="small"
+              /><ElText style="position: relative; left: 16px">Hour</ElText>
+            </ElFormItem>
+            <ElRow>
+              <ElCol :span="2" :offset="8">
+                <ElFormItem>
+                  <ElButton
+                    type="primary"
+                    @click="submitConfigPageMonitForm()"
+                    :loading="ConfigPageMonitSaveLoading"
+                    >{{ t('task.save') }}</ElButton
+                  >
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+          </ElForm>
+        </ElTabPane>
+        <ElTabPane :label="t('task.data')"><PageMonit /></ElTabPane>
+      </ElTabs>
     </Dialog>
   </ContentWrap>
 </template>

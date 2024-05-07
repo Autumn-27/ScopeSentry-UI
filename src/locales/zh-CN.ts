@@ -253,6 +253,8 @@ export default {
     createTime: '创建时间',
     endTime: '结束时间',
     addTask: '新建任务',
+    addURL: '新建URL',
+    delURL: '删除URL',
     retest: '重新测试',
     delTask: '删除任务',
     typeTask: '任务类型',
@@ -280,10 +282,12 @@ export default {
     vulList: '漏洞列表',
     save: '保存',
     duplicates: '子域名去重扫描',
+    data: '数据',
     selectNodeMsg:
       '只有通过点击All选择节点当有新节点注册时才会自动将任务添加到新节点，否则任务只会在当前选择节点中运行！',
     duplicatesMsg: '历史已经查询到了子域名将会跳过',
-    waybackUrlMsg: '从Wayback Machine获取URL'
+    waybackUrlMsg: '从Wayback Machine获取URL',
+    addPageMonitTask: '新建页面监控'
   },
   asset: {
     assetName: '资产',
