@@ -14,7 +14,11 @@ import {
   ElFormItem,
   ElInputNumber,
   ElMessage,
-  CheckboxValueType
+  CheckboxValueType,
+  ElSelectV2,
+  ElCheckbox,
+  ElTooltip,
+  ElSwitch
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -76,8 +80,11 @@ const taskColums = reactive<TableColumn[]>([
     field: 'nextTime',
     label: t('task.nextTime'),
     minWidth: 40,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+    formatter: (row: Recordable, __: TableColumn, cellValue: string) => {
       if (cellValue == '') {
+        return '-'
+      }
+      if (row.state == false) {
         return '-'
       }
       return cellValue
@@ -282,15 +289,25 @@ const ConfigPageMonitSaveLoading = ref(false)
 const pageMontForm = reactive({
   hour: 24,
   allNode: true,
-  node: [] as string[]
+  node: [] as string[],
+  state: true
 })
 const submitConfigPageMonitForm = async () => {
   ConfigPageMonitSaveLoading.value = true
-  await updateScheduledTaskPageMonitApi(pageMontForm.hour, pageMontForm.node, pageMontForm.allNode)
+  await updateScheduledTaskPageMonitApi(
+    pageMontForm.hour,
+    pageMontForm.node,
+    pageMontForm.allNode,
+    pageMontForm.state
+  )
   ConfigPageMonitSaveLoading.value = false
+  getList()
 }
 const getPageMonitContent = async (data) => {
   pageMontForm.hour = data.cycle
+  pageMontForm.allNode = data.allNode
+  pageMontForm.node = data.node
+  pageMontForm.state = data.state
   pageMontDialogVisible.value = true
 }
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
@@ -407,7 +424,7 @@ getNodeList()
       <AddProject
         :closeDialog="closeProjectDialog"
         :projectid="ProjectId"
-        :getProjectData="emptyFunction"
+        :getProjectData="getList"
         :schedule="false"
       />
     </Dialog>
@@ -419,34 +436,34 @@ getNodeList()
     >
       <ElTabs type="card">
         <ElTabPane :label="t('router.configuration')">
-          <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
-            <ElFormItem :label="t('task.nodeSelect')" prop="node">
-              <ElSelectV2
-                v-model="taskForm.node"
-                filterable
-                :options="nodeOptions"
-                placeholder="Please select node"
-                style="width: 80%"
-                multiple
-                tag-type="success"
-                collapse-tags
-                collapse-tags-tooltip
-                :max-collapse-tags="7"
-              >
-                <template #header>
-                  <el-checkbox
-                    v-model="taskForm.allNode"
-                    :disabled="isCheckboxDisabledNode"
-                    :indeterminate="indeterminate"
-                    @change="handleCheckAll"
-                  >
-                    All
-                  </el-checkbox>
-                </template>
-              </ElSelectV2>
-            </ElFormItem>
-          </ElTooltip>
           <ElForm :model="pageMontForm" label-width="100px" status-icon ref="ruleFormRef">
+            <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+              <ElFormItem :label="t('task.nodeSelect')" prop="node">
+                <ElSelectV2
+                  v-model="pageMontForm.node"
+                  filterable
+                  :options="nodeOptions"
+                  placeholder="Please select node"
+                  style="width: 80%"
+                  multiple
+                  tag-type="success"
+                  collapse-tags
+                  collapse-tags-tooltip
+                  :max-collapse-tags="7"
+                >
+                  <template #header>
+                    <ElCheckbox
+                      v-model="pageMontForm.allNode"
+                      :disabled="isCheckboxDisabledNode"
+                      :indeterminate="indeterminate"
+                      @change="handleCheckAll"
+                    >
+                      All
+                    </ElCheckbox>
+                  </template>
+                </ElSelectV2>
+              </ElFormItem>
+            </ElTooltip>
             <ElFormItem :label="t('project.cycle')" prop="type">
               <ElInputNumber
                 v-model="pageMontForm.hour"
@@ -454,6 +471,14 @@ getNodeList()
                 controls-position="right"
                 size="small"
               /><ElText style="position: relative; left: 16px">Hour</ElText>
+            </ElFormItem>
+            <ElFormItem :label="t('common.state')">
+              <ElSwitch
+                v-model="pageMontForm.state"
+                inline-prompt
+                :active-text="t('common.switchAction')"
+                :inactive-text="t('common.switchInactive')"
+              />
             </ElFormItem>
             <ElRow>
               <ElCol :span="2" :offset="8">

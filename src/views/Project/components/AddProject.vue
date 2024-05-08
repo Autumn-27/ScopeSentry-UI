@@ -276,14 +276,14 @@ const handleCheckAll = (val: CheckboxValueType) => {
           :max-collapse-tags="7"
         >
           <template #header>
-            <el-checkbox
+            <ElCheckbox
               v-model="projectForm.allNode"
               :disabled="isCheckboxDisabledNode"
               :indeterminate="indeterminate"
               @change="handleCheckAll"
             >
               All
-            </el-checkbox>
+            </ElCheckbox>
           </template>
         </ElSelectV2>
       </ElFormItem>
