@@ -84,7 +84,6 @@ const taskColums = reactive<TableColumn[]>([
         BaseButton,
         {
           type: 'warning',
-          disabled: row.progress == 100 ? false : true,
           onClick: () => confirmRetest(row)
         },
         t('task.retest')
@@ -140,6 +139,7 @@ const addTask = async () => {
   taskForm.target = ''
   taskForm.node = []
   taskForm.subdomainScan = true
+  taskForm.duplicates = true
   taskForm.subdomainConfig = []
   taskForm.urlScan = true
   taskForm.sensitiveInfoScan = true
@@ -147,8 +147,13 @@ const addTask = async () => {
   taskForm.crawlerScan = true
   taskForm.vulScan = false
   taskForm.vulList = []
+  taskForm.portScan = false
+  taskForm.ports = ''
   taskForm.dirScan = true
   taskForm.waybackurl = true
+  taskForm.scheduledTasks = true
+  taskForm.hour = 24
+  taskForm.allNode = false
   dialogVisible.value = true
 }
 
@@ -201,6 +206,7 @@ const getTaskContent = async (data) => {
     taskForm.scheduledTasks = result.scheduledTasks
     taskForm.hour = result.hour
     taskForm.allNode = result.allNode
+    taskForm.duplicates = result.duplicates
   }
   dialogVisible.value = true
   Create.value = false

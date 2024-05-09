@@ -7,7 +7,9 @@ import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Con
 const { t } = useI18n()
 const form = reactive({
   timezone: '',
-  MaxTaskNum: ''
+  MaxTaskNum: '',
+  DirscanThread: '',
+  PortscanThread: ''
 })
 onBeforeMount(async () => {
   try {
@@ -16,6 +18,8 @@ onBeforeMount(async () => {
     if (res.code == 200) {
       form.timezone = res.data.timezone
       form.MaxTaskNum = res.data.MaxTaskNum
+      form.DirscanThread = res.data.DirscanThread
+      form.PortscanThread = res.data.PortscanThread
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -31,7 +35,12 @@ const confirmAdd = async () => {
 }
 const save = async () => {
   saveLoading.value = true
-  const res = await saveSystemConfigurationApi(form.timezone, form.MaxTaskNum)
+  const res = await saveSystemConfigurationApi(
+    form.timezone,
+    form.MaxTaskNum,
+    form.DirscanThread,
+    form.PortscanThread
+  )
   if (res.code == 200) {
     saveLoading.value = false
   } else {
@@ -56,6 +65,12 @@ const saveLoading = ref(false)
       </ElFormItem>
       <ElFormItem :label="t('configuration.maxTaskNum')">
         <ElInput v-model="form.MaxTaskNum" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.dirScanThread')">
+        <ElInput v-model="form.DirscanThread" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.portScanThread')">
+        <ElInput v-model="form.PortscanThread" />
       </ElFormItem>
       <ElFormItem>
         <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>

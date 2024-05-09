@@ -11,7 +11,6 @@ import { defineProps } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { deleteProjectApi } from '@/api/project'
 import AddProject from './AddProject.vue'
-import type { Action } from 'element-plus'
 const { t } = useI18n()
 const { push } = useRouter()
 interface Recordable {
@@ -32,10 +31,6 @@ const props = defineProps({
   }
 })
 const loading = ref(false)
-const actionClick = (row?: any) => {
-  console.log(row)
-  push(`/project-management/project-detail?id=${row.ID}`)
-}
 const itemRefs = useTemplateRefsList<ComponentRef<typeof ContextMenu>>()
 let ProjectId = ''
 const visibleChange = (visible: boolean, tagItem: RouteLocationNormalizedLoaded, id: string) => {
@@ -102,7 +97,7 @@ const del = () => {
         :id="row.id"
         @visible-change="visibleChange"
       >
-        <div class="flex cursor-pointer" @click="actionClick(row.id)">
+        <div class="flex cursor-pointer">
           <div class="pr-16px">
             <template v-if="row.logo != ''">
               <ElAvatar

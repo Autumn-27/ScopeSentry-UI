@@ -25,7 +25,8 @@ export const addProjectDataApi = (
   ports: string,
   dirScan: boolean,
   allNode: boolean,
-  node: string[]
+  node: string[],
+  waybackurl: boolean
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/add',
@@ -48,7 +49,8 @@ export const addProjectDataApi = (
       ports,
       dirScan,
       allNode,
-      node
+      node,
+      waybackurl
     }
   })
 }
@@ -72,7 +74,8 @@ export const updateProjectDataApi = (
   ports: string,
   dirScan: boolean,
   allNode: boolean,
-  node: string[]
+  node: string[],
+  waybackurl: boolean
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/update',
@@ -96,7 +99,8 @@ export const updateProjectDataApi = (
       ports,
       dirScan,
       allNode,
-      node
+      node,
+      waybackurl
     }
   })
 }

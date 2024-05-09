@@ -379,7 +379,9 @@ export default {
     rad: 'rad配置',
     system: '系统配置',
     timezone: '时区',
-    maxTaskNum: '最大任务数量'
+    maxTaskNum: '最大任务数量',
+    dirScanThread: '目录扫描并发数',
+    portScanThread: '端口扫描并发数'
   },
   form: {
     input: '搜索：'

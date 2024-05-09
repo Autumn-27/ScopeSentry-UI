@@ -6,9 +6,10 @@ import { reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
+import { Icon } from '@/components/Icon'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElRow, ElCol } from 'element-plus'
-import { Table } from '@/components/Table'
+import { ElCard, ElPagination, ElRow, ElCol, ElText } from 'element-plus'
+import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getDirScanApi } from '@/api/asset'
 
@@ -71,29 +72,47 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 10
   },
   {
-    field: 'URL',
+    field: 'url',
     label: 'URL',
     minWidth: 60
   },
   {
-    field: 'Title',
-    label: t('dirScan.title'),
-    minWidth: 50
-  },
-  {
-    field: 'Status',
+    field: 'status',
     label: t('dirScan.status'),
-    minWidth: 60
+    minWidth: 60,
+    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
+      if (statusValue == null) {
+        return <div>-</div>
+      }
+      let color = ''
+      if (statusValue < 300) {
+        color = '#2eb98a'
+      } else if (statusValue < 400) {
+        color = '#ff5252'
+      } else {
+        color = '#ff5252'
+      }
+      return (
+        <ElRow gutter={1}>
+          <ElCol span={1}>
+            <Icon
+              icon="clarity:circle-solid"
+              color={color}
+              size={10}
+              style={'transform: translateY(8%)'}
+            />
+          </ElCol>
+          <ElCol span={2}>
+            <ElText>{statusValue}</ElText>
+          </ElCol>
+        </ElRow>
+      )
+    }
   },
   {
-    field: 'Length',
-    label: t('dirScan.length'),
+    field: 'msg',
+    label: 'Redirect',
     minWidth: 60
-  },
-  {
-    field: 'Time',
-    label: t('asset.time'),
-    minWidth: 30
   }
 ])
 
@@ -110,7 +129,6 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList } = tableMethods
-// getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }

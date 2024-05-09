@@ -383,7 +383,9 @@ export default {
     rad: 'rad configuration',
     system: 'system configuration',
     timezone: 'Timezone',
-    maxTaskNum: 'Max Task Num'
+    maxTaskNum: 'Max Task Num',
+    dirScanThread: 'DirScan Thread Num',
+    portScanThread: 'DirScan Thread Num'
   },
   form: {
     input: 'Search:'

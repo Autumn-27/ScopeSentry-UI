@@ -42,7 +42,7 @@ let projectForm = reactive({
   crawlerScan: true,
   vulScan: false,
   vulList: [],
-  hour: 1,
+  hour: 24,
   waybackurl: true,
   portScan: true,
   ports: '',
@@ -105,7 +105,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.ports,
           projectForm.dirScan,
           projectForm.allNode,
-          projectForm.node
+          projectForm.node,
+          projectForm.waybackurl
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -132,7 +133,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.ports,
           projectForm.dirScan,
           projectForm.allNode,
-          projectForm.node
+          projectForm.node,
+          projectForm.waybackurl
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -253,8 +255,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         <ElFormItem :label="t('project.cycle')" prop="type">
           <ElInputNumber
             v-model="projectForm.hour"
-            :min="0"
-            :max="23"
+            :min="1"
             controls-position="right"
             size="small"
           /><ElText style="position: relative; left: 16px">Hour</ElText>

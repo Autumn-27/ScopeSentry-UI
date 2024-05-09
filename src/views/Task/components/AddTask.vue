@@ -77,6 +77,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
+    console.log(taskForm.value.allNode)
+    if (!taskForm.value.allNode) {
+      taskForm.value.allNode = false
+      console.log(taskForm.value.allNode)
+    }
     if (valid) {
       if (props.taskid === '') {
         let res = await addTaskApi(

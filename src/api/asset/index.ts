@@ -97,7 +97,7 @@ export const getDirScanApi = (
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<DirScanDataResponse>> => {
-  return request.post({ url: '/api/dirscan/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/dirscan/result/data', data: { search, pageIndex, pageSize } })
 }
 
 interface PageMonitoringDataResponse {

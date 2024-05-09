@@ -7,8 +7,7 @@ import { DescriptionsSchema } from '@/components/Descriptions'
 import { Descriptions } from '@/components/Descriptions'
 import { getAssetDetailApi } from '@/api/asset'
 import { ElCol, ElRow, ElScrollbar, ElTag, ElText } from 'element-plus'
-import { Icon } from '@iconify/vue'
-import { string } from 'vue-types'
+import { Icon } from '@/components/Icon'
 
 const { push, go } = useRouter()
 
@@ -107,13 +106,13 @@ const schema = reactive<DescriptionsSchema[]>([
         }
         const color = getColor(statusValue)
         return h('div', [
-          h(ElRow, [
-            h(ElCol, { span: 0.9 }, [
+          h(ElRow, { gutter: 2 }, [
+            h(ElCol, { span: 0.99999 }, [
               h(Icon, {
                 icon: 'clarity:circle-solid',
                 color: color,
-                size: '1',
-                style: { transform: 'translateY(13%)' }
+                size: 6,
+                style: { transform: 'translateY(-35%)' }
               })
             ]),
             h(ElCol, { span: 2 }, [h(ElText, statusValue)])
