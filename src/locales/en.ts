@@ -385,7 +385,8 @@ export default {
     timezone: 'Timezone',
     maxTaskNum: 'Max Task Num',
     dirScanThread: 'DirScan Thread Num',
-    portScanThread: 'DirScan Thread Num'
+    portScanThread: 'DirScan Thread Num',
+    noticeConfig: 'Notification Configuration'
   },
   form: {
     input: 'Search:'

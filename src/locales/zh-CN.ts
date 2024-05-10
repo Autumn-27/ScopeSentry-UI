@@ -381,7 +381,8 @@ export default {
     timezone: '时区',
     maxTaskNum: '最大任务数量',
     dirScanThread: '目录扫描并发数',
-    portScanThread: '端口扫描并发数'
+    portScanThread: '端口扫描并发数',
+    noticeConfig: '通知配置'
   },
   form: {
     input: '搜索：'

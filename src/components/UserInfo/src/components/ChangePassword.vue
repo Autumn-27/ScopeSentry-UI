@@ -10,10 +10,11 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { FormSchema } from '@/components/Form'
 import { useDesign } from '@/hooks/web/useDesign'
 import { changePasswordApi } from '@/api/login'
+import { useUserStore } from '@/store/modules/user'
 
+const userStore = useUserStore()
 const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('lock-dialog')
-
 const { required } = useValidator()
 
 const { t } = useI18n()
@@ -75,6 +76,8 @@ const changePassword = async () => {
     }
   })
 }
+const userInfo = userStore.getUserInfo
+const username = userInfo!.username
 </script>
 
 <template>
@@ -87,7 +90,7 @@ const changePassword = async () => {
   >
     <div class="flex flex-col items-center">
       <img src="@/assets/imgs/avatar.jpg" alt="" class="w-70px h-70px rounded-[50%]" />
-      <span class="text-14px my-10px text-[var(--top-header-text-color)]">Admin</span>
+      <span class="text-14px my-10px text-[var(--top-header-text-color)]"> {{ username }} </span>
     </div>
     <Form :is-col="false" :schema="schema" :rules="rules" @register="formRegister" />
     <template #footer>

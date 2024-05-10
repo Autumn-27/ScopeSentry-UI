@@ -48,7 +48,8 @@ let projectForm = reactive({
   ports: '',
   dirScan: false,
   node: [] as string[],
-  allNode: false
+  allNode: false,
+  duplicates: true
 })
 const props = defineProps<{
   closeDialog: () => void
@@ -106,7 +107,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.dirScan,
           projectForm.allNode,
           projectForm.node,
-          projectForm.waybackurl
+          projectForm.waybackurl,
+          projectForm.duplicates
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -134,7 +136,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.dirScan,
           projectForm.allNode,
           projectForm.node,
-          projectForm.waybackurl
+          projectForm.waybackurl,
+          projectForm.duplicates
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -293,6 +296,20 @@ const handleCheckAll = (val: CheckboxValueType) => {
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
         t('subdomain.subdomainName')
       }}</ElDivider>
+      <ElRow v-if="!$props.schedule">
+        <ElCol :span="6">
+          <ElTooltip :content="t('task.duplicatesMsg')" placement="top">
+            <ElFormItem :label="t('task.duplicates')">
+              <ElSwitch
+                v-model="projectForm.duplicates"
+                inline-prompt
+                :active-text="t('common.true')"
+                :inactive-text="t('common.false')"
+              />
+            </ElFormItem>
+          </ElTooltip>
+        </ElCol>
+      </ElRow>
       <ElRow>
         <ElCol :span="6">
           <ElFormItem :label="t('task.subdomainScan')">

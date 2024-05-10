@@ -244,7 +244,7 @@ const signIn = async () => {
           userStore.setRememberMe(unref(remember))
           console.log(res.data.access_token)
           userStore.setToken(res.data.access_token)
-          userStore.setUsername('admin')
+          userStore.setUsername(formData.username)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole()

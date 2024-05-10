@@ -33,7 +33,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'taskNum',
     label: t('task.taskCount'),
-    minWidth: 20,
+    minWidth: 15,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -61,12 +61,12 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'creatTime',
     label: t('task.createTime'),
-    minWidth: 40
+    minWidth: 30
   },
   {
     field: 'endTime',
     label: t('task.endTime'),
-    minWidth: 40,
+    minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       if (cellValue == '') {
         return '-'
@@ -77,7 +77,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: 40,
+    minWidth: 50,
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
       const retestButton = h(

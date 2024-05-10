@@ -11,15 +11,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
 const loading = ref(true)
-interface NodeDataItem {
-  id: string
-  nodeName: string
-  taskCount: number
-  nodeStatus: number
-  nodeUsageLoad: number
-  nodeUsageCpu: number
-  nodeUsageMemory: number
-}
 
 const nodeColumns = reactive<TableColumn[]>([
   {
@@ -33,7 +24,6 @@ const nodeColumns = reactive<TableColumn[]>([
       return h(
         ElTag,
         {
-          type: '',
           round: true,
           effect: 'dark'
         },
@@ -61,21 +51,19 @@ const nodeColumns = reactive<TableColumn[]>([
     }
   }
 ])
-let nodeData: Ref<NodeDataItem[]> = ref([])
 
 const taskColums = reactive<TableColumn[]>([
   {
-    field: 'taskName',
+    field: 'name',
     label: t('task.taskName')
   },
   {
-    field: 'taskCount',
+    field: 'taskNum',
     label: t('task.taskCount'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
         {
-          type: '',
           round: true,
           effect: 'dark'
         },
@@ -84,7 +72,7 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'taskProgress',
+    field: 'progress',
     label: t('task.taskProgress'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(ElProgress, {
@@ -97,28 +85,15 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'createTime',
+    field: 'creatTime',
     label: t('task.createTime')
   }
 ])
-
-let taskData = reactive([])
 
 const nodeUsageColumns = reactive<TableColumn[]>([
   {
     field: 'nodeName',
     label: t('node.nodeName')
-  },
-  {
-    field: 'nodeUsageLoad',
-    label: t('node.nodeUsageLoad'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-      return h(ElProgress, {
-        percentage: cellValue,
-        type: 'dashboard',
-        color: cellValue < 50 ? '#26a33f' : cellValue < 80 ? '#fe9900' : '#df2800'
-      })
-    }
   },
   {
     field: 'nodeUsageCpu',
@@ -144,30 +119,36 @@ const nodeUsageColumns = reactive<TableColumn[]>([
   }
 ])
 
-let nodeUsageData: Ref<
-  { nodeName: string; nodeUsageLoad: number; nodeUsageCpu: number; nodeUsageMemory: number }[]
-> = ref([])
+let nodeUsageData: Ref<{ nodeName: string; nodeUsageCpu: number; nodeUsageMemory: number }[]> = ref(
+  []
+)
+
+const nodeData = ref<
+  {
+    nodeName: string
+    taskCount: number
+    nodeStatus: number
+    nodeUsageCpu: number
+    nodeUsageMemory: number
+  }[]
+>([])
+
 const getNodeState = async () => {
   try {
     const res = await getNodeDataApi()
-    if (res && res.data && Array.isArray(res.data)) {
-      nodeData.value = reactive(
-        res.data.map((node) => ({
-          id: node.id,
-          nodeName: node.nodeName,
-          taskCount: node.taskCount,
-          nodeStatus: node.nodeStatus,
-          nodeUsageCpu: node.nodeUsageCpu,
-          nodeUsageLoad: node.nodeUsageLoad,
-          nodeUsageMemory: node.nodeUsageMemory
-        }))
-      )
+    if (res && res.data && Array.isArray(res.data.list)) {
+      nodeData.value = res.data.list.map((node) => ({
+        nodeName: node.name,
+        taskCount: node.running,
+        nodeStatus: node.state,
+        nodeUsageCpu: node.cpuNum,
+        nodeUsageMemory: node.memNum
+      }))
       nodeUsageData.value = reactive(
-        res.data.map((node) => ({
-          nodeName: node.nodeName,
-          nodeUsageCpu: node.nodeUsageCpu,
-          nodeUsageLoad: node.nodeUsageLoad,
-          nodeUsageMemory: node.nodeUsageMemory
+        res.data.list.map((node) => ({
+          nodeName: node.name,
+          nodeUsageCpu: node.cpuNum,
+          nodeUsageMemory: node.memNum
         }))
       )
     }
@@ -179,13 +160,26 @@ const getNodeState = async () => {
   }
 }
 
+const taskData = ref<
+  {
+    name: string
+    taskNum: string
+    progress: string
+    creatTime: string
+  }[]
+>([])
+
 const getTaskData = async () => {
-  const res = await getTaskDataApi()
-    .catch(() => {})
-    .finally(() => {
-      loading.value = false
-    })
-  taskData = Object.assign(taskData, res?.data || {})
+  const res = await getTaskDataApi('', 1, 10)
+  console.log(res)
+  taskData.value = reactive(
+    res.data.list.map((task) => ({
+      name: task.name,
+      taskNum: task.taskNum,
+      progress: task.progress,
+      creatTime: task.creatTime
+    }))
+  )
 }
 
 const getAllApi = async () => {
@@ -217,10 +211,28 @@ onBeforeUnmount(() => {
         <template #header>
           <span>{{ t('dashboard.taskInfo') }}</span>
         </template>
-        <Table :columns="taskColums" :data="taskData" stripe :border="false" :height="250" />
+        <Table
+          :columns="taskColums"
+          :data="taskData"
+          stripe
+          :border="false"
+          :height="250"
+          :tooltip-options="{
+            offset: 1,
+            showArrow: false,
+            effect: 'dark',
+            enterable: false,
+            showAfter: 0,
+            popperOptions: {},
+            popperClass: 'test',
+            placement: 'bottom',
+            hideAfter: 0,
+            disabled: true
+          }"
+        />
       </ElCard>
     </ElCol>
-    <ElCol :span="24">
+    <ElCol :span="12">
       <ElCard shadow="hover" class="mb-25px">
         <template #header>
           <div class="header-container">

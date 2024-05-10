@@ -253,7 +253,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
     }
   }
 })
-const { dataList, total } = tableState
+const { dataList } = tableState
 </script>
 <template>
   <Table

@@ -1,8 +1,9 @@
 export type DashboardTotalTypes = {
-  totalAssets: number
-  totalSubdomain: number
-  totalInformationLeakage: number
-  totalURL: number
+  asetCount: number
+  subdomainCount: number
+  sensitiveCount: number
+  urlCount: number
+  vulnerabilityCount: number
 }
 
 export type UserAccessSource = {

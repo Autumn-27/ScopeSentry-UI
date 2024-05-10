@@ -6,8 +6,12 @@ import type {
   MonthlySales
 } from './types'
 
-export const getCountApi = (): Promise<IResponse<DashboardTotalTypes[]>> => {
-  return request.get({ url: '/api/dashboard/total' })
+interface DashboardTotalTypesResponse {
+  data: DashboardTotalTypes
+}
+
+export const getAssetStatisticsApi = (): Promise<IResponse<DashboardTotalTypesResponse[]>> => {
+  return request.get({ url: '/api/asset/statistics/data' })
 }
 
 export const getUserAccessSourceApi = (): Promise<IResponse<UserAccessSource[]>> => {
