@@ -1,53 +1,79 @@
 <script setup lang="ts">
-import { ElRow, ElCol, ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
+import {
+  ElRow,
+  ElCol,
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElRadioGroup,
+  ElRadio,
+  ElText
+} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
-import { ref, reactive, onBeforeMount } from 'vue'
-import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
+import { reactive, ref } from 'vue'
+import { Dialog } from '@/components/Dialog'
+import { Table, TableColumn } from '@/components/Table'
+import { BaseButton } from '@/components/Button'
+import { useTable } from '@/hooks/web/useTable'
+import { getNotificationApi } from '@/api/Configuration'
 const { t } = useI18n()
-const form = reactive({
-  timezone: '',
-  MaxTaskNum: '',
-  DirscanThread: '',
-  PortscanThread: ''
-})
-onBeforeMount(async () => {
-  try {
-    const res = await getSystemConfigurationApi()
+const taskColums = reactive<TableColumn[]>([
+  {
+    field: 'selection',
+    type: 'selection',
+    width: '55'
+  },
+  {
+    field: 'method',
+    label: 'Method'
+  },
+  {
+    field: 'url',
+    label: 'URL'
+  },
+  {
+    field: 'contentType',
+    label: 'Content Type'
+  },
+  {
+    field: 'data',
+    label: 'POST DATA'
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    minWidth: 20
+  }
+])
 
-    if (res.code == 200) {
-      form.timezone = res.data.timezone
-      form.MaxTaskNum = res.data.MaxTaskNum
-      form.DirscanThread = res.data.DirscanThread
-      form.PortscanThread = res.data.PortscanThread
-    } else {
-      console.error(`API request failed with status code ${res.code}`)
+const { tableState } = useTable({
+  fetchDataApi: async () => {
+    const res = await getNotificationApi()
+    return {
+      list: res.data.list
     }
-  } catch (error) {
-    console.error('An error occurred while fetching the subfinder config:', error)
   }
 })
-const confirmAdd = async () => {
-  const confirmed = window.confirm('Do you want to save the data?')
-  if (confirmed) {
-    await save()
-  }
+const { dataList } = tableState
+const notificationForm = reactive({
+  url: '',
+  method: 'GET',
+  contentType: 'raw',
+  data: ''
+})
+const dialogVisible = ref(false)
+const addNotification = async () => {
+  dialogVisible.value = true
 }
-const save = async () => {
-  saveLoading.value = true
-  const res = await saveSystemConfigurationApi(
-    form.timezone,
-    form.MaxTaskNum,
-    form.DirscanThread,
-    form.PortscanThread
-  )
-  if (res.code == 200) {
-    saveLoading.value = false
-  } else {
-    saveLoading.value = false
-  }
+const addNotificationSaveLoading = ref(false)
+const submitAddPageMonitForm = async () => {
+  addNotificationSaveLoading.value = true
+  // await addScheduledTaskPageMonitApi(pageMontForm.url)
+  addNotificationSaveLoading.value = false
+  dialogVisible.value = false
 }
-const saveLoading = ref(false)
 </script>
 
 <template>
@@ -59,24 +85,76 @@ const saveLoading = ref(false)
         </ElCol>
       </ElRow>
     </template>
-    <ElForm :model="form" label-width="120px" style="max-width: 460px">
-      <ElFormItem :label="t('configuration.timezone')">
-        <ElInput v-model="form.timezone" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.maxTaskNum')">
-        <ElInput v-model="form.MaxTaskNum" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.dirScanThread')">
-        <ElInput v-model="form.DirscanThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.portScanThread')">
-        <ElInput v-model="form.PortscanThread" />
-      </ElFormItem>
-      <ElFormItem>
-        <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
-      </ElFormItem>
-    </ElForm>
+    <ElRow>
+      <ElCol style="position: relative; top: 16px">
+        <div class="mb-10px">
+          <BaseButton type="primary" @click="addNotification">{{
+            t('configuration.newWebhookConfig')
+          }}</BaseButton>
+          <BaseButton type="danger">
+            {{ t('common.delete') }}
+          </BaseButton>
+        </div>
+      </ElCol>
+    </ElRow>
+    <div style="position: relative; top: 12px">
+      <Table
+        :data="dataList"
+        :columns="taskColums"
+        stripe
+        :border="true"
+        max-height="150"
+        :resizable="true"
+        :style="{
+          fontFamily:
+            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+        }"
+      />
+    </div>
   </ElCard>
+  <Dialog
+    v-model="dialogVisible"
+    :title="t('configuration.newWebhookConfig')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    maxHeight="100"
+  >
+    <ElText class="mx-2" type="danger" size="small" style="position: relative; left: 2rem">{{
+      t('configuration.noticeHelp')
+    }}</ElText>
+    <ElForm :model="notificationForm" label-width="100px" status-icon ref="ruleFormRef">
+      <ElFormItem label="Method" prop="method">
+        <ElRadioGroup v-model="notificationForm.method">
+          <ElRadio value="GET">GET</ElRadio>
+          <ElRadio value="POST">POST</ElRadio>
+        </ElRadioGroup>
+      </ElFormItem>
+      <ElFormItem label="URL" prop="url">
+        <ElInput v-model="notificationForm.url" placeholder="Input URL." />
+      </ElFormItem>
+      <ElFormItem label="Data Type" prop="contentType" v-if="notificationForm.method == 'POST'">
+        <ElRadioGroup v-model="notificationForm.contentType">
+          <ElRadio value="raw">Raw</ElRadio>
+          <ElRadio value="json">Json</ElRadio>
+        </ElRadioGroup>
+      </ElFormItem>
+      <ElFormItem label="Data" prop="Data" v-if="notificationForm.method == 'POST'">
+        <ElInput v-model="notificationForm.data" placeholder="Input POST Data." />
+      </ElFormItem>
+      <ElRow>
+        <ElCol :span="2" :offset="8">
+          <ElFormItem>
+            <ElButton
+              type="primary"
+              @click="submitAddPageMonitForm()"
+              :loading="addNotificationSaveLoading"
+              >{{ t('common.submit') }}</ElButton
+            >
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+    </ElForm>
+  </Dialog>
 </template>
 
 <style scoped>

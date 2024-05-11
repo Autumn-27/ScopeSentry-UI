@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { configRespData } from './types'
+import type { configRespData, notificationRespData } from './types'
 
 export const getSubfinderConfigurationApi = () => {
   return request.get({ url: '/api/configuration/subfinder/data' })
@@ -33,4 +33,12 @@ export const saveSystemConfigurationApi = (
     url: '/api/configuration/system/save',
     data: { timezone, MaxTaskNum, DirscanThread, PortscanThread }
   })
+}
+
+interface notificationRespInter {
+  list: notificationRespData[]
+}
+
+export const getNotificationApi = (): Promise<IResponse<notificationRespInter>> => {
+  return request.get({ url: '/api/configuration/notification/data' })
 }

@@ -385,8 +385,11 @@ export default {
     timezone: 'Timezone',
     maxTaskNum: 'Max Task Num',
     dirScanThread: 'DirScan Thread Num',
-    portScanThread: 'DirScan Thread Num',
-    noticeConfig: 'Notification Configuration'
+    portScanThread: 'PortScan Thread Num',
+    noticeConfig: 'Notification Configuration',
+    newWebhookConfig: 'New configuration',
+    noticeHelp:
+      '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"'
   },
   form: {
     input: 'Search:'

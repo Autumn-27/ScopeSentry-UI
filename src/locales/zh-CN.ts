@@ -382,7 +382,9 @@ export default {
     maxTaskNum: '最大任务数量',
     dirScanThread: '目录扫描并发数',
     portScanThread: '端口扫描并发数',
-    noticeConfig: '通知配置'
+    noticeConfig: '通知配置',
+    newWebhookConfig: '新建配置',
+    noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"'
   },
   form: {
     input: '搜索：'

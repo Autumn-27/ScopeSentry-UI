@@ -3,6 +3,7 @@ import { ElRow, ElCol, ElButton, ElForm, ElFormItem, ElInput } from 'element-plu
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
 import { ref, reactive, onBeforeMount } from 'vue'
+import notification from './components/notification.vue'
 import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
 const { t } = useI18n()
 const form = reactive({
@@ -77,32 +78,7 @@ const saveLoading = ref(false)
       </ElFormItem>
     </ElForm>
   </ElCard>
-  <ElCard shadow="never" class="mb-20px">
-    <template #header>
-      <ElRow>
-        <ElCol :span="3" style="height: 100%">
-          <span>{{ t('configuration.noticeConfig') }}</span>
-        </ElCol>
-      </ElRow>
-    </template>
-    <ElForm :model="form" label-width="120px" style="max-width: 460px">
-      <ElFormItem :label="t('configuration.timezone')">
-        <ElInput v-model="form.timezone" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.maxTaskNum')">
-        <ElInput v-model="form.MaxTaskNum" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.dirScanThread')">
-        <ElInput v-model="form.DirscanThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.portScanThread')">
-        <ElInput v-model="form.PortscanThread" />
-      </ElFormItem>
-      <ElFormItem>
-        <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
-      </ElFormItem>
-    </ElForm>
-  </ElCard>
+  <notification />
 </template>
 
 <style scoped>
