@@ -254,6 +254,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
   }
 })
 const { dataList } = tableState
+const { getList } = tableMethods
+getList()
 </script>
 <template>
   <Table

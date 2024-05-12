@@ -4,8 +4,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Search } from '@/components/Search'
 import { Ref, reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
-import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
+import { Dialog } from '@/components/Dialog'
 import { useTable } from '@/hooks/web/useTable'
 import {
   ElRow,
@@ -14,12 +14,16 @@ import {
   ElScrollbar,
   ElTag,
   ElTooltip,
-  ElText,
   ElCollapse,
   ElCollapseItem,
   ElBadge,
   ElPagination,
-  ElLink
+  ElLink,
+  ElButton,
+  ElTable,
+  ElTableColumn,
+  ElText,
+  ElDivider
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -31,53 +35,127 @@ import { getAssetStatisticsApi } from '@/api/asset'
 
 const { push } = useRouter()
 const { t } = useI18n()
-const { searchRegister } = useSearch()
-const restaurants = ref<Recordable[]>([])
-const querySearch = (queryString: string, cb: Fn) => {
-  const results = queryString
-    ? restaurants.value.filter(createFilter(queryString))
-    : restaurants.value
-  // call callback function to return suggestions
-  cb(results)
-}
 
 const schema = reactive<FormSchema[]>([
   {
     field: 'search',
     label: t('form.input'),
-    component: 'Autocomplete',
-    componentProps: {
-      fetchSuggestions: querySearch
-    },
+    component: 'Input',
     formItemProps: {
       size: 'large',
       style: { width: '100%' }
+    },
+    componentProps: {
+      slots: {
+        suffix: () => (
+          <ElButton
+            class="icon-button"
+            onClick={getHelp}
+            text
+            style="outline: none;background-color: transparent !important; color: inherit !important; box-shadow: none !important;position: relative;left: 24%"
+          >
+            <Icon icon="tdesign:chat-bubble-help" />
+          </ElButton>
+        )
+      }
     }
   }
 ])
-const createFilter = (queryString: string) => {
-  return (restaurant: Recordable) => {
-    return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-  }
-}
-const loadAll = () => {
-  return [
-    { value: 'body' },
-    { value: 'header' },
-    { value: 'title' },
-    { value: 'ip' },
-    { value: 'host' },
-    { value: 'port' },
-    { value: 'icon_hash' },
-    { value: 'and' },
-    { value: 'or' },
-    { value: '=' }
-  ]
+const dialogVisible = ref(false)
+
+const getHelp = () => {
+  dialogVisible.value = true
 }
 
-onMounted(() => {
-  restaurants.value = loadAll()
-})
+const searchHelpData = [
+  {
+    operator: '=',
+    meaning: t('searchHelp.like')
+  },
+  {
+    operator: '!=',
+    meaning: t('searchHelp.notIn')
+  },
+  {
+    operator: '==',
+    meaning: t('searchHelp.equal')
+  },
+  {
+    operator: '&&',
+    meaning: t('searchHelp.and')
+  },
+  {
+    operator: '||',
+    meaning: t('searchHelp.or')
+  },
+  {
+    operator: '()',
+    meaning: t('searchHelp.brackets')
+  }
+]
+
+const searchKeywordsData = [
+  {
+    keyword: 'app',
+    example: 'app="Nginx"',
+    explain: t('searchHelp.app')
+  },
+  {
+    keyword: 'body',
+    example: 'body="bootstrap.min.css"',
+    explain: t('searchHelp.body')
+  },
+  {
+    keyword: 'header',
+    example: 'header="rememberMe"',
+    explain: t('searchHelp.header')
+  },
+  {
+    keyword: 'title',
+    example: 'title="admin console"',
+    explain: t('searchHelp.title')
+  },
+  {
+    keyword: 'statuscode',
+    example: 'statuscode=="403"',
+    explain: t('searchHelp.statuscode')
+  },
+  {
+    keyword: 'icon',
+    example: 'icon="54256234"',
+    explain: t('searchHelp.icon')
+  },
+  {
+    keyword: 'ip',
+    example: 'ip="192.168.2.1"',
+    explain: t('searchHelp.ip')
+  },
+  {
+    keyword: 'port',
+    example: 'port="3306"',
+    explain: t('searchHelp.port')
+  },
+  {
+    keyword: 'domain',
+    example: 'domain="example.com"',
+    explain: t('searchHelp.domain')
+  },
+  {
+    keyword: 'protocol',
+    example: 'protocol="ssh"',
+    explain: t('searchHelp.protocol')
+  },
+  {
+    keyword: 'banner',
+    example: 'banner="SSH-2.0-OpenSSH"',
+    explain: t('searchHelp.banner')
+  },
+  {
+    keyword: 'project',
+    example: 'project="Hackerone"',
+    explain: t('searchHelp.project')
+  }
+]
 
 const isGrid = ref(true)
 const layout = ref('inline')
@@ -89,8 +167,6 @@ const handleSearch = (data: any) => {
   searchParams.value = data.search
   getList()
 }
-
-const searchLoading = ref(false)
 
 let AssetstatisticsData: Ref<{
   Port: { value: number; number: number }[]
@@ -372,16 +448,16 @@ const setMaxHeight = () => {
 
 <template>
   <ContentWrap style="height: 80px">
-    <Search
-      :schema="schema"
-      :is-col="isGrid"
-      :layout="layout"
-      :show-reset="false"
-      :button-position="buttonPosition"
-      :search-loading="searchLoading"
-      @search="handleSearch"
-      @register="searchRegister"
-    />
+    <div @keydown.enter="handleSearch">
+      <Search
+        :schema="schema"
+        :is-col="isGrid"
+        :layout="layout"
+        :show-reset="false"
+        :button-position="buttonPosition"
+        @search="handleSearch"
+      />
+    </div>
   </ContentWrap>
   <ElRow :gutter="3">
     <ElCol :span="3">
@@ -513,6 +589,36 @@ const setMaxHeight = () => {
       </ElRow>
     </ElCol>
   </ElRow>
+  <Dialog
+    v-model="dialogVisible"
+    :title="t('common.querysyntax')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <ElRow>
+      <ElCol>
+        <ElText tag="b" size="small">{{ t('searchHelp.operator') }}</ElText>
+        <ElDivider direction="vertical" />
+        <ElText size="small" type="danger">{{ t('searchHelp.notice') }}</ElText>
+      </ElCol>
+      <ElCol style="margin-top: 10px">
+        <ElTable :headerCellStyle="tableHeaderColor" :data="searchHelpData">
+          <ElTableColumn prop="operator" :label="t('searchHelp.operator')" width="300" />
+          <ElTableColumn prop="meaning" :label="t('searchHelp.meaning')" />
+        </ElTable>
+      </ElCol>
+      <ElCol style="margin-top: 15px">
+        <ElText tag="b" size="small">{{ t('searchHelp.keywords') }}</ElText>
+      </ElCol>
+      <ElCol style="margin-top: 10px">
+        <ElTable :headerCellStyle="tableHeaderColor" :data="searchKeywordsData">
+          <ElTableColumn prop="keyword" :label="t('searchHelp.keywords')" />
+          <ElTableColumn prop="example" :label="t('searchHelp.example')" />
+          <ElTableColumn prop="explain" :label="t('searchHelp.explain')" />
+        </ElTable>
+      </ElCol>
+    </ElRow>
+  </Dialog>
 </template>
 
 <style lang="less">

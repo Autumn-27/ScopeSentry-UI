@@ -40,5 +40,74 @@ interface notificationRespInter {
 }
 
 export const getNotificationApi = (): Promise<IResponse<notificationRespInter>> => {
-  return request.get({ url: '/api/configuration/notification/data' })
+  return request.get({ url: '/api/notification/data' })
+}
+
+export const addNotificationApi = (
+  name: string,
+  url: string,
+  method: string,
+  contentType: string,
+  data: string,
+  state: boolean
+): Promise<IResponse<configRespData>> => {
+  return request.post({
+    url: '/api/notification/add',
+    data: { name, url, method, contentType, data, state }
+  })
+}
+
+export const updateNotificationApi = (
+  id: string,
+  name: string,
+  url: string,
+  method: string,
+  contentType: string,
+  data: string,
+  state: boolean
+): Promise<IResponse<configRespData>> => {
+  return request.post({
+    url: '/api/notification/add',
+    data: { id, name, url, method, contentType, data, state }
+  })
+}
+
+export const deletePocDataApi = (ids: string[]): Promise<IResponse<configRespData>> => {
+  return request.post({ url: '/api/notification/delete', data: { ids } })
+}
+
+interface notificationConfigRespInter {
+  dirScanNotification: boolean
+  portScanNotification: boolean
+  sensitiveNotification: boolean
+  subdomainNotification: boolean
+  subdomainTakeoverNotification: boolean
+  pageMonNotification: boolean
+  vulNotification: boolean
+}
+export const getNotificationConfigApi = (): Promise<IResponse<notificationConfigRespInter>> => {
+  return request.get({ url: '/api/notification/config/data' })
+}
+
+export const updateNotificationConfigApi = (
+  dirScanNotification: boolean,
+  portScanNotification: boolean,
+  sensitiveNotification: boolean,
+  subdomainNotification: boolean,
+  subdomainTakeoverNotification: boolean,
+  pageMonNotification: boolean,
+  vulNotification: boolean
+): Promise<IResponse<configRespData>> => {
+  return request.post({
+    url: '/api/notification/config/update',
+    data: {
+      dirScanNotification,
+      portScanNotification,
+      sensitiveNotification,
+      subdomainNotification,
+      subdomainTakeoverNotification,
+      pageMonNotification,
+      vulNotification
+    }
+  })
 }
