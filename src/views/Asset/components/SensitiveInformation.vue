@@ -2,13 +2,24 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Search } from '@/components/Search'
-import { Dialog } from '@/components/Dialog'
 import { reactive, ref } from 'vue'
 import { FormSchema } from '@/components/Form'
 import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElScrollbar, ElRow, ElCol } from 'element-plus'
+import {
+  ElCard,
+  ElPagination,
+  ElCol,
+  ElRow,
+  ElButton,
+  ElTable,
+  ElTableColumn,
+  ElText,
+  ElDivider,
+  ElScrollbar
+} from 'element-plus'
+import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getSensitiveResultApi, getSensitiveResultBodyApi } from '@/api/asset'
@@ -28,6 +39,7 @@ const schema = reactive<FormSchema[]>([
       style: { width: '100%' }
     },
     componentProps: {
+      clearable: false,
       slots: {
         suffix: () => (
           <ElButton
@@ -76,14 +88,19 @@ const searchKeywordsData = [
     explain: t('searchHelp.url')
   },
   {
-    keyword: 'method',
-    example: 'method="POST"',
-    explain: t('searchHelp.method')
+    keyword: 'sname',
+    example: 'sname="twilio_account_sid"',
+    explain: t('searchHelp.sname')
   },
   {
     keyword: 'body',
-    example: 'body="username=admin"',
-    explain: t('searchHelp.crawlerBody')
+    example: 'body="api-key-example"',
+    explain: t('searchHelp.body')
+  },
+  {
+    keyword: 'info',
+    example: 'info="api-key-example"',
+    explain: t('searchHelp.sinfo')
   },
   {
     keyword: 'project',

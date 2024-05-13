@@ -100,7 +100,16 @@ export default {
     source: '检索URL来源',
     urlType: '检索URL类型',
     method: '检索Method',
-    crawlerBody: '检索POST数据'
+    crawlerBody: '检索POST数据',
+    sname: '检索敏感信息名称，不支持模糊搜索',
+    sinfo: '检索敏感信息',
+    redirect: '检索跳转链接',
+    vulname: '检索漏洞名称',
+    matched: '检索匹配内容',
+    vulRequest: '检索请求内容',
+    response: '检索响应内容',
+    hash: '检索响应hash',
+    diff: '检索diff内容'
   },
   lock: {
     lockScreen: '锁定屏幕',

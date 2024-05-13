@@ -38,6 +38,7 @@ const schema = reactive<FormSchema[]>([
       style: { width: '100%' }
     },
     componentProps: {
+      clearable: false,
       slots: {
         suffix: () => (
           <ElButton

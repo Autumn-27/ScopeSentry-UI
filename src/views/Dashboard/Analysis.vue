@@ -235,8 +235,8 @@ onBeforeUnmount(() => {
     <ElCol :span="12">
       <ElCard shadow="hover" class="mb-25px">
         <template #header>
-          <div class="header-container">
-            <span class="header-content">{{ t('node.nodeUsageStatus') }}</span>
+          <div>
+            <span>{{ t('node.nodeUsageStatus') }}</span>
           </div>
         </template>
         <Table
