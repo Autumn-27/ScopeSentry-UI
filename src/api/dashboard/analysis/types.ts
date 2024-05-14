@@ -21,3 +21,10 @@ export type MonthlySales = {
   estimate: number
   actual: number
 }
+
+export type VersionData = {
+  name: string
+  cversion: string
+  lversion: string
+  msg: string
+}

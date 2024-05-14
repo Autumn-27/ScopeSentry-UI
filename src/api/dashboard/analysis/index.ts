@@ -3,7 +3,8 @@ import type {
   DashboardTotalTypes,
   UserAccessSource,
   WeeklyUserActivity,
-  MonthlySales
+  MonthlySales,
+  VersionData
 } from './types'
 
 interface DashboardTotalTypesResponse {
@@ -24,4 +25,11 @@ export const getWeeklyUserActivityApi = (): Promise<IResponse<WeeklyUserActivity
 
 export const getMonthlySalesApi = (): Promise<IResponse<MonthlySales[]>> => {
   return request.get({ url: '/mock/analysis/monthlySales' })
+}
+
+interface VersionDataResponse {
+  list: VersionData[]
+}
+export const getVersionDataApi = (): Promise<IResponse<VersionDataResponse>> => {
+  return request.get({ url: '/api/system/version' })
 }

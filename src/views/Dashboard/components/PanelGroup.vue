@@ -40,8 +40,8 @@ getCount()
 </script>
 
 <template>
-  <ElRow justify="space-between" :class="prefixCls">
-    <ElCol :span="4">
+  <ElRow justify="space-between" :class="prefixCls" :gutter="20">
+    <ElCol :span="5">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
@@ -70,7 +70,7 @@ getCount()
       </ElCard>
     </ElCol>
 
-    <ElCol :span="4">
+    <ElCol :span="5">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
@@ -99,7 +99,7 @@ getCount()
       </ElCard>
     </ElCol>
 
-    <ElCol :span="4">
+    <ElCol :span="5">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
@@ -128,7 +128,7 @@ getCount()
       </ElCard>
     </ElCol>
 
-    <ElCol :span="4">
+    <ElCol :span="5">
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>

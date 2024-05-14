@@ -1,5 +1,8 @@
 export default {
   common: {
+    name: '名称',
+    cversion: '当前版本',
+    lversion: '最新版本',
     switchAction: '开',
     switchInactive: '关',
     inputText: '请输入',
@@ -8,10 +11,12 @@ export default {
     endTimeText: '结束时间',
     changePassword: '修改密码',
     submit: '提交',
+    update: '一键更新',
     querysyntax: '查询语法',
     true: '是',
     statusStop: '暂停',
     false: '否',
+    version: '系统版本信息',
     newPassword: '新密码',
     login: '登录',
     edit: '编辑',

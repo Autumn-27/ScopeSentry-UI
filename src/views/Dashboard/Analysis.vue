@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import PanelGroup from './components/PanelGroup.vue'
-import { ElRow, ElCol, ElCard, ElProgress } from 'element-plus'
+import { ElRow, ElCol, ElCard, ElProgress, ElText, ElTooltip, ElButton } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { ElTag } from 'element-plus'
 import { ref, reactive, h, onBeforeUnmount, Ref } from 'vue'
 import { getNodeDataApi } from '@/api/node'
 import { getTaskDataApi } from '@/api/task'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getVersionDataApi } from '@/api/dashboard/analysis'
 
 const { t } = useI18n()
 
@@ -119,6 +120,50 @@ const nodeUsageColumns = reactive<TableColumn[]>([
   }
 ])
 
+const versionColumns = reactive<TableColumn[]>([
+  {
+    field: 'name',
+    label: t('common.name')
+  },
+  {
+    field: 'cversion',
+    label: t('common.cversion')
+  },
+  {
+    field: 'lversion',
+    label: t('common.lversion'),
+    formatter: (row: Recordable, __: TableColumn, cellValue: string) => {
+      if (row.cversion != row.lversion) {
+        updateFlag.value = true
+        const msgArray = row.msg.split('\\n')
+        let content = ''
+        msgArray.forEach((line) => {
+          content += `<div>${line}</div>`
+        })
+        return h(
+          ElTooltip,
+          {
+            placement: 'top',
+            content: content,
+            rawContent: true
+          },
+          [
+            h(
+              ElText,
+              {
+                type: 'danger'
+              },
+              cellValue
+            )
+          ]
+        )
+      } else {
+        return h(ElText, cellValue)
+      }
+    }
+  }
+])
+
 let nodeUsageData: Ref<{ nodeName: string; nodeUsageCpu: number; nodeUsageMemory: number }[]> = ref(
   []
 )
@@ -182,8 +227,30 @@ const getTaskData = async () => {
   )
 }
 
+const versionData = ref<
+  {
+    name: string
+    cversion: string
+    lversion: string
+    msg: string
+  }[]
+>([])
+
+const getVersionData = async () => {
+  const res = await getVersionDataApi()
+  console.log(res)
+  versionData.value = reactive(
+    res.data.list.map((v) => ({
+      name: v.name,
+      cversion: v.cversion,
+      lversion: v.lversion,
+      msg: v.msg
+    }))
+  )
+}
+
 const getAllApi = async () => {
-  await Promise.all([getNodeState(), getTaskData()])
+  await Promise.all([getNodeState(), getTaskData(), getVersionData()])
   loading.value = false
 }
 
@@ -193,6 +260,8 @@ const refreshInterval = setInterval(getAllApi, 10000)
 onBeforeUnmount(() => {
   clearInterval(refreshInterval)
 })
+
+const updateFlag = ref(false)
 </script>
 
 <template>
@@ -248,6 +317,23 @@ onBeforeUnmount(() => {
         />
       </ElCard>
     </ElCol>
+    <ElCol :span="12">
+      <ElCard shadow="hover" class="mb-25px">
+        <template #header>
+          <ElRow>
+            <ElCol :span="12">
+              <div>
+                <span>{{ t('common.version') }}</span>
+              </div>
+            </ElCol>
+            <ElCol :span="3" :offset="8" v-if="updateFlag">
+              <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
+            </ElCol>
+          </ElRow>
+        </template>
+        <Table :columns="versionColumns" :data="versionData" stripe :border="false" :height="600" />
+      </ElCard>
+    </ElCol>
   </ElRow>
 </template>
 
@@ -257,5 +343,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+.tooltip-content {
+  white-space: pre-line !important;
 }
 </style>
