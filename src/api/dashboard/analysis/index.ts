@@ -33,3 +33,7 @@ interface VersionDataResponse {
 export const getVersionDataApi = (): Promise<IResponse<VersionDataResponse>> => {
   return request.get({ url: '/api/system/version' })
 }
+
+export const UPDATEsYSTEMApi = (): Promise<IResponse<VersionDataResponse>> => {
+  return request.get({ url: '/api/system/update' })
+}

@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import PanelGroup from './components/PanelGroup.vue'
-import { ElRow, ElCol, ElCard, ElProgress, ElText, ElTooltip, ElButton } from 'element-plus'
+import {
+  ElRow,
+  ElCol,
+  ElCard,
+  ElProgress,
+  ElText,
+  ElTooltip,
+  ElButton,
+  ElPopconfirm
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { ElTag } from 'element-plus'
 import { ref, reactive, h, onBeforeUnmount, Ref } from 'vue'
 import { getNodeDataApi } from '@/api/node'
 import { getTaskDataApi } from '@/api/task'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getVersionDataApi } from '@/api/dashboard/analysis'
+import { UPDATEsYSTEMApi, getVersionDataApi } from '@/api/dashboard/analysis'
 
 const { t } = useI18n()
 
@@ -261,6 +270,9 @@ onBeforeUnmount(() => {
   clearInterval(refreshInterval)
 })
 
+const updateSystem = async () => {
+  await UPDATEsYSTEMApi()
+}
 const updateFlag = ref(false)
 </script>
 
@@ -327,7 +339,11 @@ const updateFlag = ref(false)
               </div>
             </ElCol>
             <ElCol :span="3" :offset="8" v-if="updateFlag">
-              <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
+              <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
+                <template #reference>
+                  <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
+                </template>
+              </ElPopconfirm>
             </ElCol>
           </ElRow>
         </template>
