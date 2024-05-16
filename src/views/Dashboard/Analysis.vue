@@ -110,6 +110,7 @@ const nodeUsageColumns = reactive<TableColumn[]>([
     label: t('node.nodeUsageCpu'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
+      numericValue = parseFloat(numericValue.toFixed(2))
       return h(ElProgress, {
         percentage: numericValue,
         type: 'dashboard',
@@ -122,6 +123,7 @@ const nodeUsageColumns = reactive<TableColumn[]>([
     label: t('node.nodeUsageMemory'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
+      numericValue = parseFloat(numericValue.toFixed(2))
       return h(ElProgress, {
         percentage: numericValue,
         type: 'dashboard',
