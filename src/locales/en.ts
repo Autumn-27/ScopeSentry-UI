@@ -12,6 +12,7 @@ export default {
     changePassword: 'Change Password',
     submit: 'Submit',
     update: 'One click update',
+    updatemsg: 'Discovering new versions',
     querysyntax: 'Query Syntax',
     newPassword: 'New Password',
     statusStop: 'Stop',

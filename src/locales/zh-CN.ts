@@ -11,6 +11,7 @@ export default {
     endTimeText: '结束时间',
     changePassword: '修改密码',
     submit: '提交',
+    updatemsg: '发现新版本',
     update: '一键更新',
     querysyntax: '查询语法',
     true: '是',

@@ -108,22 +108,24 @@ const nodeUsageColumns = reactive<TableColumn[]>([
   {
     field: 'nodeUsageCpu',
     label: t('node.nodeUsageCpu'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      let numericValue = parseFloat(cellValue)
       return h(ElProgress, {
-        percentage: cellValue,
+        percentage: numericValue,
         type: 'dashboard',
-        color: cellValue < 50 ? '#26a33f' : cellValue <= 80 ? '#fe9900' : '#df2800'
+        color: numericValue < 50 ? '#26a33f' : numericValue <= 80 ? '#fe9900' : '#df2800'
       })
     }
   },
   {
     field: 'nodeUsageMemory',
     label: t('node.nodeUsageMemory'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      let numericValue = parseFloat(cellValue)
       return h(ElProgress, {
-        percentage: cellValue,
+        percentage: numericValue,
         type: 'dashboard',
-        color: cellValue < 50 ? '#26a33f' : cellValue < 80 ? '#fe9900' : '#df2800'
+        color: numericValue < 50 ? '#26a33f' : numericValue < 80 ? '#fe9900' : '#df2800'
       })
     }
   }
@@ -264,7 +266,7 @@ const getAllApi = async () => {
 }
 
 getAllApi()
-const refreshInterval = setInterval(getAllApi, 10000)
+const refreshInterval = setInterval(getAllApi, 30000)
 
 onBeforeUnmount(() => {
   clearInterval(refreshInterval)
@@ -336,15 +338,22 @@ const updateFlag = ref(false)
             <ElCol :span="12">
               <div>
                 <span>{{ t('common.version') }}</span>
+                <ElText
+                  v-if="updateFlag"
+                  type="danger"
+                  size="small"
+                  style="position: relative; left: 1rem"
+                  >*{{ t('common.updatemsg') }}</ElText
+                >
               </div>
             </ElCol>
-            <ElCol :span="3" :offset="8" v-if="updateFlag">
+            <!-- <ElCol :span="3" :offset="8" v-if="updateFlag">
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
                   <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
                 </template>
-              </ElPopconfirm>
-            </ElCol>
+              </ElPopconfirm> -->
+            <!-- </ElCol> -->
           </ElRow>
         </template>
         <Table :columns="versionColumns" :data="versionData" stripe :border="false" :height="600" />
