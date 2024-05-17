@@ -11,6 +11,8 @@ const { t } = useI18n()
 const props = defineProps<{
   closeDialog: () => void
   getProgressInfoID: string
+  getProgressInfotype: string
+  getProgressInforunnerid: string
 }>()
 const progressColums = reactive<TableColumn[]>([
   {
@@ -246,7 +248,11 @@ const progressColums = reactive<TableColumn[]>([
 ])
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const res = await getTaskProgressApi(props.getProgressInfoID)
+    const res = await getTaskProgressApi(
+      props.getProgressInfoID,
+      props.getProgressInfotype,
+      props.getProgressInforunnerid
+    )
     return {
       total: res.data.total,
       list: res.data.list

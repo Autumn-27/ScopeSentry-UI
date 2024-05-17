@@ -367,6 +367,10 @@ const setMaxHeight = () => {
     width="70%"
     max-height="700"
   >
-    <ProgressInfo :closeDialog="progresscloseDialog" :getProgressInfoID="getProgressInfoID"
+    <ProgressInfo
+      :closeDialog="progresscloseDialog"
+      :getProgressInfoID="getProgressInfoID"
+      getProgressInfotype="scan"
+      getProgressInforunnerid=""
   /></Dialog>
 </template>

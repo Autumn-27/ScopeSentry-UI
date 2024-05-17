@@ -77,6 +77,7 @@ const nodeColums = reactive<TableColumn[]>([
     label: t('node.nodeUsageCpu'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
+      numericValue = parseFloat(numericValue.toFixed(2))
       return h(
         ElTag,
         {
@@ -85,7 +86,7 @@ const nodeColums = reactive<TableColumn[]>([
           hit: true,
           type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
-        () => cellValue + '%'
+        () => numericValue + '%'
       )
     }
   },
@@ -94,6 +95,7 @@ const nodeColums = reactive<TableColumn[]>([
     label: t('node.nodeUsageMemory'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
+      numericValue = parseFloat(numericValue.toFixed(2))
       return h(
         ElTag,
         {
@@ -102,7 +104,7 @@ const nodeColums = reactive<TableColumn[]>([
           hit: true,
           type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
         },
-        () => cellValue + '%'
+        () => numericValue + '%'
       )
     }
   },

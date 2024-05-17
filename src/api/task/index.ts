@@ -131,8 +131,12 @@ interface TaskProgessInforesp {
   list: TaskProgessInfo[]
   total: number
 }
-export const getTaskProgressApi = (id: string): Promise<IResponse<TaskProgessInforesp>> => {
-  return request.post({ url: '/api/task/progress/info', data: { id } })
+export const getTaskProgressApi = (
+  id: string,
+  type: string,
+  runner: string
+): Promise<IResponse<TaskProgessInforesp>> => {
+  return request.post({ url: '/api/task/progress/info', data: { id, type, runner } })
 }
 
 interface ScheduledTaskDataResponse {

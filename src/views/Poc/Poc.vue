@@ -119,22 +119,14 @@ let pocForm = reactive({
 const addPoc = async () => {
   pocForm.id = ''
   pocForm.name = ''
-  pocForm.level = 0
+  pocForm.level = 1
   pocForm.content = ''
   dialogVisible.value = true
-}
-const dictionary = {
-  1: 'unknown',
-  2: 'medium',
-  3: 'low',
-  4: 'info',
-  5: 'high',
-  6: 'critical'
 }
 const edit = async (data) => {
   pocForm.id = data.id
   pocForm.name = data.name
-  pocForm.level = dictionary[data.level]
+  pocForm.level = data.level
   const res = await getPocContentApi(pocForm.id)
   pocForm.content = res.data.content
   dialogVisible.value = true

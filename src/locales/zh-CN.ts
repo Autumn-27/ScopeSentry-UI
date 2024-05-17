@@ -437,7 +437,7 @@ export default {
     noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"'
   },
   form: {
-    input: '搜索：'
+    input: '搜索'
   },
   portDict: {
     name: '名称',

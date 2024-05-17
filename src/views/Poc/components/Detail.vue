@@ -121,7 +121,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         v-model="localForm.level"
         placeholder="Please select level"
         :options="levelOptions"
-        value-key="value"
       />
     </ElFormItem>
     <ElDivider />

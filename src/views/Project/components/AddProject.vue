@@ -22,7 +22,7 @@ import {
   CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi, updateProjectDataApi } from '@/api/project'
 import { getPocDataAllApi } from '@/api/poc'
 import { getPortDictDataApi } from '@/api/DictionaryManagement'
@@ -62,10 +62,24 @@ interface RuleForm {
   tag: string
   target: string
 }
-const rules = reactive<FormRules<RuleForm>>({
-  name: [{ required: true, message: t('project.msgProject'), trigger: 'blur' }],
-  tag: [{ required: true, message: t('project.msgProjectTag'), trigger: 'blur' }],
-  target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }]
+// const rules = reactive<FormRules<RuleForm>>({
+//   name: [{ required: true, message: t('project.msgProject'), trigger: 'blur' }],
+//   tag: [{ required: true, message: t('project.msgProjectTag'), trigger: 'blur' }],
+//   target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }]
+// })
+const rules = computed(() => {
+  const baseRules = {
+    name: [{ required: true, message: t('project.msgProject'), trigger: 'blur' }],
+    tag: [{ required: true, message: t('project.msgProjectTag'), trigger: 'blur' }],
+    target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }],
+    node: [{ required: false, message: t('task.nodeMsg'), trigger: 'blur' }]
+  }
+
+  if (projectForm.scheduledTasks) {
+    baseRules.node = [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }]
+  }
+
+  return baseRules
 })
 
 const vulOptions = reactive<{ value: string; label: string }[]>([])

@@ -263,12 +263,12 @@ const getVersionData = async () => {
 }
 
 const getAllApi = async () => {
-  await Promise.all([getNodeState(), getTaskData(), getVersionData()])
+  await Promise.all([getNodeState(), getTaskData()])
   loading.value = false
 }
-
+getVersionData()
 getAllApi()
-const refreshInterval = setInterval(getAllApi, 30000)
+const refreshInterval = setInterval(getAllApi, 10000)
 
 onBeforeUnmount(() => {
   clearInterval(refreshInterval)

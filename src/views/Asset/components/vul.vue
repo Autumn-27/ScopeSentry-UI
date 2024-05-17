@@ -15,6 +15,8 @@ import {
   ElButton,
   ElTable,
   ElTableColumn,
+  ElDescriptions,
+  ElDescriptionsItem,
   ElText,
   ElDivider
 } from 'element-plus'

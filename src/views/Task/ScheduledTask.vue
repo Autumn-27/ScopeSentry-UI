@@ -36,6 +36,7 @@ import AddProject from '../Project/components/AddProject.vue'
 import { Icon } from '@iconify/vue'
 import PageMonit from './components/PageMonit.vue'
 import { getNodeDataOnlineApi } from '@/api/node'
+import ProgressInfo from './components/ProgressInfo.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -124,6 +125,12 @@ const taskColums = reactive<TableColumn[]>([
     label: t('tableDemo.action'),
     minWidth: 40,
     formatter: (row, __: TableColumn, _: number) => {
+      let type = ''
+      if (row.type == 'Scan') {
+        type = 'scan'
+      } else {
+        type = 'project'
+      }
       return (
         <>
           {row.id === 'page_monitoring' ? (
@@ -138,6 +145,12 @@ const taskColums = reactive<TableColumn[]>([
               <BaseButton type="danger" onClick={() => confirmDelete(row)}>
                 {t('common.delete')}
               </BaseButton>
+              <BaseButton
+                type="primary"
+                onClick={() => getProgressInfo(row.id, type, row.runner_id)}
+              >
+                {t('task.taskProgress')}
+              </BaseButton>
             </>
           )}
         </>
@@ -145,7 +158,19 @@ const taskColums = reactive<TableColumn[]>([
     }
   }
 ])
-
+const progressDialogVisible = ref(false)
+let getProgressInfoID = ''
+let getProgressInfotype = ''
+let getProgressInforunnerid = ''
+const getProgressInfo = async (id, type, runner_id) => {
+  getProgressInfoID = id
+  getProgressInfotype = type
+  getProgressInforunnerid = runner_id
+  progressDialogVisible.value = true
+}
+const progresscloseDialog = () => {
+  progressDialogVisible.value = false
+}
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
@@ -497,5 +522,19 @@ getNodeList()
         <ElTabPane :label="t('task.data')"><PageMonit /></ElTabPane>
       </ElTabs>
     </Dialog>
+    <Dialog
+      v-model="progressDialogVisible"
+      :title="t('task.taskProgress')"
+      center
+      style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+      width="70%"
+      max-height="700"
+    >
+      <ProgressInfo
+        :closeDialog="progresscloseDialog"
+        :getProgressInfoID="getProgressInfoID"
+        :getProgressInfotype="getProgressInfotype"
+        :getProgressInforunnerid="getProgressInforunnerid"
+    /></Dialog>
   </ContentWrap>
 </template>
