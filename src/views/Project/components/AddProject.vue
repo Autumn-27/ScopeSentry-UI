@@ -247,7 +247,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         v-model="projectForm.target"
         :placeholder="t('project.msgProjectScope')"
         type="textarea"
-        :autosize="{ minRows: 6 }"
+        :autosize="{ minRows: 6, maxRows: 15 }"
       />
     </ElFormItem>
     <ElFormItem label="Logo" prop="logo">

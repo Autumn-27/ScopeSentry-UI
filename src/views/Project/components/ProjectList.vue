@@ -78,33 +78,17 @@ const handleCommand = (command: string | number | object) => {
         <div class="flex cursor-pointer">
           <div class="pr-16px">
             <template v-if="row.logo != ''">
-              <ElAvatar
-                :src="row.logo"
-                style="width: 45px; height: 45px; line-height: 45px; font-size: 24px"
-                fit="cover"
-              />
+              <ElAvatar :src="row.logo" class="avatar" fit="cover" />
             </template>
             <template v-else>
-              <ElAvatar
-                style="
-                  width: 45px;
-                  height: 45px;
-                  line-height: 45px;
-                  font-size: 24px;
-                  background-color: cornflowerblue;
-                "
-              >
+              <ElAvatar class="avatar avatar-placeholder">
                 {{ row.name.charAt(0) }}
               </ElAvatar>
             </template>
           </div>
           <div>
-            <div class="mb-12px font-700 font-size-16px">{{ row.name }}</div>
-            <div
-              class="line-clamp-3 font-size-11px"
-              style="color: #b1b3b8; position: relative; top: -6px"
-              >{{ t('project.totalAssets') }} : {{ row.AssetCount }}</div
-            >
+            <div class="name">{{ row.name }}</div>
+            <div class="assets-info">{{ t('project.totalAssets') }} : {{ row.AssetCount }}</div>
           </div>
         </div>
         <template #dropdown>
@@ -135,10 +119,32 @@ const handleCommand = (command: string | number | object) => {
   </Dialog>
 </template>
 <style>
+.avatar {
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 24px;
+}
+
+.avatar-placeholder {
+  background-color: cornflowerblue;
+}
 .demo-tabs > .el-tabs__content {
   padding: 32px;
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
+}
+.name {
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.assets-info {
+  color: #b1b3b8;
+  font-size: 11px;
+  position: relative;
+  top: -6px;
 }
 </style>
