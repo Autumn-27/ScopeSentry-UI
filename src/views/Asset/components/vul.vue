@@ -93,6 +93,11 @@ const searchKeywordsData = [
     explain: t('searchHelp.vulname')
   },
   {
+    keyword: 'level',
+    example: 'level="info',
+    explain: t('searchHelp.level')
+  },
+  {
     keyword: 'matched',
     example: 'matched="https://example.com"',
     explain: t('searchHelp.matched')

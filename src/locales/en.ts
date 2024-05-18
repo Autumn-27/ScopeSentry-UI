@@ -3,6 +3,7 @@ export default {
     name: 'Name',
     cversion: 'Current Version',
     lversion: 'Latest Version',
+    updateButtonMsg: 'Currently, only server upgrades are supported',
     switchAction: 'On',
     switchInactive: 'Off',
     inputText: 'Please input',
@@ -115,7 +116,8 @@ export default {
     vulRequest: 'Retrieve request content',
     response: 'Retrieve response content',
     hash: 'Retrieve response hash',
-    diff: 'Retrieve diff content'
+    diff: 'Retrieve diff content',
+    level: 'Retrieve vuln level'
   },
   lock: {
     lockScreen: 'Lock screen',

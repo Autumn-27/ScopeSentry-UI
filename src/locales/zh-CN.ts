@@ -3,6 +3,7 @@ export default {
     name: '名称',
     cversion: '当前版本',
     lversion: '最新版本',
+    updateButtonMsg: '目前只支持升级Server',
     switchAction: '开',
     switchInactive: '关',
     inputText: '请输入',
@@ -115,7 +116,8 @@ export default {
     vulRequest: '检索请求内容',
     response: '检索响应内容',
     hash: '检索响应hash',
-    diff: '检索diff内容'
+    diff: '检索diff内容',
+    level: '检索漏洞等级'
   },
   lock: {
     lockScreen: '锁定屏幕',

@@ -44,17 +44,17 @@ const nodeColumns = reactive<TableColumn[]>([
   {
     field: 'nodeStatus',
     label: t('node.nodeStatus'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
         ElTag,
         {
-          type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger',
+          type: cellValue === '1' ? 'success' : cellValue === '2' ? 'warning' : 'danger',
           effect: 'dark'
         },
         () =>
-          cellValue === 1
+          cellValue == '1'
             ? t('node.statusRun')
-            : cellValue === 2
+            : cellValue == '2'
               ? t('node.statusStop')
               : t('node.statusError')
       )
@@ -349,13 +349,19 @@ const updateFlag = ref(false)
                 >
               </div>
             </ElCol>
-            <!-- <ElCol :span="3" :offset="8" v-if="updateFlag">
+            <ElCol :span="3" :offset="8" v-if="updateFlag">
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
-                  <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
+                  <ElTooltip
+                    :content="t('common.updateButtonMsg')"
+                    lacement="top-start"
+                    effect="dark"
+                  >
+                    <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
+                  </ElTooltip>
                 </template>
-              </ElPopconfirm> -->
-            <!-- </ElCol> -->
+              </ElPopconfirm>
+            </ElCol>
           </ElRow>
         </template>
         <Table :columns="versionColumns" :data="versionData" stripe :border="false" :height="600" />
