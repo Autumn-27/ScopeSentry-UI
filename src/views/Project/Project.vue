@@ -68,10 +68,13 @@ handleSearch()
       </ElCol>
     </ElRow>
     <ElTabs class="demo-tabs" style="position: relative; top: 10px">
-      <ElTabPane label="All"
+      <ElTabPane :label="`All (${allProjectData.length})`"
         ><ProjectList :tableDataList="allProjectData" :getProjectTag="getProjectTag"
       /></ElTabPane>
-      <ElTabPane v-for="tagName in tabNames" :label="tagName" :key="tagName"
+      <ElTabPane
+        v-for="tagName in tabNames"
+        :label="`${tagName} (${groupedProjects[tagName].length})`"
+        :key="tagName"
         ><ProjectList :tableDataList="groupedProjects[tagName]" :getProjectTag="getProjectTag"
       /></ElTabPane>
     </ElTabs>

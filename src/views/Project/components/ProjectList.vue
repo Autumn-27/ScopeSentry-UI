@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Table } from '@/components/Table'
 import { ref, unref } from 'vue'
-import { ElAvatar } from 'element-plus'
+import { ElAvatar, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ContextMenu } from '@/components/ContextMenu'
 import { RouteLocationNormalizedLoaded, useRouter } from 'vue-router'
@@ -11,6 +11,7 @@ import { defineProps } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { deleteProjectApi } from '@/api/project'
 import AddProject from './AddProject.vue'
+import { useIcon } from '@/hooks/web/useIcon'
 const { t } = useI18n()
 const { push } = useRouter()
 interface Recordable {
@@ -31,38 +32,32 @@ const props = defineProps({
   }
 })
 const loading = ref(false)
-const itemRefs = useTemplateRefsList<ComponentRef<typeof ContextMenu>>()
 let ProjectId = ''
-const visibleChange = (visible: boolean, tagItem: RouteLocationNormalizedLoaded, id: string) => {
-  if (visible) {
-    for (const v of unref(itemRefs)) {
-      const elDropdownMenuRef = v.elDropdownMenuRef
-      if (v.id !== id) {
-        elDropdownMenuRef?.handleClose()
-      } else {
-        console.log(v.id)
-        ProjectId = id
-      }
-    }
-  }
-}
 const dialogVisible = ref(false)
 const closeDialog = () => {
   dialogVisible.value = false
 }
-const edit = async () => {
-  console.log(ProjectId)
+const edit = async (id: string) => {
+  ProjectId = id
   dialogVisible.value = true
 }
-const del = () => {
+const del = (id: string) => {
   ElMessageBox.alert('Are you sure you want to delete the selected data?', '', {
     confirmButtonText: 'YES',
     callback: async () => {
-      await deleteProjectApi(ProjectId)
+      await deleteProjectApi(id)
       props.getProjectTag()
-      window.location.reload()
     }
   })
+}
+const editIcon = useIcon({ icon: 'uil:edit' })
+const delIcon = useIcon({ icon: 'material-symbols:delete-outline' })
+const handleCommand = (command: string | number | object) => {
+  if (command['type'] == 'edit') {
+    edit(command['id'])
+  } else {
+    del(command['id'])
+  }
 }
 </script>
 
@@ -73,33 +68,13 @@ const del = () => {
     :loading="loading"
     custom-content
     :card-wrap-style="{
-      width: '200px',
+      width: '220px',
       marginBottom: '20px',
       marginRight: '20px'
     }"
   >
     <template #content="row">
-      <ContextMenu
-        :ref="itemRefs.set"
-        :schema="[
-          {
-            icon: 'uil:edit',
-            label: t('common.edit'),
-            command: () => {
-              edit()
-            }
-          },
-          {
-            icon: 'material-symbols:delete-outline',
-            label: t('common.delete'),
-            command: () => {
-              del()
-            }
-          }
-        ]"
-        :id="row.id"
-        @visible-change="visibleChange"
-      >
+      <ElDropdown trigger="click" @command="handleCommand">
         <div class="flex cursor-pointer">
           <div class="pr-16px">
             <template v-if="row.logo != ''">
@@ -132,7 +107,17 @@ const del = () => {
             >
           </div>
         </div>
-      </ContextMenu>
+        <template #dropdown>
+          <ElDropdownMenu>
+            <ElDropdownItem :icon="editIcon" :command="{ type: 'edit', id: row.id }">{{
+              t('common.edit')
+            }}</ElDropdownItem>
+            <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
+              t('common.delete')
+            }}</ElDropdownItem>
+          </ElDropdownMenu>
+        </template>
+      </ElDropdown>
     </template>
   </Table>
   <Dialog
