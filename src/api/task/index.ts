@@ -6,7 +6,7 @@ import type {
   TaskProgessInfo,
   ScheduledTaskData
 } from './types'
-import type { commonRespData } from '../common/types'
+import type { commonRespData } from '../scommon/types'
 
 interface TaskDataResponse {
   list: TaskData[]

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LoginForm, RegisterForm } from './components'
+import { LoginForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -77,11 +77,6 @@ const toLogin = () => {
                 v-if="isLogin"
                 class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
                 @to-register="toRegister"
-              />
-              <RegisterForm
-                v-else
-                class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
-                @to-login="toLogin"
               />
             </div>
           </Transition>

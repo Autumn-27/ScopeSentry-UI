@@ -40,6 +40,7 @@ const visibleChange = (visible: boolean, tagItem: RouteLocationNormalizedLoaded,
       if (v.id !== id) {
         elDropdownMenuRef?.handleClose()
       } else {
+        console.log(v.id)
         ProjectId = id
       }
     }
@@ -50,6 +51,7 @@ const closeDialog = () => {
   dialogVisible.value = false
 }
 const edit = async () => {
+  console.log(ProjectId)
   dialogVisible.value = true
 }
 const del = () => {
@@ -58,6 +60,7 @@ const del = () => {
     callback: async () => {
       await deleteProjectApi(ProjectId)
       props.getProjectTag()
+      window.location.reload()
     }
   })
 }

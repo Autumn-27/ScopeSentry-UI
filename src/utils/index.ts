@@ -70,6 +70,9 @@ export const trim = (str: string) => {
   return str.replace(/(^\s*)|(\s*$)/g, '')
 }
 
+export const getCssVar = (prop: string, dom = document.documentElement) => {
+  return getComputedStyle(dom).getPropertyValue(prop)
+}
 /**
  * @param {Date | number | string} time 需要转换的时间
  * @param {String} fmt 需要转换的格式 如 yyyy-MM-dd、yyyy-MM-dd HH:mm:ss

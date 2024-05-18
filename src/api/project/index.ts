@@ -1,6 +1,6 @@
 import request from '@/axios'
 import { ProjectData, projectRespData, projectContent } from './types'
-import { commonRespData } from '../common/types'
+import { commonRespData } from '../scommon/types'
 
 export const getProjectDataApi = (search: string): Promise<IResponse<ProjectData[]>> => {
   return request.post({ url: '/api/project/data', data: { search } })
