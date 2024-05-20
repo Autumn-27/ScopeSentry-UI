@@ -163,7 +163,7 @@ const schema = reactive<DescriptionsSchema[]>([
   {
     field: 'products',
     label: t('asset.products'),
-    span: 24,
+    span: 12,
     slots: {
       default: (data) => {
         const products: any[] = data.products
@@ -190,6 +190,20 @@ const schema = reactive<DescriptionsSchema[]>([
         })
 
         return h('div', tags)
+      }
+    }
+  },
+  {
+    field: 'project',
+    label: t('project.projectName'),
+    span: 12,
+    slots: {
+      default: (data) => {
+        const statusValue = data.project
+        if (statusValue == '') {
+          return h('div', '-')
+        }
+        return h('div', [h(ElTag, statusValue)])
       }
     }
   },
