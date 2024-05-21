@@ -11,13 +11,21 @@ import { useIcon } from '@/hooks/web/useIcon'
 const { t } = useI18n()
 let allProjectData = ref<any[]>([])
 let tabNames = ref<string[]>([])
+let tagNum = {}
 const groupedProjects = ref<Record<string, any[]>>({})
-const getProjectTag = async () => {
+const getProjectTag = async (pageIndex: number, pageSize: number) => {
+  if (pageIndex === 0) {
+    pageIndex = currentPage.value
+    pageSize = currentpageSize.value
+  } else {
+    currentPage.value = pageIndex
+    currentpageSize.value = pageSize
+  }
   try {
-    const res = await getProjectDataApi(search.value)
-    const projects = res.data
+    const res = await getProjectDataApi(search.value, pageIndex, pageSize)
+    const projects = res.data.result
     console.log(projects)
-    allProjectData.value = res?.data || []
+    allProjectData.value = res?.data.result || []
     groupedProjects.value = projects.reduce((acc, project) => {
       const tagName = project.tag
 
@@ -27,7 +35,13 @@ const getProjectTag = async () => {
       acc[tagName].push(project)
       return acc
     }, {})
-    tabNames.value = Object.keys(groupedProjects.value)
+    tabNames.value = Object.keys(res.data.tag)
+    tagNum = res.data.tag
+    console.log(tabNames.value)
+    const index = tabNames.value.indexOf('All')
+    if (index !== -1) {
+      tabNames.value.splice(index, 1)
+    }
   } catch (error) {
     console.error('An error occurred:', error)
   }
@@ -41,8 +55,10 @@ const closeDialog = () => {
 }
 const search = ref('')
 const searchicon = useIcon({ icon: 'iconoir:search' })
+const currentPage = ref(1)
+const currentpageSize = ref(50)
 const handleSearch = () => {
-  getProjectTag()
+  getProjectTag(currentPage.value, currentpageSize.value)
 }
 handleSearch()
 </script>
@@ -68,14 +84,20 @@ handleSearch()
       </ElCol>
     </ElRow>
     <ElTabs class="demo-tabs" style="position: relative; top: 10px">
-      <ElTabPane :label="`All (${allProjectData.length})`"
-        ><ProjectList :tableDataList="allProjectData" :getProjectTag="getProjectTag"
+      <ElTabPane :label="`All (${tagNum['All']})`"
+        ><ProjectList
+          :tableDataList="allProjectData"
+          :getProjectTag="getProjectTag"
+          :total="tagNum['All']"
       /></ElTabPane>
       <ElTabPane
         v-for="tagName in tabNames"
-        :label="`${tagName} (${groupedProjects[tagName].length})`"
+        :label="`${tagName} (${tagNum[tagName]})`"
         :key="tagName"
-        ><ProjectList :tableDataList="groupedProjects[tagName]" :getProjectTag="getProjectTag"
+        ><ProjectList
+          :tableDataList="groupedProjects[tagName]"
+          :getProjectTag="getProjectTag"
+          :total="tagNum['All']"
       /></ElTabPane>
     </ElTabs>
   </ContentWrap>

@@ -54,7 +54,7 @@ let projectForm = reactive({
 const props = defineProps<{
   closeDialog: () => void
   projectid: string
-  getProjectData: () => void
+  getProjectData: (pageIndex: number, pageSize: number) => void
   schedule: boolean
 }>()
 interface RuleForm {
@@ -163,12 +163,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       saveLoading.value = false
     }
   })
-  props.getProjectData()
+  props.getProjectData(0, 0)
 }
 getPocList()
-
+const dataLoading = ref(false)
 const getProjectInfo = async () => {
   if (props.projectid != '') {
+    dataLoading.value = true
     const res = await getProjectContentDataApi(props.projectid)
     projectForm.name = res.data.name
     projectForm.tag = res.data.tag
@@ -189,6 +190,7 @@ const getProjectInfo = async () => {
     projectForm.dirScan = res.data.dirScan
     projectForm.allNode = res.data.allNode
     projectForm.node = res.data.node
+    // props.closedataLoading()
   }
 }
 getProjectInfo()
@@ -235,7 +237,14 @@ const handleCheckAll = (val: CheckboxValueType) => {
 }
 </script>
 <template>
-  <ElForm :model="projectForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
+  <ElForm
+    :model="projectForm"
+    label-width="120px"
+    :rules="rules"
+    status-icon
+    ref="ruleFormRef"
+    :loading="dataLoading"
+  >
     <ElFormItem :label="t('project.projectName')" prop="name">
       <ElInput v-model="projectForm.name" :placeholder="t('project.msgProject')" />
     </ElFormItem>

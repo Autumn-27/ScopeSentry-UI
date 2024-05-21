@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { Table } from '@/components/Table'
-import { ref, unref } from 'vue'
-import { ElAvatar, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
+import { ref } from 'vue'
+import { ElAvatar, ElDropdown, ElDropdownMenu, ElDropdownItem, ElPagination } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ContextMenu } from '@/components/ContextMenu'
-import { RouteLocationNormalizedLoaded, useRouter } from 'vue-router'
-import { useTemplateRefsList } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 import { Dialog } from '@/components/Dialog'
 import { defineProps } from 'vue'
 import { ElMessageBox } from 'element-plus'
@@ -13,7 +11,6 @@ import { deleteProjectApi } from '@/api/project'
 import AddProject from './AddProject.vue'
 import { useIcon } from '@/hooks/web/useIcon'
 const { t } = useI18n()
-const { push } = useRouter()
 interface Recordable {
   id: string
   name: string
@@ -27,8 +24,12 @@ const props = defineProps({
     default: () => []
   },
   getProjectTag: {
-    type: Function as unknown as () => () => Promise<void>,
+    type: Function as unknown as () => (pageIndex: number, pageSize: number) => Promise<void>,
     required: true
+  },
+  total: {
+    type: Number,
+    default: 0
   }
 })
 const loading = ref(false)
@@ -46,7 +47,7 @@ const del = (id: string) => {
     confirmButtonText: 'YES',
     callback: async () => {
       await deleteProjectApi(id)
-      props.getProjectTag()
+      props.getProjectTag(currentPage.value, pageSize.value)
     }
   })
 }
@@ -59,6 +60,14 @@ const handleCommand = (command: string | number | object) => {
     del(command['id'])
   }
 }
+const handlePageChange = () => {
+  props.getProjectTag(currentPage.value, pageSize.value)
+}
+const currentPage = ref(1)
+const pageSize = ref(50)
+const small = ref(false)
+const background = ref(false)
+const disabled = ref(false)
 </script>
 
 <template>
@@ -68,7 +77,7 @@ const handleCommand = (command: string | number | object) => {
     :loading="loading"
     custom-content
     :card-wrap-style="{
-      width: '220px',
+      width: '210px',
       marginBottom: '20px',
       marginRight: '20px'
     }"
@@ -104,6 +113,18 @@ const handleCommand = (command: string | number | object) => {
       </ElDropdown>
     </template>
   </Table>
+  <ElPagination
+    v-model:current-page="currentPage"
+    v-model:page-size="pageSize"
+    :page-sizes="[50, 70, 100, 200, 400]"
+    :small="small"
+    :disabled="disabled"
+    :background="background"
+    layout="total, sizes, prev, pager, next, jumper"
+    :total="total"
+    @size-change="handlePageChange"
+    @current-change="handlePageChange"
+  />
   <Dialog
     v-model="dialogVisible"
     :title="t('common.edit')"

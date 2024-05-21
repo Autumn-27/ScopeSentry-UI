@@ -2,8 +2,17 @@ import request from '@/axios'
 import { ProjectData, projectRespData, projectContent } from './types'
 import { commonRespData } from '../scommon/types'
 
-export const getProjectDataApi = (search: string): Promise<IResponse<ProjectData[]>> => {
-  return request.post({ url: '/api/project/data', data: { search } })
+interface projectDataResponse {
+  result: ProjectData[]
+  tag: { [key: string]: number }
+}
+
+export const getProjectDataApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number
+): Promise<IResponse<projectDataResponse>> => {
+  return request.post({ url: '/api/project/data', data: { search, pageIndex, pageSize } })
 }
 
 export const addProjectDataApi = (
