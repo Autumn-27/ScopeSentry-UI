@@ -3,7 +3,7 @@ import { ProjectData, projectRespData, projectContent } from './types'
 import { commonRespData } from '../scommon/types'
 
 interface projectDataResponse {
-  result: ProjectData[]
+  result: { [key: string]: ProjectData[] }
   tag: { [key: string]: number }
 }
 

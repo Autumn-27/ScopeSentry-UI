@@ -257,7 +257,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total,
       list: res.data.list
     }
-  }
+  },
+  immediate: false
 })
 const { dataList } = tableState
 const { getList } = tableMethods

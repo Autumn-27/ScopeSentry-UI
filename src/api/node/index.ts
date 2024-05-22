@@ -20,9 +20,14 @@ export const getNodeDataOnlineApi = (): Promise<IResponse<NodeDataOnlineResponse
 export const updateNodeConfigDataApi = (
   name: string,
   maxTaskNum: string,
+  dirscanThread: string,
+  portscanThread: string,
   state: boolean
 ): Promise<IResponse<NodeDataResponse>> => {
-  return request.post({ url: '/api/node/config/update', data: { name, maxTaskNum, state } })
+  return request.post({
+    url: '/api/node/config/update',
+    data: { name, maxTaskNum, dirscanThread, portscanThread, state }
+  })
 }
 
 export const deleteNodeApi = (names: string[]): Promise<IResponse<nodeRespData>> => {

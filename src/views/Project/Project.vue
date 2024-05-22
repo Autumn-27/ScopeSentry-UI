@@ -9,10 +9,9 @@ import { Dialog } from '@/components/Dialog'
 import { getProjectDataApi } from '@/api/project'
 import { useIcon } from '@/hooks/web/useIcon'
 const { t } = useI18n()
-let allProjectData = ref<any[]>([])
+let allProjectData = {}
 let tabNames = ref<string[]>([])
 let tagNum = {}
-const groupedProjects = ref<Record<string, any[]>>({})
 const getProjectTag = async (pageIndex: number, pageSize: number) => {
   if (pageIndex === 0) {
     pageIndex = currentPage.value
@@ -23,21 +22,9 @@ const getProjectTag = async (pageIndex: number, pageSize: number) => {
   }
   try {
     const res = await getProjectDataApi(search.value, pageIndex, pageSize)
-    const projects = res.data.result
-    console.log(projects)
-    allProjectData.value = res?.data.result || []
-    groupedProjects.value = projects.reduce((acc, project) => {
-      const tagName = project.tag
-
-      if (!acc[tagName]) {
-        acc[tagName] = []
-      }
-      acc[tagName].push(project)
-      return acc
-    }, {})
+    allProjectData = res.data.result
     tabNames.value = Object.keys(res.data.tag)
     tagNum = res.data.tag
-    console.log(tabNames.value)
     const index = tabNames.value.indexOf('All')
     if (index !== -1) {
       tabNames.value.splice(index, 1)
@@ -86,7 +73,7 @@ handleSearch()
     <ElTabs class="demo-tabs" style="position: relative; top: 10px">
       <ElTabPane :label="`All (${tagNum['All']})`"
         ><ProjectList
-          :tableDataList="allProjectData"
+          :tableDataList="allProjectData['All']"
           :getProjectTag="getProjectTag"
           :total="tagNum['All']"
       /></ElTabPane>
@@ -95,9 +82,9 @@ handleSearch()
         :label="`${tagName} (${tagNum[tagName]})`"
         :key="tagName"
         ><ProjectList
-          :tableDataList="groupedProjects[tagName]"
+          :tableDataList="allProjectData[tagName]"
           :getProjectTag="getProjectTag"
-          :total="tagNum['All']"
+          :total="tagNum[tagName]"
       /></ElTabPane>
     </ElTabs>
   </ContentWrap>

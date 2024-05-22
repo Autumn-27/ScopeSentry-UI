@@ -171,11 +171,15 @@ const closeDialog = () => {
 const detailData = reactive({
   name: '',
   maxTaskNum: '',
-  state: ''
+  state: '',
+  dirscanThread: '',
+  portscanThread: ''
 })
 const openConfig = async (data) => {
   detailData.name = data.name
   detailData.maxTaskNum = data.maxTaskNum
+  detailData.dirscanThread = data.dirscanThread
+  detailData.portscanThread = data.portscanThread
   detailData.state = data.state
   dialogVisible.value = true
 }

@@ -153,12 +153,12 @@ const { tableRegister, tableState, tableMethods } = useTable({
       list: res.data.list,
       total: res.data.total
     }
-  }
+  },
+  immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList } = tableMethods
 pageSize.value = 20
-// getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }

@@ -21,6 +21,8 @@ const props = defineProps<{
     name: string
     maxTaskNum: string
     state: string
+    dirscanThread: string
+    portscanThread: string
   }
 }>()
 const { nodeConfForm } = toRefs(props)
@@ -50,6 +52,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       res = await updateNodeConfigDataApi(
         localForm.value.name,
         localForm.value.maxTaskNum,
+        localForm.value.dirscanThread,
+        localForm.value.portscanThread,
         switchValue.value
       )
       if (res.code === 200) {
@@ -65,12 +69,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 }
 </script>
 <template>
-  <ElForm :model="localForm" label-width="100px" status-icon ref="ruleFormRef">
+  <ElForm :model="localForm" label-width="auto" status-icon ref="ruleFormRef">
     <ElFormItem :label="t('node.nodeName')" prop="name">
       <ElInput v-model="localForm.name" disabled />
     </ElFormItem>
     <ElFormItem :label="t('configuration.maxTaskNum')" prop="MaxTaskNum">
       <ElInput v-model="localForm.maxTaskNum" />
+    </ElFormItem>
+    <ElFormItem :label="t('configuration.portScanThread')" prop="MaxTaskNum">
+      <ElInput v-model="localForm.portscanThread" />
+    </ElFormItem>
+    <ElFormItem :label="t('configuration.dirScanThread')" prop="MaxTaskNum">
+      <ElInput v-model="localForm.dirscanThread" />
     </ElFormItem>
     <ElFormItem :label="t('common.state')">
       <ElSwitch
