@@ -16,7 +16,6 @@ const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const search = ref('')
 const handleSearch = () => {
-  console.log('as')
   getList()
 }
 const taskColums = reactive<TableColumn[]>([
