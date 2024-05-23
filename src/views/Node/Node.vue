@@ -173,13 +173,15 @@ const detailData = reactive({
   maxTaskNum: '',
   state: '',
   dirscanThread: '',
-  portscanThread: ''
+  portscanThread: '',
+  crawlerThread: ''
 })
 const openConfig = async (data) => {
   detailData.name = data.name
   detailData.maxTaskNum = data.maxTaskNum
   detailData.dirscanThread = data.dirscanThread
   detailData.portscanThread = data.portscanThread
+  detailData.crawlerThread = data.crawlerThread
   detailData.state = data.state
   dialogVisible.value = true
 }

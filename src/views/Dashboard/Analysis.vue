@@ -327,6 +327,7 @@ const updateFlag = ref(false)
         <Table
           :columns="nodeUsageColumns"
           :data="nodeUsageData"
+          :highlightCurrentRow="false"
           stripe
           :border="false"
           :height="600"

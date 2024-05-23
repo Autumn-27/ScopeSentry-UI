@@ -23,6 +23,7 @@ const props = defineProps<{
     state: string
     dirscanThread: string
     portscanThread: string
+    crawlerThread: string
   }
 }>()
 const { nodeConfForm } = toRefs(props)
@@ -54,6 +55,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         localForm.value.maxTaskNum,
         localForm.value.dirscanThread,
         localForm.value.portscanThread,
+        localForm.value.crawlerThread,
         switchValue.value
       )
       if (res.code === 200) {
@@ -82,6 +84,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('configuration.dirScanThread')" prop="MaxTaskNum">
       <ElInput v-model="localForm.dirscanThread" />
     </ElFormItem>
+    <ElFormItem :label="t('configuration.crawlerThread')" prop="MaxTaskNum">
+      <ElInput v-model="localForm.crawlerThread" />
+    </ElFormItem>
     <ElFormItem :label="t('common.state')">
       <ElSwitch
         v-model="switchValue"
@@ -94,9 +99,10 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElRow>
       <ElCol :span="2" :offset="8">
         <ElFormItem>
-          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
-            t('task.save')
-          }}</ElButton>
+          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">
+            {{ t('task.save') }}
+            <ElText size="small">{{ t('configuration.threadMsg') }}</ElText>
+          </ElButton>
         </ElFormItem>
       </ElCol>
     </ElRow>

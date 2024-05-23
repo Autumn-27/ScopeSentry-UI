@@ -438,8 +438,11 @@ export default {
     maxTaskNum: 'Max Task Num',
     dirScanThread: 'DirScan Thread Num',
     portScanThread: 'PortScan Thread Num',
+    crawlerThread: 'Number of parallel crawlers',
     noticeConfig: 'Notification Configuration',
     newWebhookConfig: 'New configuration',
+    threadMsg:
+      'Please configure the number of concurrencies according to the system memory (refer to the documentation)',
     noticeHelp:
       '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"'
   },

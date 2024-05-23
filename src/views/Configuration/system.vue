@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { ElRow, ElCol, ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
+import {
+  ElRow,
+  ElCol,
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElText,
+  ElDivider
+} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
 import { ref, reactive, onBeforeMount } from 'vue'
@@ -10,7 +19,8 @@ const form = reactive({
   timezone: '',
   MaxTaskNum: '',
   DirscanThread: '',
-  PortscanThread: ''
+  PortscanThread: '',
+  CrawlerThread: ''
 })
 onBeforeMount(async () => {
   try {
@@ -21,6 +31,7 @@ onBeforeMount(async () => {
       form.MaxTaskNum = res.data.MaxTaskNum
       form.DirscanThread = res.data.DirscanThread
       form.PortscanThread = res.data.PortscanThread
+      form.CrawlerThread = res.data.CrawlerThread
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -40,7 +51,8 @@ const save = async () => {
     form.timezone,
     form.MaxTaskNum,
     form.DirscanThread,
-    form.PortscanThread
+    form.PortscanThread,
+    form.CrawlerThread
   )
   if (res.code == 200) {
     saveLoading.value = false
@@ -60,7 +72,7 @@ const saveLoading = ref(false)
         </ElCol>
       </ElRow>
     </template>
-    <ElForm :model="form" label-width="120px" style="max-width: 460px">
+    <ElForm :model="form" label-width="auto" style="max-width: 460px">
       <ElFormItem :label="t('configuration.timezone')">
         <ElInput v-model="form.timezone" />
       </ElFormItem>
@@ -73,8 +85,13 @@ const saveLoading = ref(false)
       <ElFormItem :label="t('configuration.portScanThread')">
         <ElInput v-model="form.PortscanThread" />
       </ElFormItem>
+      <ElFormItem :label="t('configuration.crawlerThread')">
+        <ElInput v-model="form.CrawlerThread" />
+      </ElFormItem>
       <ElFormItem>
         <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
+        <ElDivider direction="vertical" />
+        <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
       </ElFormItem>
     </ElForm>
   </ElCard>

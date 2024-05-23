@@ -434,6 +434,8 @@ export default {
     maxTaskNum: '最大任务数量',
     dirScanThread: '目录扫描并发数',
     portScanThread: '端口扫描并发数',
+    crawlerThread: '爬虫并行数',
+    threadMsg: '请根据系统内存自行配置并发数量(参考文档)',
     noticeConfig: '通知配置',
     newWebhookConfig: '新建配置',
     noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"'
