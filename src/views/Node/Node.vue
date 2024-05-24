@@ -219,7 +219,11 @@ const openLogDialogVisible = async (data) => {
   const res = await getNodeLogApi(data.name)
   logContent.value = res.logs
   logDialogVisible.value = true
-  const socket = new WebSocket('ws://127.0.0.1:8000')
+  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+  const host = window.location.host
+
+  // 构建 WebSocket 地址
+  const socket = new WebSocket(protocol + host)
   socket.onopen = () => {
     setInterval(() => {
       const message = { node_name: data.name }
