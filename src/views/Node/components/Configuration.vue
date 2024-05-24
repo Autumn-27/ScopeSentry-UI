@@ -101,8 +101,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         <ElFormItem>
           <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">
             {{ t('task.save') }}
-            <ElText size="small">{{ t('configuration.threadMsg') }}</ElText>
           </ElButton>
+          <ElText size="small">{{ t('configuration.threadMsg') }}</ElText>
         </ElFormItem>
       </ElCol>
     </ElRow>
