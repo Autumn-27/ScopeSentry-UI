@@ -88,11 +88,15 @@ const saveLoading = ref(false)
       <ElFormItem :label="t('configuration.crawlerThread')">
         <ElInput v-model="form.CrawlerThread" />
       </ElFormItem>
-      <ElFormItem>
-        <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
-        <ElDivider direction="vertical" />
-        <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
-      </ElFormItem>
+      <ElRow>
+        <ElCol :span="20" :offset="12">
+          <ElFormItem>
+            <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
+            <ElDivider direction="vertical" />
+            <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
     </ElForm>
   </ElCard>
   <notification />

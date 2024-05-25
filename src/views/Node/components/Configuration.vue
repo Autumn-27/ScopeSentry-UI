@@ -7,7 +7,9 @@ import {
   FormInstance,
   ElForm,
   ElButton,
-  ElSwitch
+  ElSwitch,
+  ElDivider,
+  ElText
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, ref } from 'vue'
@@ -97,12 +99,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       />
     </ElFormItem>
     <ElRow>
-      <ElCol :span="2" :offset="8">
+      <ElCol :span="16" :offset="8">
         <ElFormItem>
           <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">
             {{ t('task.save') }}
           </ElButton>
-          <ElText size="small">{{ t('configuration.threadMsg') }}</ElText>
+          <ElDivider direction="vertical" />
+          <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
         </ElFormItem>
       </ElCol>
     </ElRow>
