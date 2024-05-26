@@ -87,7 +87,7 @@ const searchKeywordsData = [
   },
   {
     keyword: 'statuscode',
-    example: 'statuscode="200"',
+    example: 'statuscode=="200"',
     explain: t('searchHelp.statuscode')
   },
   {
