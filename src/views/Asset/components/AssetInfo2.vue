@@ -186,6 +186,7 @@ const getAssetstatistics = async () => {
   AssetstatisticsData.value.Service = res.data.Service
   AssetstatisticsData.value.Product = res.data.Product
   AssetstatisticsData.value.Icon = res.data.Icon
+  staticLoading.value = false
 }
 
 const crudSchemas = reactive<CrudSchema[]>([
@@ -446,6 +447,7 @@ const setMaxHeight = () => {
   maxHeight.value = screenHeight * 0.7
 }
 getList()
+const staticLoading = ref(true)
 </script>
 
 <template>
@@ -463,7 +465,7 @@ getList()
   </ContentWrap>
   <ElRow :gutter="3">
     <ElCol :span="3">
-      <ElCard v-loading="loading">
+      <ElCard v-loading="staticLoading">
         <div>
           <ElRow>
             <ElCol :span="12">
