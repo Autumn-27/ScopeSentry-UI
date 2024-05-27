@@ -146,6 +146,31 @@ const progressColums = reactive<TableColumn[]>([
     }
   },
   {
+    field: 'sensitive',
+    label: t('sensitiveInformation.sensitiveInformationName'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
+  },
+  {
     field: 'crawler',
     label: t('crawler.crawlerName'),
     minWidth: 30,

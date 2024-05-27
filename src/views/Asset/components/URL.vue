@@ -140,7 +140,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'source',
     label: t('URL.source'),
-    minWidth: 60
+    minWidth: 30
   },
   {
     field: 'type',
