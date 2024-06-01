@@ -206,7 +206,7 @@ const submitAddPageMonitForm = async () => {
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
     maxHeight="100"
   >
-    <ElForm :model="pageMontForm" label-width="100px" status-icon ref="ruleFormRef">
+    <ElForm :model="pageMontForm" label-width="auto" status-icon ref="ruleFormRef">
       <ElFormItem label="URL" prop="url">
         <ElInput v-model="pageMontForm.url" placeholder="Input URL. Eg: http(s)://xxx.com" />
       </ElFormItem>

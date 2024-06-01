@@ -108,7 +108,7 @@ export default {
     urlType: '检索URL类型',
     method: '检索Method',
     crawlerBody: '检索POST数据',
-    sname: '检索敏感信息名称，不支持模糊搜索',
+    sname: '检索敏感信息名称',
     sinfo: '检索敏感信息',
     redirect: '检索跳转链接',
     vulname: '检索漏洞名称',
@@ -117,7 +117,8 @@ export default {
     response: '检索响应内容',
     hash: '检索响应hash',
     diff: '检索diff内容',
-    level: '检索漏洞等级'
+    level: '检索漏洞等级',
+    sensMd5: '根据响应体MD5检索'
   },
   lock: {
     lockScreen: '锁定屏幕',

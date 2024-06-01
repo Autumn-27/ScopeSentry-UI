@@ -115,7 +115,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 <template>
   <ElForm
     :model="localSensitiveForm"
-    label-width="120px"
+    label-width="auto"
     :rules="rules"
     status-icon
     ref="ruleFormRef"

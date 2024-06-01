@@ -108,7 +108,7 @@ export default {
     urlType: 'Retrieve URL type',
     method: 'Retrieve Method',
     crawlerBody: 'Retrieve POST data',
-    sname: 'Retrieve sensitive information name, fuzzy search is not supported',
+    sname: 'Retrieve sensitive information name',
     sinfo: 'Retrieve sensitive information',
     redirect: 'Retrieve redirect link',
     vulname: 'Retrieve vulnerability name',
@@ -117,7 +117,8 @@ export default {
     response: 'Retrieve response content',
     hash: 'Retrieve response hash',
     diff: 'Retrieve diff content',
-    level: 'Retrieve vuln level'
+    level: 'Retrieve vuln level',
+    sensMd5: 'Retrieve based on response body MD5'
   },
   lock: {
     lockScreen: 'Lock screen',
@@ -335,7 +336,7 @@ export default {
     vulList: 'Vul List',
     save: 'Save',
     data: 'Data',
-    duplicates: 'Subdomain deduplication scanning',
+    duplicates: 'Sub dedup',
     portScan: 'Port Scan',
     portSelect: 'Select Port',
     selectNodeMsg:

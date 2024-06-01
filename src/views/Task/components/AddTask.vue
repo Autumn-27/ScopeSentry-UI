@@ -201,7 +201,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
 <template>
   <ElForm
     :model="taskForm"
-    label-width="120px"
+    label-width="auto"
     :rules="rules"
     status-icon
     ref="ruleFormRef"
@@ -246,7 +246,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
       </ElFormItem>
     </ElTooltip>
     <ElRow>
-      <ElCol :span="6">
+      <ElCol :span="12">
         <ElFormItem :label="t('project.scheduledTasks')">
           <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
             <ElSwitch

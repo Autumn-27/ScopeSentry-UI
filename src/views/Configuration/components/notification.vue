@@ -272,7 +272,7 @@ const delSelect = async () => {
     <ElDivider />
     <ElForm
       :model="notificationConfigForm"
-      label-width="100px"
+      label-width="auto"
       status-icon
       ref="ruleFormRef"
       style="position: relative; top: 1rem"
@@ -379,7 +379,7 @@ const delSelect = async () => {
     }}</ElText>
     <ElForm
       :model="notificationForm"
-      label-width="100px"
+      label-width="auto"
       status-icon
       ref="ruleFormRef"
       style="position: relative; top: 1rem"

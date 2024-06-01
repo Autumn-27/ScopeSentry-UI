@@ -106,6 +106,11 @@ const searchKeywordsData = [
     keyword: 'project',
     example: 'project="Hackerone"',
     explain: t('searchHelp.project')
+  },
+  {
+    keyword: 'md5',
+    example: 'md5=="1d49e5e190f7a38ab498e28e6578f64f"',
+    explain: t('searchHelp.sensMd5')
   }
 ]
 const dialogVisible = ref(false)
@@ -137,7 +142,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'url',
     label: 'URL',
-    minWidth: 30
+    minWidth: 50
   },
   {
     field: 'name',
@@ -157,7 +162,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'match',
     label: 'Info',
-    minWidth: 60,
+    minWidth: 50,
     formatter: (row, __: TableColumn, cellValue: string[]) => {
       const elements = cellValue.map((line, index) => <div key={index}>{line}</div>)
       return (
@@ -259,13 +264,13 @@ const action = async (id) => {
             offset: 1,
             showArrow: false,
             effect: 'dark',
-            enterable: false,
+            enterable: true,
             showAfter: 0,
             popperOptions: {},
             popperClass: 'test',
-            placement: 'bottom',
+            placement: 'top',
             hideAfter: 0,
-            disabled: true
+            disabled: false
           }"
           :style="{
             fontFamily:
