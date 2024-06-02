@@ -26,6 +26,8 @@ const props = defineProps<{
     dirscanThread: string
     portscanThread: string
     crawlerThread: string
+    urlThread: string
+    urlMaxNum: string
   }
 }>()
 const { nodeConfForm } = toRefs(props)
@@ -58,7 +60,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         localForm.value.dirscanThread,
         localForm.value.portscanThread,
         localForm.value.crawlerThread,
-        switchValue.value
+        switchValue.value,
+        localForm.value.urlThread,
+        localForm.value.urlMaxNum
       )
       if (res.code === 200) {
         props.getList()
@@ -80,14 +84,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('configuration.maxTaskNum')" prop="MaxTaskNum">
       <ElInput v-model="localForm.maxTaskNum" />
     </ElFormItem>
-    <ElFormItem :label="t('configuration.portScanThread')" prop="MaxTaskNum">
+    <ElFormItem :label="t('configuration.portScanThread')" prop="portscanThread">
       <ElInput v-model="localForm.portscanThread" />
     </ElFormItem>
-    <ElFormItem :label="t('configuration.dirScanThread')" prop="MaxTaskNum">
+    <ElFormItem :label="t('configuration.dirScanThread')" prop="dirscanThread">
       <ElInput v-model="localForm.dirscanThread" />
     </ElFormItem>
-    <ElFormItem :label="t('configuration.crawlerThread')" prop="MaxTaskNum">
+    <ElFormItem :label="t('configuration.crawlerThread')" prop="crawlerThread">
       <ElInput v-model="localForm.crawlerThread" />
+    </ElFormItem>
+    <ElFormItem :label="t('configuration.urlThread')" prop="MaxTaskNum">
+      <ElInput v-model="localForm.urlThread" />
+    </ElFormItem>
+    <ElFormItem :label="t('configuration.maxUrlNum')" prop="MaxTaskNum">
+      <ElInput v-model="localForm.urlMaxNum" />
     </ElFormItem>
     <ElFormItem :label="t('common.state')">
       <ElSwitch

@@ -7,6 +7,8 @@ export type NodeData = {
   memNum: number
   updateTime: string
   maxTaskNum: string
+  urlThread: string
+  urlMaxNum: string
 }
 
 export type nodeRespData = {

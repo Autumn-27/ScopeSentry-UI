@@ -166,7 +166,9 @@ const buttonPosition = ref('left')
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data.search
+  staticLoading.value = true
   getList()
+  staticLoading.value = false
 }
 
 let AssetstatisticsData: Ref<{

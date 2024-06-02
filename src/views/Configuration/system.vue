@@ -20,7 +20,9 @@ const form = reactive({
   MaxTaskNum: '',
   DirscanThread: '',
   PortscanThread: '',
-  CrawlerThread: ''
+  CrawlerThread: '',
+  UrlThread: '',
+  UrlMaxNum: ''
 })
 onBeforeMount(async () => {
   try {
@@ -32,6 +34,8 @@ onBeforeMount(async () => {
       form.DirscanThread = res.data.DirscanThread
       form.PortscanThread = res.data.PortscanThread
       form.CrawlerThread = res.data.CrawlerThread
+      form.UrlThread = res.data.UrlThread
+      form.UrlMaxNum = res.data.UrlMaxNum
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -52,7 +56,9 @@ const save = async () => {
     form.MaxTaskNum,
     form.DirscanThread,
     form.PortscanThread,
-    form.CrawlerThread
+    form.CrawlerThread,
+    form.UrlThread,
+    form.UrlMaxNum
   )
   if (res.code == 200) {
     saveLoading.value = false
@@ -87,6 +93,12 @@ const saveLoading = ref(false)
       </ElFormItem>
       <ElFormItem :label="t('configuration.crawlerThread')">
         <ElInput v-model="form.CrawlerThread" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.urlThread')">
+        <ElInput v-model="form.UrlThread" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.maxUrlNum')">
+        <ElInput v-model="form.UrlMaxNum" />
       </ElFormItem>
       <ElRow>
         <ElCol :span="20" :offset="12">

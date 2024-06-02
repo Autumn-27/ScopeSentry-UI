@@ -436,6 +436,8 @@ export default {
     dirScanThread: '目录扫描并发数',
     portScanThread: '端口扫描并发数',
     crawlerThread: '爬虫并行数',
+    urlThread: 'URL爬取线程数',
+    maxUrlNum: '最大URL获取数量',
     threadMsg: '请根据系统内存自行配置并发数量(参考文档)',
     noticeConfig: '通知配置',
     newWebhookConfig: '新建配置',

@@ -28,11 +28,21 @@ export const saveSystemConfigurationApi = (
   MaxTaskNum: string,
   DirscanThread: string,
   PortscanThread: string,
-  CrawlerThread: string
+  CrawlerThread: string,
+  UrlThread: string,
+  UrlMaxNum: string
 ): Promise<IResponse<configRespData>> => {
   return request.post({
     url: '/api/configuration/system/save',
-    data: { timezone, MaxTaskNum, DirscanThread, PortscanThread, CrawlerThread }
+    data: {
+      timezone,
+      MaxTaskNum,
+      DirscanThread,
+      PortscanThread,
+      CrawlerThread,
+      UrlThread,
+      UrlMaxNum
+    }
   })
 }
 

@@ -439,7 +439,9 @@ export default {
     maxTaskNum: 'Max Task Num',
     dirScanThread: 'DirScan Thread Num',
     portScanThread: 'PortScan Thread Num',
-    crawlerThread: 'Number of parallel crawlers',
+    crawlerThread: 'Crawlers Thread Num',
+    urlThread: 'URL Scan Thread Num',
+    maxUrlNum: 'Max URL Num',
     noticeConfig: 'Notification Configuration',
     newWebhookConfig: 'New configuration',
     threadMsg:

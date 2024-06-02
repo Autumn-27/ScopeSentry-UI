@@ -23,11 +23,22 @@ export const updateNodeConfigDataApi = (
   dirscanThread: string,
   portscanThread: string,
   crawlerThread: string,
-  state: boolean
+  state: boolean,
+  urlThread: string,
+  urlMaxNum: string
 ): Promise<IResponse<NodeDataResponse>> => {
   return request.post({
     url: '/api/node/config/update',
-    data: { name, maxTaskNum, dirscanThread, portscanThread, crawlerThread, state }
+    data: {
+      name,
+      maxTaskNum,
+      dirscanThread,
+      portscanThread,
+      crawlerThread,
+      state,
+      urlThread,
+      urlMaxNum
+    }
   })
 }
 
