@@ -438,7 +438,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     </ElRow>
     <ElDivider />
     <ElRow>
-      <ElCol :span="2" :offset="7">
+      <ElCol :span="2" :offset="10">
         <ElFormItem>
           <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
             t('task.save')
