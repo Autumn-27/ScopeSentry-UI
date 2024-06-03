@@ -143,7 +143,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'url',
     label: 'url',
-    minWidth: 30,
+    minWidth: 50,
     formatter: (_, __: TableColumn, domainValue: string) => {
       return (
         <ElLink href={domainValue} underline={false}>
@@ -155,11 +155,11 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'response1',
     label: t('PageMonitoring.oldResponseBody'),
-    minWidth: 30,
+    minWidth: 10,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="success" onClick={() => action(row.response1, row.hash1)}>
+          <BaseButton type="info" size="small" onClick={() => action(row.response1, row.hash1)}>
             {t('common.view')}
           </BaseButton>
         </>
@@ -169,11 +169,11 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'respone2',
     label: t('PageMonitoring.currentResponseBody'),
-    minWidth: 30,
+    minWidth: 10,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="success" onClick={() => action(row.response2, row.hash2)}>
+          <BaseButton type="info" size="small" onClick={() => action(row.response2, row.hash2)}>
             {t('common.view')}
           </BaseButton>
         </>
