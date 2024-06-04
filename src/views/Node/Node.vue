@@ -27,11 +27,12 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'name',
     label: t('node.nodeName'),
-    minWidth: 100
+    minWidth: 20
   },
   {
     field: 'maxTaskNum',
     label: t('configuration.maxTaskNum'),
+    minWidth: 10,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -45,6 +46,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'running',
     label: t('node.taskCount'),
+    minWidth: 10,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -60,6 +62,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'finished',
     label: t('node.finished'),
+    minWidth: 10,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
         ElTag,
@@ -75,6 +78,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'cpuNum',
     label: t('node.nodeUsageCpu'),
+    minWidth: 20,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
       numericValue = parseFloat(numericValue.toFixed(2))
@@ -93,6 +97,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'memNum',
     label: t('node.nodeUsageMemory'),
+    minWidth: 20,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
       numericValue = parseFloat(numericValue.toFixed(2))
@@ -111,6 +116,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'state',
     label: t('node.nodeStatus'),
+    minWidth: 20,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
         ElTag,
@@ -130,12 +136,13 @@ const nodeColums = reactive<TableColumn[]>([
   },
   {
     field: 'updateTime',
-    label: t('node.updateTime')
+    label: t('node.updateTime'),
+    minWidth: 20
   },
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: '100px',
+    minWidth: 30,
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
       return (

@@ -31,7 +31,7 @@ export type TaskContentData = {
   scheduledTasks: boolean
   hour: number
   allNode: boolean
-  duplicates: boolean
+  duplicates: string
 }
 
 export type TaskProgessInfo = {

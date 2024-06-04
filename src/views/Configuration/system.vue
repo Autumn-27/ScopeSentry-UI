@@ -100,16 +100,16 @@ const saveLoading = ref(false)
       <ElFormItem :label="t('configuration.maxUrlNum')">
         <ElInput v-model="form.UrlMaxNum" />
       </ElFormItem>
-      <ElRow>
-        <ElCol :span="20" :offset="12">
-          <ElFormItem>
-            <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
-            <ElDivider direction="vertical" />
-            <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
     </ElForm>
+
+    <ElRow>
+      <!-- <ElCol :span="20" :offset="12"/> -->
+      <ElCol :span="12" :offset="2">
+        <ElButton type="primary" @click="confirmAdd" :loading="saveLoading">Save</ElButton>
+        <ElDivider direction="vertical" />
+        <ElText size="small" type="danger">{{ t('configuration.threadMsg') }}</ElText>
+      </ElCol>
+    </ElRow>
   </ElCard>
   <notification />
 </template>

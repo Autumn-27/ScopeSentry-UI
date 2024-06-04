@@ -27,7 +27,8 @@ import {
   getScheduledTaskDataApi,
   getTaskContentApi,
   scheduledDeleteTaskApi,
-  updateScheduledTaskPageMonitApi
+  updateScheduledTaskPageMonitApi,
+  taskRunApi
 } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
@@ -94,7 +95,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'state',
     label: t('common.state'),
-    minWidth: 40,
+    minWidth: 20,
     formatter: (_: Recordable, __: TableColumn, stateValue: boolean) => {
       if (stateValue == null) {
         return <div></div>
@@ -153,11 +154,19 @@ const taskColums = reactive<TableColumn[]>([
               </BaseButton>
             </>
           )}
+          {/* <BaseButton type="warning" onClick={() => taskRunNow(row.id)}>
+            {t('task.runNow')}
+          </BaseButton> */}
         </>
       )
     }
   }
 ])
+
+// const taskRunNow = async (id) => {
+//   await taskRunApi(id)
+// }
+
 const progressDialogVisible = ref(false)
 let getProgressInfoID = ''
 let getProgressInfotype = ''
@@ -198,7 +207,7 @@ let taskForm = reactive({
   target: '',
   node: [] as string[],
   subdomainScan: true,
-  duplicates: true,
+  duplicates: '',
   subdomainConfig: [] as string[],
   urlScan: true,
   sensitiveInfoScan: true,
@@ -242,6 +251,7 @@ const getTaskContent = async (data) => {
       taskForm.scheduledTasks = result.scheduledTasks
       taskForm.hour = result.hour
       taskForm.allNode = result.allNode
+      taskForm.duplicates = result.duplicates
       dialogVisible.value = true
     }
   } else {

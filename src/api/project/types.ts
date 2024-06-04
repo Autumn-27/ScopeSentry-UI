@@ -33,4 +33,5 @@ export type projectContent = {
   dirScan: boolean
   allNode: boolean
   node: string[]
+  duplicates: string
 }

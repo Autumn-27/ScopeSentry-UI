@@ -336,14 +336,18 @@ export default {
     vulList: 'Vul List',
     save: 'Save',
     data: 'Data',
-    duplicates: 'Sub dedup',
+    duplicatesSubdomain: 'Subdomain Duplicates',
+    duplicates: 'Duplicates',
     portScan: 'Port Scan',
     portSelect: 'Select Port',
     selectNodeMsg:
       'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
     duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.',
     waybackUrlMsg: 'Get URL from Wayback Machine.',
-    addPageMonitTask: 'New Page Monitoring'
+    addPageMonitTask: 'New Page Monitoring',
+    duplicatesPort: 'Port Duplicates',
+    duplicatesPortMsg: 'Scan only undiscovered ports',
+    runNow: 'Run Now'
   },
   asset: {
     assetName: 'Asset',
@@ -410,7 +414,7 @@ export default {
     msgProject: 'Please enter the project name',
     projectScope: 'Project Scope',
     msgProjectScope: 'Enter the root domain name of the project, one per line.',
-    msgScheduledTasks: 'Scheduled scanning (removal of duplicates)',
+    msgScheduledTasks: 'Scheduled scanning',
     scheduledTasks: 'Scheduled Tasks',
     cycle: 'Monitoring Cycle',
     projectDetail: 'Project Detail',
@@ -444,8 +448,7 @@ export default {
     maxUrlNum: 'Max URL Num',
     noticeConfig: 'Notification Configuration',
     newWebhookConfig: 'New configuration',
-    threadMsg:
-      'Please configure the number of concurrencies according to the system memory (refer to the documentation)',
+    threadMsg: 'Please configure the number of concurrencies according to the system memory',
     noticeHelp:
       '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"'
   },

@@ -37,7 +37,7 @@ const props = defineProps<{
     target: string
     node: string[]
     subdomainScan: boolean
-    duplicates: boolean
+    duplicates: string
     subdomainConfig: string[]
     urlScan: boolean
     sensitiveInfoScan: boolean
@@ -270,22 +270,26 @@ const handleCheckAll = (val: CheckboxValueType) => {
       </ElCol>
     </ElRow>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
-      t('subdomain.subdomainName')
+      t('task.duplicates')
     }}</ElDivider>
-    <ElRow v-if="!$props.schedule">
-      <ElCol :span="6">
-        <ElTooltip :content="t('task.duplicatesMsg')" placement="top">
-          <ElFormItem :label="t('task.duplicates')">
-            <ElSwitch
-              v-model="taskForm.duplicates"
-              inline-prompt
-              :active-text="t('common.true')"
-              :inactive-text="t('common.false')"
-            />
-          </ElFormItem>
-        </ElTooltip>
+    <ElRow>
+      <ElCol :span="24">
+        <ElFormItem :label="t('task.duplicates')" prop="type">
+          <ElRadioGroup v-model="taskForm.duplicates">
+            <ElRadio label="None" name="duplicates" :checked="true" value="None" />
+            <ElTooltip effect="dark" :content="t('task.duplicatesMsg')" placement="top">
+              <ElRadio :label="t('task.duplicatesSubdomain')" name="duplicates" value="subdomain" />
+            </ElTooltip>
+            <ElTooltip effect="dark" :content="t('task.duplicatesPortMsg')" placement="top">
+              <ElRadio :label="t('task.duplicatesPort')" name="duplicates" value="port" />
+            </ElTooltip>
+          </ElRadioGroup>
+        </ElFormItem>
       </ElCol>
     </ElRow>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('subdomain.subdomainName')
+    }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
         <ElFormItem :label="t('task.subdomainScan')">

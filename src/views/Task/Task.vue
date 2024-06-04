@@ -139,7 +139,7 @@ const addTask = async () => {
   taskForm.target = ''
   taskForm.node = []
   taskForm.subdomainScan = true
-  taskForm.duplicates = true
+  taskForm.duplicates = 'None'
   taskForm.subdomainConfig = []
   taskForm.urlScan = true
   taskForm.sensitiveInfoScan = true
@@ -166,7 +166,7 @@ let taskForm = reactive({
   target: '',
   node: [] as string[],
   subdomainScan: true,
-  duplicates: true,
+  duplicates: 'None',
   subdomainConfig: [],
   urlScan: true,
   sensitiveInfoScan: true,

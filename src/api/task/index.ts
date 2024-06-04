@@ -28,7 +28,7 @@ export const addTaskApi = (
   subdomainScan: boolean,
   subdomainConfig: string[],
   urlScan: boolean,
-  duplicates: boolean,
+  duplicates: string,
   sensitiveInfoScan: boolean,
   pageMonitoring: string,
   crawlerScan: boolean,
@@ -75,7 +75,7 @@ export const updateTaskApi = (
   subdomainScan: boolean,
   subdomainConfig: string[],
   urlScan: boolean,
-  duplicates: boolean,
+  duplicates: string,
   sensitiveInfoScan: boolean,
   pageMonitoring: string,
   crawlerScan: boolean,
@@ -150,6 +150,10 @@ export const getScheduledTaskDataApi = (
   pageSize: number
 ): Promise<IResponse<ScheduledTaskDataResponse>> => {
   return request.post({ url: '/api/scheduled/task/data', data: { search, pageIndex, pageSize } })
+}
+
+export const taskRunApi = (id: string): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/scheduled/task/run', data: { id } })
 }
 
 export const scheduledDeleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>> => {

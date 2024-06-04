@@ -49,7 +49,7 @@ let projectForm = reactive({
   dirScan: false,
   node: [] as string[],
   allNode: false,
-  duplicates: true
+  duplicates: ''
 })
 const props = defineProps<{
   closeDialog: () => void
@@ -190,6 +190,8 @@ const getProjectInfo = async () => {
     projectForm.dirScan = res.data.dirScan
     projectForm.allNode = res.data.allNode
     projectForm.node = res.data.node
+    projectForm.duplicates = res.data.duplicates
+    dataLoading.value = false
     // props.closedataLoading()
   }
 }
@@ -317,22 +319,30 @@ const handleCheckAll = (val: CheckboxValueType) => {
     </ElTooltip>
     <div v-if="projectForm.scheduledTasks">
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
-        t('subdomain.subdomainName')
+        t('task.duplicates')
       }}</ElDivider>
-      <ElRow v-if="!$props.schedule">
-        <ElCol :span="6">
-          <ElTooltip :content="t('task.duplicatesMsg')" placement="top">
-            <ElFormItem :label="t('task.duplicates')">
-              <ElSwitch
-                v-model="projectForm.duplicates"
-                inline-prompt
-                :active-text="t('common.true')"
-                :inactive-text="t('common.false')"
-              />
-            </ElFormItem>
-          </ElTooltip>
+      <ElRow>
+        <ElCol :span="24">
+          <ElFormItem :label="t('task.duplicates')" prop="type">
+            <ElRadioGroup v-model="projectForm.duplicates">
+              <ElRadio label="None" name="duplicates" :checked="true" value="None" />
+              <ElTooltip effect="dark" :content="t('task.duplicatesMsg')" placement="top">
+                <ElRadio
+                  :label="t('task.duplicatesSubdomain')"
+                  name="duplicates"
+                  value="subdomain"
+                />
+              </ElTooltip>
+              <ElTooltip effect="dark" :content="t('task.duplicatesPortMsg')" placement="top">
+                <ElRadio :label="t('task.duplicatesPort')" name="duplicates" value="port" />
+              </ElTooltip>
+            </ElRadioGroup>
+          </ElFormItem>
         </ElCol>
       </ElRow>
+      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+        t('subdomain.subdomainName')
+      }}</ElDivider>
       <ElRow>
         <ElCol :span="6">
           <ElFormItem :label="t('task.subdomainScan')">
@@ -485,7 +495,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     </div>
     <ElDivider />
     <ElRow>
-      <ElCol :span="2" :offset="8">
+      <ElCol :span="2" :offset="12">
         <ElFormItem>
           <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
             t('task.save')

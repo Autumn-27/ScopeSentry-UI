@@ -334,13 +334,17 @@ export default {
     vulScan: '漏洞扫描',
     vulList: '漏洞列表',
     save: '保存',
-    duplicates: '子域名去重扫描',
+    duplicatesSubdomain: '子域名去重',
     data: '数据',
     selectNodeMsg:
       '只有通过点击All选择节点当有新节点注册时才会自动将任务添加到新节点，否则任务只会在当前选择节点中运行！',
     duplicatesMsg: '历史已经查询到了子域名将会跳过',
     waybackUrlMsg: '从Wayback Machine获取URL',
-    addPageMonitTask: '新建页面监控'
+    addPageMonitTask: '新建页面监控',
+    duplicates: '去重',
+    duplicatesPort: '端口去重',
+    duplicatesPortMsg: '仅扫描未发现的端口',
+    runNow: '立即运行'
   },
   asset: {
     assetName: '资产',
@@ -407,7 +411,7 @@ export default {
     msgProject: '请输入项目名称',
     projectScope: '项目范围',
     msgProjectScope: '输入项目的根域名，一行一个。',
-    msgScheduledTasks: '定时扫描(去重)',
+    msgScheduledTasks: '定时扫描',
     scheduledTasks: '定时任务',
     cycle: '监控周期',
     projectDetail: '项目信息',
