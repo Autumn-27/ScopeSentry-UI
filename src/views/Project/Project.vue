@@ -4,14 +4,14 @@ import { ElButton, ElTabPane, ElTabs, ElInput, ElRow, ElCol } from 'element-plus
 import ProjectList from './components/ProjectList.vue'
 import AddProject from './components/AddProject.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import { getProjectDataApi } from '@/api/project'
 import { useIcon } from '@/hooks/web/useIcon'
 const { t } = useI18n()
-let allProjectData = {}
+let allProjectData = reactive({})
 let tabNames = ref<string[]>([])
-let tagNum = {}
+let tagNum = reactive({})
 const getProjectTag = async (pageIndex: number, pageSize: number) => {
   if (pageIndex === 0) {
     pageIndex = currentPage.value
@@ -22,9 +22,10 @@ const getProjectTag = async (pageIndex: number, pageSize: number) => {
   }
   try {
     const res = await getProjectDataApi(search.value, pageIndex, pageSize)
-    allProjectData = res.data.result
+    // 更新响应式对象
+    Object.assign(allProjectData, res.data.result)
     tabNames.value = Object.keys(res.data.tag)
-    tagNum = res.data.tag
+    Object.assign(tagNum, res.data.tag)
     const index = tabNames.value.indexOf('All')
     if (index !== -1) {
       tabNames.value.splice(index, 1)
@@ -44,8 +45,12 @@ const search = ref('')
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const currentPage = ref(1)
 const currentpageSize = ref(50)
+
+const loading = ref(false)
 const handleSearch = () => {
+  loading.value = true
   getProjectTag(currentPage.value, currentpageSize.value)
+  loading.value = false
 }
 handleSearch()
 </script>
@@ -60,7 +65,14 @@ handleSearch()
         <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
       </ElCol>
       <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch" />
+        <ElButton
+          :loading="loading"
+          type="primary"
+          :icon="searchicon"
+          size="large"
+          style="height: 100%"
+          @click="handleSearch"
+        />
       </ElCol>
     </ElRow>
     <ElRow>
