@@ -353,13 +353,15 @@ const updateFlag = ref(false)
             <ElCol :span="3" :offset="8" v-if="updateFlag">
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
-                  <ElTooltip
-                    :content="t('common.updateButtonMsg')"
-                    lacement="top-start"
-                    effect="dark"
-                  >
-                    <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
-                  </ElTooltip>
+                  <ElButton color="#626aef">
+                    <ElTooltip
+                      :content="t('common.updateButtonMsg')"
+                      lacement="top-start"
+                      effect="dark"
+                    >
+                      {{ t('common.update') }}
+                    </ElTooltip>
+                  </ElButton>
                 </template>
               </ElPopconfirm>
             </ElCol>
