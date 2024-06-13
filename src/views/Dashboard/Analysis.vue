@@ -275,7 +275,10 @@ onBeforeUnmount(() => {
 })
 
 const updateSystem = async () => {
-  await UPDATEsYSTEMApi()
+  const confirmed = window.confirm('Are you sure you want to retest?')
+  if (confirmed) {
+    await UPDATEsYSTEMApi()
+  }
 }
 const updateFlag = ref(false)
 </script>
@@ -351,17 +354,9 @@ const updateFlag = ref(false)
               </div>
             </ElCol>
             <ElCol :span="3" :offset="8" v-if="updateFlag">
-              <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
-                <template #reference>
-                  <ElTooltip
-                    :content="t('common.updateButtonMsg')"
-                    lacement="top-start"
-                    effect="dark"
-                  >
-                    <ElButton color="#626aef">{{ t('common.update') }}</ElButton>
-                  </ElTooltip>
-                </template>
-              </ElPopconfirm>
+              <ElTooltip :content="t('common.updateButtonMsg')" lacement="top-start" effect="dark">
+                <ElButton color="#626aef" @click="updateSystem">{{ t('common.update') }}</ElButton>
+              </ElTooltip>
             </ElCol>
           </ElRow>
         </template>
