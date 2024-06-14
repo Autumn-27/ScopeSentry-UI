@@ -23,7 +23,11 @@ import {
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getPageMonitoringApi } from '@/api/asset'
+import {
+  getPageMonitoringApi,
+  getPageMonitoringHistoryApi,
+  getPageMonitoringResponseApi
+} from '@/api/asset'
 import { BaseButton } from '@/components/Button'
 import { Icon } from '@iconify/vue'
 
@@ -155,11 +159,11 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'response1',
     label: t('PageMonitoring.oldResponseBody'),
-    minWidth: 10,
+    minWidth: 12,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="info" size="small" onClick={() => action(row.response1, row.hash1)}>
+          <BaseButton type="info" size="small" onClick={() => getResponse(row.id, '1')}>
             {t('common.view')}
           </BaseButton>
         </>
@@ -169,11 +173,11 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'respone2',
     label: t('PageMonitoring.currentResponseBody'),
-    minWidth: 10,
+    minWidth: 12,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="info" size="small" onClick={() => action(row.response2, row.hash2)}>
+          <BaseButton type="info" size="small" onClick={() => getResponse(row.id, '2')}>
             {t('common.view')}
           </BaseButton>
         </>
@@ -200,7 +204,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="success" onClick={() => historyDiffAction(row.history_diff)}>
+          <BaseButton type="success" onClick={() => getHistoryDiff(row.id)}>
             {t('asset.historyDiff')}
           </BaseButton>
         </>
@@ -211,11 +215,22 @@ const crudSchemas = reactive<CrudSchema[]>([
 const DialogVisible = ref(false)
 const body = ref('')
 const hash = ref('')
+const getResponse = async (id: string, flag: string) => {
+  const res = await getPageMonitoringResponseApi(id, flag)
+  action(res.data.content, res.data.hash)
+}
+
 const action = (newBody: any, newHash: string) => {
   DialogVisible.value = true
   body.value = newBody
   hash.value = newHash
 }
+
+const getHistoryDiff = async (id: string) => {
+  const res = await getPageMonitoringHistoryApi(id)
+  historyDiffAction(res.data.diff)
+}
+
 const HistoryDiffDialogVisible = ref(false)
 const historyDiff = ref<string[]>([])
 const historyDiffAction = (data: string[]) => {

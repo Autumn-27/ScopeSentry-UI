@@ -1,3 +1,5 @@
+import { string } from 'vue-types'
+
 export type AssetData = {
   id: string
   domain: string
@@ -101,4 +103,13 @@ export type SubdomaintakerData = {
   type: string
   value: string
   response: string
+}
+
+export type PageMResponse = {
+  hash: string
+  content: string
+}
+
+export type PageMHistory = {
+  diff: string[]
 }

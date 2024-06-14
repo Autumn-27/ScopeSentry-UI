@@ -10,7 +10,9 @@ import {
   DirScanData,
   PageMonitoringData,
   SubdomaintakerData,
-  SensitiveBody
+  SensitiveBody,
+  PageMResponse,
+  PageMHistory
 } from './types'
 
 interface AssetDataResponse {
@@ -110,6 +112,23 @@ export const getPageMonitoringApi = (
   pageSize: number
 ): Promise<IResponse<PageMonitoringDataResponse>> => {
   return request.post({ url: '/api/page/monitoring/result', data: { search, pageIndex, pageSize } })
+}
+
+export const getPageMonitoringResponseApi = (
+  id: string,
+  flag: string
+): Promise<IResponse<PageMResponse>> => {
+  return request.post({
+    url: '/api/page/monitoring/response',
+    data: { id, flag }
+  })
+}
+
+export const getPageMonitoringHistoryApi = (id: string): Promise<IResponse<PageMHistory>> => {
+  return request.post({
+    url: '/api/page/monitoring/history/diff',
+    data: { id }
+  })
 }
 
 interface SubdomaintakerDataResponse {
