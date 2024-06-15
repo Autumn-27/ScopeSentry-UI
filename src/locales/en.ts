@@ -367,7 +367,8 @@ export default {
     assetTotalNum: 'Total Assets',
     responseHeader: 'Response Header',
     responseBody: 'Response Body',
-    historyDiff: 'Historical changes'
+    historyDiff: 'Historical changes',
+    export: 'Export'
   },
   subdomain: {
     subdomainName: 'Subdomain',
@@ -707,103 +708,5 @@ export default {
     showOrHiddenSortable: 'Show or hidden sortable',
     videoPreview: 'Video preview',
     cardTable: 'Card table'
-  },
-  richText: {
-    richText: 'Rich text',
-    richTextDes: 'Secondary packaging based on wangeditor',
-    jsonEditor: 'JSON Editor',
-    jsonEditorDes: 'Secondary packaging based on vue-json-pretty'
-  },
-  dialogDemo: {
-    dialog: 'Dialog',
-    dialogDes: 'Secondary packaging of Dialog components based on ElementPlus',
-    open: 'Open',
-    close: 'Close',
-    combineWithForm: 'Combine with form',
-    submit: 'Submit'
-  },
-  imageViewerDemo: {
-    open: 'Open',
-    imageViewer: 'Image viewer',
-    imageViewerDes: 'Secondary packaging of ImageViewer components based on ElementPlus'
-  },
-  descriptionsDemo: {
-    descriptions: 'Descriptions',
-    descriptionsDes: 'Secondary packaging of Descriptions components based on ElementPlus',
-    username: 'Username',
-    nickName: 'NickName',
-    phone: 'Phone',
-    email: 'Email',
-    addr: 'Address',
-    form: 'Combined with Form component'
-  },
-  exampleDemo: {
-    title: 'Title',
-    add: 'Add',
-    del: 'Delete',
-    edit: 'Edit',
-    author: 'Author',
-    displayTime: 'Display time',
-    importance: 'Importance',
-    pageviews: 'Pageviews',
-    important: 'Important',
-    content: 'Content',
-    save: 'Save',
-    detail: 'Detail'
-  },
-  userDemo: {
-    title: 'User management',
-    message:
-      'Because it is simulated data, only two accounts with different permissions are provided, which can be modified and combined by developers according to the actual situation.',
-    index: 'Index',
-    action: 'Action',
-    username: 'Username',
-    password: 'Password',
-    role: 'Role',
-    remark: 'Remark',
-    remarkMessage1: 'Back end control routing permission',
-    remarkMessage2: 'Front end control routing permission',
-    // 部门列表
-    departmentList: 'Department list',
-    // 搜索部门
-    searchDepartment: 'Search department',
-    account: 'Account',
-    email: 'Email',
-    createTime: 'Create time',
-    // 所属部门
-    department: 'Department',
-    departmentName: 'Department name',
-    status: 'Status',
-    enable: 'Enable',
-    disable: 'Disable',
-    superiorDepartment: 'Superior department'
-  },
-  menu: {
-    menuName: 'Menu name',
-    icon: 'Icon',
-    // 权限
-    permission: 'Permission',
-    component: 'Component',
-    path: 'Path',
-    status: 'Status',
-    hidden: 'Hidden',
-    alwaysShow: 'Always show',
-    noCache: 'No cache',
-    breadcrumb: 'Breadcrumb',
-    affix: 'Affix',
-    noTagsView: 'No tags view',
-    activeMenu: 'Active menu',
-    canTo: 'Can to',
-    name: 'Name'
-  },
-  role: {
-    roleName: 'Role name',
-    role: 'Role',
-    // 菜单分配
-    menu: 'Menu allocation'
-  },
-  inputPasswordDemo: {
-    title: 'InputPassword',
-    inputPasswordDes: 'Secondary packaging of Input components based on ElementPlus'
   }
 }

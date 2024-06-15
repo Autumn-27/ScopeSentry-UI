@@ -159,7 +159,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'response1',
     label: t('PageMonitoring.oldResponseBody'),
-    minWidth: 12,
+    minWidth: 15,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -173,7 +173,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'respone2',
     label: t('PageMonitoring.currentResponseBody'),
-    minWidth: 12,
+    minWidth: 15,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -196,6 +196,11 @@ const crudSchemas = reactive<CrudSchema[]>([
         </ElScrollbar>
       )
     }
+  },
+  {
+    field: 'time',
+    label: t('asset.time'),
+    minWidth: 50
   },
   {
     field: 'action',

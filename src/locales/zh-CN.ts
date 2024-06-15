@@ -364,7 +364,8 @@ export default {
     assetTotalNum: '资产总数',
     responseHeader: '响应头',
     responseBody: '响应体',
-    historyDiff: '历史变更'
+    historyDiff: '历史变更',
+    export: '导出'
   },
   subdomain: {
     subdomainName: '子域名',
@@ -697,102 +698,5 @@ export default {
     showOrHiddenSortable: '显示/隐藏排序',
     videoPreview: '视频预览',
     cardTable: '卡片表格'
-  },
-  richText: {
-    richText: '富文本',
-    richTextDes: '基于 wangeditor 二次封装',
-    jsonEditor: 'JSON编辑器',
-    jsonEditorDes: '基于 vue-json-pretty 二次封装'
-  },
-  dialogDemo: {
-    dialog: '弹窗',
-    dialogDes: '基于 ElementPlus 的 Dialog 组件二次封装',
-    open: '打开',
-    close: '关闭',
-    combineWithForm: '与表单结合',
-    submit: '提交'
-  },
-  imageViewerDemo: {
-    open: '打开',
-    imageViewer: '图片预览',
-    imageViewerDes: '基于 ElementPlus 的 ImageViewer 组件二次封装'
-  },
-  descriptionsDemo: {
-    descriptions: '描述',
-    descriptionsDes: '基于 ElementPlus 的 Descriptions 组件二次封装',
-    username: '用户名',
-    nickName: '昵称',
-    phone: '联系电话',
-    email: '邮箱',
-    addr: '地址',
-    form: '与 Form 组件组合'
-  },
-  exampleDemo: {
-    title: '标题',
-    add: '新增',
-    del: '删除',
-    edit: '编辑',
-    author: '作者',
-    displayTime: '创建时间',
-    importance: '重要性',
-    pageviews: '阅读数',
-    important: '重要',
-    content: '内容',
-    save: '保存',
-    detail: '详情'
-  },
-  userDemo: {
-    title: '用户管理',
-    message: '由于是模拟数据，所以只提供了两种不同权限的帐号，开发者可根据实际情况自行改造结合。',
-    index: '序号',
-    action: '操作',
-    username: '用户名',
-    password: '密码',
-    role: '角色',
-    remark: '备注',
-    remarkMessage1: '后端控制路由权限',
-    remarkMessage2: '前端控制路由权限',
-    // 部门列表
-    departmentList: '部门列表',
-    searchDepartment: '搜索部门',
-    account: '账号',
-    email: '邮箱',
-    createTime: '创建时间',
-    // 所属部门
-    department: '所属部门',
-    departmentName: '部门名称',
-    status: '状态',
-    // 启用
-    enable: '启用',
-    // 禁用
-    disable: '禁用',
-    // 上级部门
-    superiorDepartment: '上级部门'
-  },
-  menu: {
-    menuName: '菜单名称',
-    icon: '图标',
-    permission: '按钮权限',
-    component: '组件',
-    path: '路径',
-    status: '状态',
-    hidden: '是否隐藏',
-    alwaysShow: '是否一直显示',
-    noCache: '是否清除缓存',
-    breadcrumb: '是否显示面包屑',
-    affix: '是否固定在标签页',
-    noTagsView: '是否隐藏标签页',
-    activeMenu: '高亮菜单',
-    canTo: '是否可跳转',
-    name: '组件名称'
-  },
-  role: {
-    roleName: '角色名称',
-    role: '角色',
-    menu: '菜单分配'
-  },
-  inputPasswordDemo: {
-    title: '密码输入框',
-    inputPasswordDes: '基于 ElementPlus 的 Input 组件二次封装'
   }
 }
