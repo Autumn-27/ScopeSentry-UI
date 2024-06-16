@@ -75,6 +75,12 @@ export default {
     notSpecialCharacters: '不能包含特殊字符',
     isEqual: '两次输入不一致'
   },
+  export: {
+    exportType: '导出类型',
+    exportTypeAll: '所有数据',
+    exportTypeSearch: '当前搜索条件',
+    exportQuantity: '导出数据量'
+  },
   searchHelp: {
     notice: '关键字需要用双引号包裹',
     operator: '运算符',

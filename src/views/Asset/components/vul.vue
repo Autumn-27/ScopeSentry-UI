@@ -237,6 +237,7 @@ const action = (data: any) => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
+    index="vulnerability"
   />
   <ElRow>
     <ElCol>

@@ -75,6 +75,12 @@ export default {
     notSpecialCharacters: 'Special characters are not allowed',
     isEqual: 'The two are not equal'
   },
+  export: {
+    exportType: 'Export Type',
+    exportTypeAll: 'All data',
+    exportTypeSearch: 'Current search criteria',
+    exportQuantity: 'Export data volume'
+  },
   searchHelp: {
     notice: 'Keywords need to be wrapped in double quotes',
     operator: 'Operator',

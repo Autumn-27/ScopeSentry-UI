@@ -1,40 +1,54 @@
 <script setup lang="tsx">
-import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
-import { FormSchema } from '@/components/Form'
 import {
-  ElCol,
-  ElRow,
-  ElButton,
-  ElTable,
-  ElTableColumn,
-  ElText,
-  ElDivider,
-  ElInput,
-  ElForm,
+  ElTabs,
+  ElTabPane,
   ElFormItem,
-  ElTabs
+  ElForm,
+  ElRadio,
+  ElRadioGroup,
+  ElInput,
+  ElButton
 } from 'element-plus'
-import { Dialog } from '@/components/Dialog'
-import { Icon } from '@iconify/vue'
-import { useIcon } from '@/hooks/web/useIcon'
-// import exportData from '../export/exportData.vue'
+import { reactive } from 'vue'
+import { exportApi } from '@/api/export'
 const { t } = useI18n()
 
 const props = defineProps<{
-  getList: () => void
-  handleSearch: (string) => void
-  searchKeywordsData: {
-    keyword: string
-    example: string
-    explain: string
-  }[]
+  index: string
+  searchParams: string
 }>()
+const exportForm = reactive({
+  type: 'all',
+  quantity: 0
+})
+const create = async () => {
+  await exportApi(props.index, exportForm.quantity, exportForm.type, props.searchParams)
+}
 </script>
 
 <template>
-  <ElTabs tab-position="tabPosition">
-    <ElTabPane />
+  <ElTabs tabPosition="left">
+    <ElTabPane :label="t('asset.export')">
+      <ElForm
+        :model="exportForm"
+        label-width="auto"
+        style="max-width: 300px; left: 5%; position: relative"
+      >
+        <ElFormItem :label="t('export.exportType')">
+          <ElRadioGroup v-model="exportForm.type">
+            <ElRadio value="all">{{ t('export.exportTypeAll') }}</ElRadio>
+            <ElRadio value="search">{{ t('export.exportTypeSearch') }}</ElRadio>
+          </ElRadioGroup>
+        </ElFormItem>
+        <ElFormItem :label="t('export.exportQuantity')">
+          <ElInput v-model="exportForm.quantity" />
+        </ElFormItem>
+        <ElFormItem>
+          <ElButton type="primary" @click="create">Create</ElButton>
+        </ElFormItem>
+      </ElForm>
+    </ElTabPane>
+    <ElTabPane :label="t('asset.assetName')">test</ElTabPane>
   </ElTabs>
 </template>

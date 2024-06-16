@@ -18,7 +18,7 @@ import {
 import { Dialog } from '@/components/Dialog'
 import { Icon } from '@iconify/vue'
 import { useIcon } from '@/hooks/web/useIcon'
-// import exportData from '../export/exportData.vue'
+import exportData from '../export/exportData.vue'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -29,6 +29,7 @@ const props = defineProps<{
     example: string
     explain: string
   }[]
+  index: string
 }>()
 const searchHelpData = [
   {
@@ -95,6 +96,11 @@ const searchicon = useIcon({ icon: 'iconoir:search' })
 const help = useIcon({ icon: 'tdesign:chat-bubble-help' })
 
 const exporticon = useIcon({ icon: 'ph:export-light' })
+
+const exportDialogVisible = ref(false)
+const openExport = () => {
+  exportDialogVisible.value = true
+}
 </script>
 
 <template>
@@ -144,7 +150,7 @@ const exporticon = useIcon({ icon: 'ph:export-light' })
         >
           {{ t('form.input') }}
         </ElButton>
-        <ElButton size="large" type="primary" @click="$props.handleSearch" :icon="exporticon">
+        <ElButton size="large" type="primary" @click="openExport" :icon="exporticon">
           {{ t('asset.export') }}
         </ElButton>
       </ElCol>
@@ -180,12 +186,13 @@ const exporticon = useIcon({ icon: 'ph:export-light' })
       </ElCol>
     </ElRow>
   </Dialog>
-  <!-- <Dialog
-    v-model="dialogVisible"
+  <Dialog
+    v-model="exportDialogVisible"
     :title="t('asset.export')"
     center
+    max-height="300"
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <exportData />
-  </Dialog> -->
+    <exportData :index="$props.index" :searchParams="searchParams" />
+  </Dialog>
 </template>
