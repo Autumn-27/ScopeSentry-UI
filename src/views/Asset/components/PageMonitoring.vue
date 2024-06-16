@@ -1,10 +1,6 @@
 <script setup lang="tsx">
-import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Search } from '@/components/Search'
 import { reactive, ref } from 'vue'
-import { FormSchema } from '@/components/Form'
-import { useSearch } from '@/hooks/web/useSearch'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import {
@@ -12,9 +8,6 @@ import {
   ElPagination,
   ElCol,
   ElRow,
-  ElButton,
-  ElTable,
-  ElTableColumn,
   ElText,
   ElDivider,
   ElLink,
@@ -29,63 +22,9 @@ import {
   getPageMonitoringResponseApi
 } from '@/api/asset'
 import { BaseButton } from '@/components/Button'
-import { Icon } from '@iconify/vue'
-
+import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
-const { searchRegister } = useSearch()
 
-const schema = reactive<FormSchema[]>([
-  {
-    field: 'search',
-    label: t('form.input'),
-    component: 'Input',
-    formItemProps: {
-      size: 'large',
-      style: { width: '100%' }
-    },
-    componentProps: {
-      clearable: false,
-      slots: {
-        suffix: () => (
-          <ElButton
-            class="icon-button"
-            onClick={getHelp}
-            text
-            style="outline: none;background-color: transparent !important; color: inherit !important; box-shadow: none !important;position: relative;left: 24%"
-          >
-            <Icon icon="tdesign:chat-bubble-help" />
-          </ElButton>
-        )
-      }
-    }
-  }
-])
-const searchHelpData = [
-  {
-    operator: '=',
-    meaning: t('searchHelp.like')
-  },
-  {
-    operator: '!=',
-    meaning: t('searchHelp.notIn')
-  },
-  {
-    operator: '==',
-    meaning: t('searchHelp.equal')
-  },
-  {
-    operator: '&&',
-    meaning: t('searchHelp.and')
-  },
-  {
-    operator: '||',
-    meaning: t('searchHelp.or')
-  },
-  {
-    operator: '()',
-    meaning: t('searchHelp.brackets')
-  }
-]
 const searchKeywordsData = [
   {
     keyword: 'url',
@@ -118,24 +57,12 @@ const searchKeywordsData = [
     explain: t('searchHelp.project')
   }
 ]
-const dialogVisible = ref(false)
-
-const getHelp = () => {
-  dialogVisible.value = true
-}
-
-const isGrid = ref(true)
-const layout = ref('inline')
-
-const buttonPosition = ref('left')
 
 const searchParams = ref('')
 const handleSearch = (data: any) => {
-  searchParams.value = data.search
+  searchParams.value = data
   getList()
 }
-
-const searchLoading = ref(false)
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
@@ -275,19 +202,12 @@ const setMaxHeight = () => {
 </script>
 
 <template>
-  <ContentWrap style="height: 80px">
-    <Search
-      :schema="schema"
-      :is-col="isGrid"
-      :layout="layout"
-      :show-reset="false"
-      :button-position="buttonPosition"
-      :search-loading="searchLoading"
-      @search="handleSearch"
-      @reset="handleSearch"
-      @register="searchRegister"
-    />
-  </ContentWrap>
+  <Csearch
+    :getList="getList"
+    :handleSearch="handleSearch"
+    :searchKeywordsData="searchKeywordsData"
+    index="PageMonitoring"
+  />
   <ElRow>
     <ElCol>
       <ElCard>
@@ -362,36 +282,6 @@ const setMaxHeight = () => {
         <ElDivider style="background: #e99696" />
       </div>
     </div>
-  </Dialog>
-  <Dialog
-    v-model="dialogVisible"
-    :title="t('common.querysyntax')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
-    <ElRow>
-      <ElCol>
-        <ElText tag="b" size="small">{{ t('searchHelp.operator') }}</ElText>
-        <ElDivider direction="vertical" />
-        <ElText size="small" type="danger">{{ t('searchHelp.notice') }}</ElText>
-      </ElCol>
-      <ElCol style="margin-top: 10px">
-        <ElTable :headerCellStyle="tableHeaderColor" :data="searchHelpData">
-          <ElTableColumn prop="operator" :label="t('searchHelp.operator')" width="300" />
-          <ElTableColumn prop="meaning" :label="t('searchHelp.meaning')" />
-        </ElTable>
-      </ElCol>
-      <ElCol style="margin-top: 15px">
-        <ElText tag="b" size="small">{{ t('searchHelp.keywords') }}</ElText>
-      </ElCol>
-      <ElCol style="margin-top: 10px">
-        <ElTable :headerCellStyle="tableHeaderColor" :data="searchKeywordsData">
-          <ElTableColumn prop="keyword" :label="t('searchHelp.keywords')" />
-          <ElTableColumn prop="example" :label="t('searchHelp.example')" />
-          <ElTableColumn prop="explain" :label="t('searchHelp.explain')" />
-        </ElTable>
-      </ElCol>
-    </ElRow>
   </Dialog>
 </template>
 

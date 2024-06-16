@@ -79,7 +79,8 @@ export default {
     exportType: '导出类型',
     exportTypeAll: '所有数据',
     exportTypeSearch: '当前搜索条件',
-    exportQuantity: '导出数据量'
+    exportQuantity: '导出数据量',
+    exportRecords: '导出记录'
   },
   searchHelp: {
     notice: '关键字需要用双引号包裹',

@@ -79,7 +79,8 @@ export default {
     exportType: 'Export Type',
     exportTypeAll: 'All data',
     exportTypeSearch: 'Current search criteria',
-    exportQuantity: 'Export data volume'
+    exportQuantity: 'Export data volume',
+    exportRecords: 'Export Records'
   },
   searchHelp: {
     notice: 'Keywords need to be wrapped in double quotes',

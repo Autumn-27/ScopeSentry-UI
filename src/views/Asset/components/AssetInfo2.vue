@@ -1,11 +1,7 @@
 <script setup lang="tsx">
-import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Search } from '@/components/Search'
 import { Ref, reactive, ref } from 'vue'
-import { FormSchema } from '@/components/Form'
 import { onMounted } from 'vue'
-import { Dialog } from '@/components/Dialog'
 import { useTable } from '@/hooks/web/useTable'
 import {
   ElRow,
@@ -19,11 +15,7 @@ import {
   ElBadge,
   ElPagination,
   ElLink,
-  ElButton,
-  ElTable,
-  ElTableColumn,
-  ElText,
-  ElDivider
+  ElText
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -32,68 +24,9 @@ import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
 import { useRouter } from 'vue-router'
 import { getAssetStatisticsApi } from '@/api/asset'
-
+import Csearch from '../search/Csearch.vue'
 const { push } = useRouter()
 const { t } = useI18n()
-
-const schema = reactive<FormSchema[]>([
-  {
-    field: 'search',
-    label: t('form.input'),
-    component: 'Input',
-    formItemProps: {
-      size: 'large',
-      style: { width: '100%' }
-    },
-    componentProps: {
-      clearable: false,
-      slots: {
-        suffix: () => (
-          <ElButton
-            class="icon-button"
-            onClick={getHelp}
-            text
-            style="outline: none;background-color: transparent !important; color: inherit !important; box-shadow: none !important;position: relative;left: 24%"
-          >
-            <Icon icon="tdesign:chat-bubble-help" />
-          </ElButton>
-        )
-      }
-    }
-  }
-])
-const dialogVisible = ref(false)
-
-const getHelp = () => {
-  dialogVisible.value = true
-}
-
-const searchHelpData = [
-  {
-    operator: '=',
-    meaning: t('searchHelp.like')
-  },
-  {
-    operator: '!=',
-    meaning: t('searchHelp.notIn')
-  },
-  {
-    operator: '==',
-    meaning: t('searchHelp.equal')
-  },
-  {
-    operator: '&&',
-    meaning: t('searchHelp.and')
-  },
-  {
-    operator: '||',
-    meaning: t('searchHelp.or')
-  },
-  {
-    operator: '()',
-    meaning: t('searchHelp.brackets')
-  }
-]
 
 const searchKeywordsData = [
   {
@@ -158,14 +91,9 @@ const searchKeywordsData = [
   }
 ]
 
-const isGrid = ref(true)
-const layout = ref('inline')
-
-const buttonPosition = ref('left')
-
 const searchParams = ref('')
 const handleSearch = (data: any) => {
-  searchParams.value = data.search
+  searchParams.value = data
   staticLoading.value = true
   getList()
   staticLoading.value = false
@@ -334,7 +262,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'banner',
     label: t('asset.banner'),
     fit: 'true',
-    formatter: (row: Recordable, __: TableColumn, bannerValue: string) => {
+    formatter: (_: Recordable, __: TableColumn, bannerValue: string) => {
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
       return (
@@ -453,18 +381,12 @@ const staticLoading = ref(true)
 </script>
 
 <template>
-  <ContentWrap style="height: 80px">
-    <div @keydown.enter="handleSearch">
-      <Search
-        :schema="schema"
-        :is-col="isGrid"
-        :layout="layout"
-        :show-reset="false"
-        :button-position="buttonPosition"
-        @search="handleSearch"
-      />
-    </div>
-  </ContentWrap>
+  <Csearch
+    :getList="getList"
+    :handleSearch="handleSearch"
+    :searchKeywordsData="searchKeywordsData"
+    index="asset"
+  />
   <ElRow :gutter="3">
     <ElCol :span="3">
       <ElCard v-loading="staticLoading">
@@ -595,36 +517,6 @@ const staticLoading = ref(true)
       </ElRow>
     </ElCol>
   </ElRow>
-  <Dialog
-    v-model="dialogVisible"
-    :title="t('common.querysyntax')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
-    <ElRow>
-      <ElCol>
-        <ElText tag="b" size="small">{{ t('searchHelp.operator') }}</ElText>
-        <ElDivider direction="vertical" />
-        <ElText size="small" type="danger">{{ t('searchHelp.notice') }}</ElText>
-      </ElCol>
-      <ElCol style="margin-top: 10px">
-        <ElTable :headerCellStyle="tableHeaderColor" :data="searchHelpData">
-          <ElTableColumn prop="operator" :label="t('searchHelp.operator')" width="300" />
-          <ElTableColumn prop="meaning" :label="t('searchHelp.meaning')" />
-        </ElTable>
-      </ElCol>
-      <ElCol style="margin-top: 15px">
-        <ElText tag="b" size="small">{{ t('searchHelp.keywords') }}</ElText>
-      </ElCol>
-      <ElCol style="margin-top: 10px">
-        <ElTable :headerCellStyle="tableHeaderColor" :data="searchKeywordsData">
-          <ElTableColumn prop="keyword" :label="t('searchHelp.keywords')" />
-          <ElTableColumn prop="example" :label="t('searchHelp.example')" />
-          <ElTableColumn prop="explain" :label="t('searchHelp.explain')" />
-        </ElTable>
-      </ElCol>
-    </ElRow>
-  </Dialog>
 </template>
 
 <style lang="less">

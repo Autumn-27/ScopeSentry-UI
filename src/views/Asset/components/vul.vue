@@ -60,7 +60,6 @@ const searchKeywordsData = [
 ]
 const searchParams = ref('')
 const handleSearch = (data: any) => {
-  console.log(data)
   searchParams.value = data
   getList()
 }

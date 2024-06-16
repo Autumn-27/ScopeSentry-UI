@@ -58,32 +58,6 @@ const searchHelpData = [
   }
 ]
 
-const schema = reactive<FormSchema[]>([
-  {
-    field: 'search',
-    label: t('form.input'),
-    component: 'Input',
-    formItemProps: {
-      size: 'large',
-      style: { width: '100%' }
-    },
-    componentProps: {
-      clearable: false,
-      slots: {
-        suffix: () => (
-          <ElButton
-            class="icon-button"
-            onClick={getHelp}
-            text
-            style="outline: none;background-color: transparent !important; color: inherit !important; box-shadow: none !important;position: relative;left: 24%"
-          >
-            <Icon icon="tdesign:chat-bubble-help" />
-          </ElButton>
-        )
-      }
-    }
-  }
-])
 const dialogVisible = ref(false)
 const getHelp = () => {
   dialogVisible.value = true
@@ -191,6 +165,7 @@ const openExport = () => {
     :title="t('asset.export')"
     center
     max-height="300"
+    width="auto"
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
     <exportData :index="$props.index" :searchParams="searchParams" />

@@ -9,3 +9,7 @@ export const exportApi = (
 ): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/export', data: { index, quantity, type, search } })
 }
+
+export const getExportRecordApi = () => {
+  return request.get({ url: '/api/export/record' })
+}
