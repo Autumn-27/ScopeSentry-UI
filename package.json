@@ -29,8 +29,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/state": "^6.1.1",
-    "@codemirror/theme-one-dark": "^6.1.2",
-    "@faker-js/faker": "^8.3.1",
+    
     "@iconify/iconify": "^3.1.1",
     "@iconify/vue": "^4.1.1",
     "@vueuse/core": "^10.7.0",

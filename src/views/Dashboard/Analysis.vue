@@ -275,10 +275,7 @@ onBeforeUnmount(() => {
 })
 
 const updateSystem = async () => {
-  const confirmed = window.confirm('Are you sure you want to retest?')
-  if (confirmed) {
-    await UPDATEsYSTEMApi()
-  }
+  await UPDATEsYSTEMApi()
 }
 const updateFlag = ref(false)
 </script>

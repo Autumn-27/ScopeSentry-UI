@@ -80,7 +80,17 @@ export default {
     exportTypeAll: 'All data',
     exportTypeSearch: 'Current search criteria',
     exportQuantity: 'Export data volume',
-    exportRecords: 'Export Records'
+    exportRecords: 'Export Records',
+    fileName: 'File Name',
+    createTime: 'Create Time',
+    endTime: 'Complete Time',
+    fileSize: 'File Size',
+    state: 'State',
+    wait: 'Wait',
+    success: 'Success',
+    fail: 'Fail',
+    type: 'Type',
+    download: 'Download'
   },
   searchHelp: {
     notice: 'Keywords need to be wrapped in double quotes',

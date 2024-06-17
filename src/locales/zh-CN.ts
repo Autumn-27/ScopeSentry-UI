@@ -80,7 +80,17 @@ export default {
     exportTypeAll: '所有数据',
     exportTypeSearch: '当前搜索条件',
     exportQuantity: '导出数据量',
-    exportRecords: '导出记录'
+    exportRecords: '导出记录',
+    fileName: '文件名',
+    createTime: '创建时间',
+    endTime: '完成时间',
+    fileSize: '文件大小',
+    state: '状态',
+    wait: '等待',
+    success: '成功',
+    fail: '失败',
+    type: '类型',
+    download: '下载'
   },
   searchHelp: {
     notice: '关键字需要用双引号包裹',

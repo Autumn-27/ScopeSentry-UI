@@ -21,18 +21,15 @@ const handleSearch = () => {
 const taskColums = reactive<TableColumn[]>([
   {
     field: 'selection',
-    type: 'selection',
-    width: '55'
+    type: 'selection'
   },
   {
     field: 'name',
-    label: t('task.taskName'),
-    minWidth: 20
+    label: t('task.taskName')
   },
   {
     field: 'taskNum',
     label: t('task.taskCount'),
-    minWidth: 15,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -46,7 +43,6 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'progress',
     label: t('task.taskProgress'),
-    minWidth: 30,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(ElProgress, {
         percentage: cellValue,
@@ -59,13 +55,11 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'creatTime',
-    label: t('task.createTime'),
-    minWidth: 25
+    label: t('task.createTime')
   },
   {
     field: 'endTime',
     label: t('task.endTime'),
-    minWidth: 25,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       if (cellValue == '') {
         return '-'
@@ -76,7 +70,8 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: 50,
+    fixed: 'right',
+    width: '420',
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
       const retestButton = h(
