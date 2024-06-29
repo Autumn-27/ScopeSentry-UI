@@ -1,8 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
-import { FormSchema } from '@/components/Form'
+import { ref } from 'vue'
 import {
   ElCol,
   ElRow,
@@ -13,12 +12,17 @@ import {
   ElDivider,
   ElInput,
   ElForm,
-  ElFormItem
+  ElFormItem,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElMessageBox,
+  ElMessage
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
-import { Icon } from '@iconify/vue'
 import { useIcon } from '@/hooks/web/useIcon'
 import exportData from '../export/exportData.vue'
+import { delDataApi } from '@/api/asset'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -30,6 +34,7 @@ const props = defineProps<{
     explain: string
   }[]
   index: string
+  getElTableExpose: () => void
 }>()
 const searchHelpData = [
   {
@@ -68,12 +73,34 @@ function tableHeaderColor() {
 const searchParams = ref('')
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const help = useIcon({ icon: 'tdesign:chat-bubble-help' })
-
+const elDropdownicon = useIcon({ icon: 'ri:arrow-drop-down-line' })
 const exporticon = useIcon({ icon: 'ph:export-light' })
-
+const deleteicon = useIcon({ icon: 'openmoji:delete' })
 const exportDialogVisible = ref(false)
 const openExport = () => {
   exportDialogVisible.value = true
+}
+const ids = ref<string[]>([])
+const delSelect = async () => {
+  ElMessageBox.confirm('Whether to delete?', 'Warning', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    type: 'warning'
+  })
+    .then(async () => {
+      const elTableExpose = await props.getElTableExpose()
+      const selectedRows = elTableExpose?.getSelectionRows() || []
+      ids.value = selectedRows.map((row) => row.id)
+      console.log(ids)
+      await delDataApi(ids.value, props.index)
+      props.getList()
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Delete canceled'
+      })
+    })
 }
 </script>
 
@@ -116,17 +143,33 @@ const openExport = () => {
         </ElForm>
       </ElCol>
       <ElCol :span="12">
-        <ElButton
-          size="large"
-          type="primary"
-          :icon="searchicon"
-          @click="$props.handleSearch(searchParams)"
-        >
-          {{ t('form.input') }}
-        </ElButton>
-        <ElButton size="large" type="primary" @click="openExport" :icon="exporticon">
-          {{ t('asset.export') }}
-        </ElButton>
+        <div class="flex flex-wrap items-center mb-4">
+          <ElButton
+            size="large"
+            type="primary"
+            :icon="searchicon"
+            @click="$props.handleSearch(searchParams)"
+          >
+            {{ t('form.input') }}
+          </ElButton>
+          <ElButton size="large" type="primary" @click="openExport" :icon="exporticon">
+            {{ t('asset.export') }}
+          </ElButton>
+          <ElDivider direction="vertical" />
+          <ElDropdown trigger="click">
+            <ElButton plain class="custom-button align-bottom">
+              {{ t('common.operation') }}
+              <ElIcon class="el-icon--right"><elDropdownicon /></ElIcon>
+            </ElButton>
+            <template #dropdown>
+              <ElDropdownMenu>
+                <ElDropdownItem :icon="deleteicon" @click="delSelect">{{
+                  t('common.delete')
+                }}</ElDropdownItem>
+              </ElDropdownMenu>
+            </template>
+          </ElDropdown>
+        </div>
       </ElCol>
     </ElRow>
   </ContentWrap>
@@ -171,3 +214,12 @@ const openExport = () => {
     <exportData :index="$props.index" :searchParams="searchParams" />
   </Dialog>
 </template>
+<style scoped>
+.custom-button:hover {
+  background-color: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+  border-width: 1px !important;
+}
+</style>

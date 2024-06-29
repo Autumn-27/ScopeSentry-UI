@@ -56,25 +56,30 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: '30'
   },
   {
     field: 'host',
     label: t('subdomain.subdomainName'),
-    minWidth: 50
+    minWidth: '200'
   },
   {
     field: 'type',
     label: t('subdomain.recordType'),
-    minWidth: 30
+    minWidth: '200'
   },
   {
     field: 'value',
     label: t('subdomain.recordValue'),
-    minWidth: 50,
+    minWidth: '250',
     formatter: (_: Recordable, __: TableColumn, RecordValue: string[]) => {
       let content = ''
       RecordValue.forEach((item, _) => {
@@ -86,7 +91,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'ip',
     label: 'IP',
-    minWidth: 50,
+    minWidth: '150',
     formatter: (_: Recordable, __: TableColumn, IPValue: string[]) => {
       let content = ''
       IPValue.forEach((item, _) => {
@@ -98,7 +103,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 60
+    minWidth: '200'
   }
 ])
 
@@ -115,7 +120,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -128,6 +133,7 @@ function tableHeaderColor() {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="subdomain"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>

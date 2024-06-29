@@ -19,11 +19,16 @@ import {
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getAssetApi } from '@/api/asset'
+import {
+  getAssetApi,
+  getAssetStatisticsPortApi,
+  getAssetStatisticsTypeApi,
+  getAssetStatisticsappApi,
+  getAssetStatisticsiconApi
+} from '@/api/asset'
 import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
 import { useRouter } from 'vue-router'
-import { getAssetStatisticsApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 const { push } = useRouter()
 const { t } = useI18n()
@@ -111,25 +116,37 @@ let AssetstatisticsData: Ref<{
   Icon: []
 })
 const getAssetstatistics = async () => {
-  const res = await getAssetStatisticsApi(searchParams.value)
-  AssetstatisticsData.value.Port = res.data.Port
-  AssetstatisticsData.value.Service = res.data.Service
-  AssetstatisticsData.value.Product = res.data.Product
-  AssetstatisticsData.value.Icon = res.data.Icon
+  const [portRes, serviceRes, productRes, iconRes] = await Promise.all([
+    getAssetStatisticsPortApi(searchParams.value),
+    getAssetStatisticsTypeApi(searchParams.value),
+    getAssetStatisticsappApi(searchParams.value),
+    getAssetStatisticsiconApi(searchParams.value)
+  ])
+
+  AssetstatisticsData.value.Port = portRes.data.Port
+  AssetstatisticsData.value.Service = serviceRes.data.Service
+  AssetstatisticsData.value.Product = productRes.data.Product
+  AssetstatisticsData.value.Icon = iconRes.data.Icon
+
   staticLoading.value = false
 }
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 4
+    minWidth: '30'
   },
   {
     field: 'domain',
     label: t('asset.domain'),
-    minWidth: 50,
+    minWidth: '200',
     formatter: (row, __: TableColumn, domainValue: string) => {
       return (
         <div class="flex">
@@ -149,7 +166,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'ip',
     label: t('asset.IP'),
-    minWidth: 40,
+    minWidth: '160',
     formatter: (row, __: TableColumn, ipValue: string) => {
       return (
         <div class="flex">
@@ -169,7 +186,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'port',
     label: t('asset.port') + '/' + t('asset.service'),
-    minWidth: 30,
+    minWidth: '120',
     formatter: (raw, __: TableColumn, statusValue: number) => {
       if (raw.service == '') {
         return <div>{statusValue}</div>
@@ -194,7 +211,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'title',
     label: t('asset.title'),
-    minWidth: 50,
+    minWidth: '160',
     formatter: (row: Recordable, __: TableColumn, title: string) => {
       if (title == null || title == '') {
         title = ''
@@ -228,7 +245,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'status',
     label: t('asset.status'),
-    minWidth: 25,
+    minWidth: '85',
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
         return <div>-</div>
@@ -271,12 +288,12 @@ const crudSchemas = reactive<CrudSchema[]>([
         </ElScrollbar>
       )
     },
-    minWidth: 100
+    minWidth: '200'
   },
   {
     field: 'products',
     label: t('asset.products'),
-    minWidth: 60,
+    minWidth: '200',
     formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
       if (ProductsValue.length != 0) {
         if (ProductsValue.length > 1) {
@@ -323,7 +340,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 50
+    minWidth: '180'
   },
   {
     field: 'action',
@@ -337,7 +354,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         </>
       )
     },
-    minWidth: 30
+    minWidth: '100'
   }
 ])
 
@@ -358,7 +375,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -386,6 +403,7 @@ const staticLoading = ref(true)
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="asset"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow :gutter="3">
     <ElCol :span="3">

@@ -45,35 +45,40 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 55
   },
   {
     field: 'url',
     label: 'URL',
-    minWidth: 70
+    minWidth: 250
   },
   {
     field: 'source',
     label: t('URL.source'),
-    minWidth: 30
+    minWidth: 100
   },
   {
     field: 'type',
     label: t('URL.type'),
-    minWidth: 30
+    minWidth: 100
   },
   {
     field: 'input',
     label: t('URL.input'),
-    minWidth: 60
+    minWidth: 200
   },
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 30
+    minWidth: 200
   }
 ])
 
@@ -90,7 +95,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 pageSize.value = 20
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -114,6 +119,7 @@ const setMaxHeight = () => {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="UrlScan"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>

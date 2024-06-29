@@ -1,5 +1,6 @@
 export default {
   common: {
+    operation: 'Operation',
     name: 'Name',
     cversion: 'Current Version',
     lversion: 'Latest Version',
@@ -98,7 +99,7 @@ export default {
     meaning: 'Meaning',
     equal: 'Exact matching means querying only keyword assets.',
     notIn: 'Eliminate means to eliminate assets containing keywords.',
-    like: 'Match, indicating that the query contains keyword assets.',
+    like: 'Match, indicating that the query contains keyword assets(Supports regular input).',
     brackets: 'The content in brackets has the highest priority',
     and: 'and conditions',
     or: 'or condition',
@@ -135,7 +136,8 @@ export default {
     hash: 'Retrieve response hash',
     diff: 'Retrieve diff content',
     level: 'Retrieve vuln level',
-    sensMd5: 'Retrieve based on response body MD5'
+    sensMd5: 'Retrieve based on response body MD5',
+    sensLevel: 'Search by sensitivity level (red, green, cyan, yellow, orange, gray, pink)'
   },
   lock: {
     lockScreen: 'Lock screen',

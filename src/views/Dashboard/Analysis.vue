@@ -350,7 +350,7 @@ const updateFlag = ref(false)
                 >
               </div>
             </ElCol>
-            <ElCol :span="3" :offset="8" v-if="updateFlag">
+            <!-- <ElCol :span="3" :offset="8" v-if="updateFlag">
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
                   <ElButton color="#626aef">
@@ -364,7 +364,7 @@ const updateFlag = ref(false)
                   </ElButton>
                 </template>
               </ElPopconfirm>
-            </ElCol>
+            </ElCol> -->
           </ElRow>
         </template>
         <Table :columns="versionColumns" :data="versionData" stripe :border="false" :height="600" />

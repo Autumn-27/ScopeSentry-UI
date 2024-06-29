@@ -13,7 +13,7 @@ import {
   ElSpace
 } from 'element-plus'
 import { reactive, ref } from 'vue'
-import { exportApi, getExportRecordApi, delExportApi, downloadExportApi } from '@/api/export'
+import { exportApi, getExportRecordApi, delExportApi } from '@/api/export'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { BaseButton } from '@/components/Button'

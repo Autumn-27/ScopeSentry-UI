@@ -1,5 +1,6 @@
 export default {
   common: {
+    operation: '操作',
     name: '名称',
     cversion: '当前版本',
     lversion: '最新版本',
@@ -98,7 +99,7 @@ export default {
     meaning: '含义',
     equal: '精准匹配，表示仅查询关键词资产。',
     notIn: '剔除，表示剔除包含关键词资产。',
-    like: '匹配，表示查询包含关键词资产。',
+    like: '匹配，表示查询包含关键词资产（支持正则输入）。',
     brackets: '括号内容优先级最高',
     and: '与条件',
     or: '或条件',
@@ -135,7 +136,8 @@ export default {
     hash: '检索响应hash',
     diff: '检索diff内容',
     level: '检索漏洞等级',
-    sensMd5: '根据响应体MD5检索'
+    sensMd5: '根据响应体MD5检索',
+    sensLevel: '根据敏感信息等级搜索（red、green、cyan、yellow、orange、gray、pink）'
   },
   lock: {
     lockScreen: '锁定屏幕',

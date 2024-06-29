@@ -58,30 +58,35 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: '30'
   },
   {
     field: 'host',
     label: 'Domain',
-    minWidth: 50
+    minWidth: '300'
   },
   {
     field: 'value',
     label: t('subdomain.recordValue'),
-    minWidth: 30
+    minWidth: '400'
   },
   {
     field: 'type',
     label: 'Type',
-    minWidth: 50
+    minWidth: '200'
   },
   {
     field: 'response',
     label: 'Response',
-    minWidth: 50,
+    minWidth: '300',
     formatter: (_: Recordable, __: TableColumn, Value: string) => {
       return (
         <ElScrollbar max-height="100">
@@ -106,7 +111,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 pageSize.value = 20
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -118,6 +123,7 @@ function tableHeaderColor() {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="SubdoaminTakerResult"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>

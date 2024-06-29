@@ -14,6 +14,7 @@ import {
   PageMResponse,
   PageMHistory
 } from './types'
+import { commonRespData } from '../scommon/types'
 
 interface AssetDataResponse {
   list: AssetData[]
@@ -29,6 +30,22 @@ export const getAssetApi = (
 
 export const getAssetStatisticsApi = (search: string): Promise<IResponse<AssetStatistics>> => {
   return request.post({ url: '/api/asset/statistics2', data: { search } })
+}
+
+export const getAssetStatisticsPortApi = (search: string): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/port', data: { search } })
+}
+
+export const getAssetStatisticsTypeApi = (search: string): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/type', data: { search } })
+}
+
+export const getAssetStatisticsiconApi = (search: string): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/icon', data: { search } })
+}
+
+export const getAssetStatisticsappApi = (search: string): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/app', data: { search } })
 }
 
 export const getAssetDetailApi = (id: string): Promise<IResponse<AssetDetail>> => {
@@ -141,4 +158,8 @@ export const getSubdomaintakerApi = (
   pageSize: number
 ): Promise<IResponse<SubdomaintakerDataResponse>> => {
   return request.post({ url: '/api/subdomaintaker/data', data: { search, pageIndex, pageSize } })
+}
+
+export const delDataApi = (ids: string[], index: string): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/data/delete', data: { ids, index } })
 }

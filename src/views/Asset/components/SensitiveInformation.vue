@@ -43,6 +43,11 @@ const searchKeywordsData = [
     keyword: 'md5',
     example: 'md5=="1d49e5e190f7a38ab498e28e6578f64f"',
     explain: t('searchHelp.sensMd5')
+  },
+  {
+    keyword: 'level',
+    example: 'level=="rad"',
+    explain: t('searchHelp.sensLevel')
   }
 ]
 const searchParams = ref('')
@@ -53,25 +58,30 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 55
   },
   {
     field: 'url',
     label: 'URL',
-    minWidth: 50
+    minWidth: 200
   },
   {
     field: 'name',
     label: t('sensitiveInformation.sensitiveName'),
-    minWidth: 15
+    minWidth: 150
   },
   {
     field: 'color',
     label: 'Level',
-    minWidth: 7,
+    minWidth: 50,
     formatter: (_, __: TableColumn, cellValue: string) => {
       return (
         <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
@@ -81,7 +91,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'match',
     label: 'Info',
-    minWidth: 50,
+    minWidth: 150,
     formatter: (_, __: TableColumn, cellValue: string[]) => {
       const elements = cellValue.map((line, index) => <div key={index}>{line}</div>)
       return (
@@ -94,7 +104,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 30
+    minWidth: 200
   },
   {
     field: 'action',
@@ -108,7 +118,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         </>
       )
     },
-    minWidth: 10
+    minWidth: 100
   }
 ])
 
@@ -125,7 +135,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -156,6 +166,7 @@ const action = async (id) => {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="SensitiveResult"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>
