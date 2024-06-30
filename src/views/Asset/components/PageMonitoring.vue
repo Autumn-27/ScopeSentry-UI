@@ -66,15 +66,20 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 55
   },
   {
     field: 'url',
     label: 'url',
-    minWidth: 50,
+    minWidth: 200,
     formatter: (_, __: TableColumn, domainValue: string) => {
       return (
         <ElLink href={domainValue} underline={false}>
@@ -86,7 +91,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'response1',
     label: t('PageMonitoring.oldResponseBody'),
-    minWidth: 15,
+    minWidth: 100,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -100,7 +105,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'respone2',
     label: t('PageMonitoring.currentResponseBody'),
-    minWidth: 15,
+    minWidth: 100,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -114,6 +119,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'diff',
     label: 'diff',
+    minWidth: 200,
     formatter: (_, __: TableColumn, bannerValue: string) => {
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
@@ -127,12 +133,12 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 50
+    minWidth: 200
   },
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: 30,
+    minWidth: 100,
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -183,7 +189,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -207,6 +213,7 @@ const setMaxHeight = () => {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="PageMonitoring"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>

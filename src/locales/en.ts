@@ -1,6 +1,8 @@
 export default {
   common: {
     operation: 'Operation',
+    selectAll: 'Select All',
+    multipleSelection: 'Multiple Selection',
     name: 'Name',
     cversion: 'Current Version',
     lversion: 'Latest Version',
@@ -114,6 +116,7 @@ export default {
     statuscode: 'Retrieve response code, fuzzy search is not supported',
     icon: 'Retrieve by website icon hash',
     ip: 'Retrieve IP',
+    length: 'Retrieve Respone Length',
     port: 'Retrieve port',
     domain: 'Retrieve domain',
     protocol: 'Retrieve by service',
@@ -135,9 +138,10 @@ export default {
     response: 'Retrieve response content',
     hash: 'Retrieve response hash',
     diff: 'Retrieve diff content',
-    level: 'Retrieve vuln level',
+    level: 'Retrieve vuln level(info、high、medium、critical、low、unknown)',
     sensMd5: 'Retrieve based on response body MD5',
-    sensLevel: 'Search by sensitivity level (red, green, cyan, yellow, orange, gray, pink)'
+    sensLevel: 'Search by sensitivity level (red, green, cyan, yellow, orange, gray, pink)',
+    taskName: 'Search by task name, only supports exact search.'
   },
   lock: {
     lockScreen: 'Lock screen',
@@ -332,6 +336,7 @@ export default {
     delURL: 'Delete URL',
     retest: 'Retest',
     delTask: 'Delete Task',
+    delAsset: 'Delete assets at the same time:',
     lastTime: 'Last Run',
     nextTime: 'Next Run',
     taskCycle: 'Task Cycle',

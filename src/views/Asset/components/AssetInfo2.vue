@@ -96,10 +96,12 @@ const searchKeywordsData = [
   }
 ]
 
+const staticLoading = ref(true)
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data
   staticLoading.value = true
+  AssetstatisticsData.value.Icon = []
   getList()
   staticLoading.value = false
 }
@@ -116,19 +118,20 @@ let AssetstatisticsData: Ref<{
   Icon: []
 })
 const getAssetstatistics = async () => {
-  const [portRes, serviceRes, productRes, iconRes] = await Promise.all([
+  staticLoading.value = true
+  AssetstatisticsData.value.Icon = []
+  const [portRes, serviceRes, productRes] = await Promise.all([
     getAssetStatisticsPortApi(searchParams.value),
     getAssetStatisticsTypeApi(searchParams.value),
-    getAssetStatisticsappApi(searchParams.value),
-    getAssetStatisticsiconApi(searchParams.value)
+    getAssetStatisticsappApi(searchParams.value)
   ])
 
   AssetstatisticsData.value.Port = portRes.data.Port
   AssetstatisticsData.value.Service = serviceRes.data.Service
   AssetstatisticsData.value.Product = productRes.data.Product
-  AssetstatisticsData.value.Icon = iconRes.data.Icon
-
   staticLoading.value = false
+  let iconRes = await getAssetStatisticsiconApi(searchParams.value)
+  AssetstatisticsData.value.Icon = iconRes.data.Icon
 }
 
 const crudSchemas = reactive<CrudSchema[]>([
@@ -186,7 +189,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'port',
     label: t('asset.port') + '/' + t('asset.service'),
-    minWidth: '120',
+    minWidth: '110',
     formatter: (raw, __: TableColumn, statusValue: number) => {
       if (raw.service == '') {
         return <div>{statusValue}</div>
@@ -361,6 +364,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 const action = (id: string) => {
   push(`/asset-information/asset-detail?id=${id}`)
 }
+
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
@@ -394,7 +398,6 @@ const setMaxHeight = () => {
   maxHeight.value = screenHeight * 0.7
 }
 getList()
-const staticLoading = ref(true)
 </script>
 
 <template>

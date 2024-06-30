@@ -34,7 +34,7 @@ const searchKeywordsData = [
   },
   {
     keyword: 'level',
-    example: 'level="info',
+    example: 'level="info"',
     explain: t('searchHelp.level')
   },
   {
@@ -66,25 +66,30 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 55
   },
   {
     field: 'url',
     label: 'URL',
-    minWidth: 30
+    minWidth: 100
   },
   {
     field: 'vulnerability',
     label: 'Vulnerability',
-    minWidth: 20
+    minWidth: 100
   },
   {
     field: 'level',
     label: 'Level',
-    minWidth: 10,
+    minWidth: 100,
     formatter: (_: Recordable, __: TableColumn, levelValue: number) => {
       if (levelValue == null) {
         return <div></div>
@@ -125,12 +130,12 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'matched',
     label: 'Matched',
-    minWidth: 30
+    minWidth: 200
   },
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 20
+    minWidth: 200
   },
   {
     field: 'action',
@@ -144,7 +149,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         </>
       )
     },
-    minWidth: 10
+    minWidth: 100
   }
 ])
 
@@ -161,7 +166,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 pageSize.value = 20
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -237,6 +242,7 @@ const action = (data: any) => {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="vulnerability"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>
@@ -283,7 +289,7 @@ const action = (data: any) => {
     <ElDescriptions :border="true" :column="2">
       <ElDescriptionsItem label="URL">{{ DialogData.URL }}</ElDescriptionsItem>
       <ElDescriptionsItem label="Level">
-        <ElRow :gutter="20" style="width: 80%">
+        <ElRow :gutter="20">
           <ElCol :span="1">
             <Icon icon="clarity:circle-solid" :color="color" />
           </ElCol>

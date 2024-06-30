@@ -1,6 +1,8 @@
 export default {
   common: {
     operation: '操作',
+    selectAll: '全选',
+    multipleSelection: '多选',
     name: '名称',
     cversion: '当前版本',
     lversion: '最新版本',
@@ -118,6 +120,7 @@ export default {
     protocol: '根据服务检索',
     banner: '检索非HTTP资产的Banner',
     project: '根据项目名称检索',
+    length: '根据响应长度检索，不支持模糊查找',
     subdomainType: '检索记录类型',
     subdoaminValue: '检索记录值',
     url: '检索URL',
@@ -135,9 +138,10 @@ export default {
     response: '检索响应内容',
     hash: '检索响应hash',
     diff: '检索diff内容',
-    level: '检索漏洞等级',
+    level: '检索漏洞等级(info、high、medium、critical、low、unknown)',
     sensMd5: '根据响应体MD5检索',
-    sensLevel: '根据敏感信息等级搜索（red、green、cyan、yellow、orange、gray、pink）'
+    sensLevel: '根据敏感信息等级搜索（red、green、cyan、yellow、orange、gray、pink）',
+    taskName: '根据任务名称检索，仅支持精确查找'
   },
   lock: {
     lockScreen: '锁定屏幕',
@@ -329,6 +333,7 @@ export default {
     delURL: '删除URL',
     retest: '重新测试',
     delTask: '删除任务',
+    delAsset: '同时删除资产:',
     typeTask: '任务类型',
     lastTime: '上次运行',
     nextTime: '下次运行',

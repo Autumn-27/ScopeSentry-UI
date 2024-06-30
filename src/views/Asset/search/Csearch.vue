@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import {
   ElCol,
   ElRow,
@@ -10,7 +10,7 @@ import {
   ElTableColumn,
   ElText,
   ElDivider,
-  ElInput,
+  ElAutocomplete,
   ElForm,
   ElFormItem,
   ElDropdown,
@@ -36,6 +36,13 @@ const props = defineProps<{
   index: string
   getElTableExpose: () => void
 }>()
+const localSearchKeywordsData = reactive([...props.searchKeywordsData])
+const newKeyword = {
+  keyword: 'task',
+  example: 'task=="test"',
+  explain: t('searchHelp.taskName')
+}
+localSearchKeywordsData.push(newKeyword)
 const searchHelpData = [
   {
     operator: '=',
@@ -62,7 +69,6 @@ const searchHelpData = [
     meaning: t('searchHelp.brackets')
   }
 ]
-
 const dialogVisible = ref(false)
 const getHelp = () => {
   dialogVisible.value = true
@@ -102,10 +108,50 @@ const delSelect = async () => {
       })
     })
 }
+// const querySearch = (queryString, cb) => {
+//   const results = localSearchKeywordsData.filter((item) => {
+//     return item.keyword.toLowerCase().includes(queryString.toLowerCase())
+//   })
+//   cb(results)
+// }
+// const handleSelect = (item) => {
+//   searchParams.value = item.keyword
+// }
+
+const selectedKeyword = ref('')
+const opSelect = ref(false)
+const querySearch = (queryString, cb) => {
+  if (queryString == '') {
+    opSelect.value = false
+  }
+  if (opSelect.value) {
+    const searchStr = queryString.replace(searchParams.value, '').trim()
+    console.log('Search String for Operators:', searchStr)
+    const results = searchHelpData.filter((item) => item.operator.includes(searchStr))
+    cb(results)
+  } else {
+    const results = localSearchKeywordsData.filter((item) => {
+      return item.keyword.toLowerCase().includes(queryString.toLowerCase())
+    })
+    cb(results)
+  }
+}
+
+const handleSelect = (item) => {
+  if (item.keyword) {
+    selectedKeyword.value = item.keyword
+    searchParams.value = item.keyword
+    opSelect.value = true
+  } else {
+    searchParams.value = `${selectedKeyword.value}${item.operator}`
+  }
+}
+
+// @keyup.enter="$props.handleSearch(searchParams)"
 </script>
 
 <template>
-  <ContentWrap style="height: 80px">
+  <ContentWrap>
     <!-- <ElRow justify="start">
       <ElCol :span="1">
         <ElText>{{ t('form.input') }}:</ElText>
@@ -120,7 +166,7 @@ const delSelect = async () => {
       </ElCol>
     </ElRow> -->
     <ElRow class="row-bg" :gutter="20">
-      <ElCol :span="8">
+      <ElCol :span="24" :xs="24" :sm="12" :md="8">
         <ElForm>
           <ElFormItem
             :label="t('form.input')"
@@ -128,7 +174,12 @@ const delSelect = async () => {
             label-width="auto"
             style="max-width: 600px"
           >
-            <ElInput v-model="searchParams" @keyup.enter="$props.handleSearch(searchParams)">
+            <ElAutocomplete
+              v-model="searchParams"
+              :fetch-suggestions="querySearch"
+              @select="handleSelect"
+              style="width: 100%"
+            >
               <template #append>
                 <ElButton
                   @click="getHelp"
@@ -138,11 +189,17 @@ const delSelect = async () => {
                   style="display: contents"
                 />
               </template>
-            </ElInput>
+              <template #default="{ item }">
+                <span style="float: left">{{ item.keyword || item.operator }}</span>
+                <span style="float: right; color: var(--el-text-color-secondary); font-size: 13px">
+                  {{ item.explain || item.meaning }}
+                </span>
+              </template>
+            </ElAutocomplete>
           </ElFormItem>
         </ElForm>
       </ElCol>
-      <ElCol :span="12">
+      <ElCol :span="24" :xs="24" :sm="12" :md="16">
         <div class="flex flex-wrap items-center mb-4">
           <ElButton
             size="large"
@@ -195,7 +252,7 @@ const delSelect = async () => {
         <ElText tag="b" size="small">{{ t('searchHelp.keywords') }}</ElText>
       </ElCol>
       <ElCol style="margin-top: 10px">
-        <ElTable :headerCellStyle="tableHeaderColor" :data="$props.searchKeywordsData">
+        <ElTable :headerCellStyle="tableHeaderColor" :data="localSearchKeywordsData">
           <ElTableColumn prop="keyword" :label="t('searchHelp.keywords')" />
           <ElTableColumn prop="example" :label="t('searchHelp.example')" />
           <ElTableColumn prop="explain" :label="t('searchHelp.explain')" />

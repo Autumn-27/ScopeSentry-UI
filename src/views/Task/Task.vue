@@ -2,7 +2,17 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElProgress, ElTag } from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElInput,
+  ElRow,
+  ElText,
+  ElProgress,
+  ElTag,
+  ElMessageBox,
+  ElSwitch
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -21,15 +31,18 @@ const handleSearch = () => {
 const taskColums = reactive<TableColumn[]>([
   {
     field: 'selection',
-    type: 'selection'
+    type: 'selection',
+    minWidth: 55
   },
   {
     field: 'name',
-    label: t('task.taskName')
+    label: t('task.taskName'),
+    minWidth: 100
   },
   {
     field: 'taskNum',
     label: t('task.taskCount'),
+    minWidth: 70,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -43,6 +56,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'progress',
     label: t('task.taskProgress'),
+    minWidth: 200,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(ElProgress, {
         percentage: cellValue,
@@ -55,11 +69,13 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'creatTime',
+    minWidth: 200,
     label: t('task.createTime')
   },
   {
     field: 'endTime',
     label: t('task.endTime'),
+    minWidth: 200,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       if (cellValue == '') {
         return '-'
@@ -70,8 +86,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    fixed: 'right',
-    width: '420',
+    minWidth: '420',
     formatter: (row, __: TableColumn, _: number) => {
       console.log(row)
       const retestButton = h(
@@ -208,23 +223,55 @@ const getTaskContent = async (data) => {
   DialogTitle = t('common.view')
 }
 const confirmDeleteSelect = async () => {
-  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
-  if (confirmed) {
-    await delSelect()
-  }
+  const deleteAssetS = ref<boolean | string | number>(false)
+  ElMessageBox({
+    title: 'Delete',
+    draggable: true,
+    // Should pass a function if VNode contains dynamic props
+    message: () =>
+      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
+        h(ElSwitch, {
+          modelValue: deleteAssetS.value,
+          'onUpdate:modelValue': (val: boolean | string | number) => {
+            deleteAssetS.value = val
+          }
+        })
+      ])
+  }).then(async () => {
+    await delSelect(deleteAssetS.value)
+  })
 }
 
 const confirmDelete = async (data) => {
-  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
-  if (confirmed) {
-    await del(data)
-  }
+  const deleteAsset = ref<boolean | string | number>(false)
+  ElMessageBox({
+    title: 'Delete',
+    draggable: true,
+    // Should pass a function if VNode contains dynamic props
+    message: () =>
+      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
+        h(ElSwitch, {
+          modelValue: deleteAsset.value,
+          'onUpdate:modelValue': (val: boolean | string | number) => {
+            deleteAsset.value = val
+          }
+        })
+      ])
+  }).then(async () => {
+    await del(data, deleteAsset.value)
+  })
+  // const confirmed = window.confirm('Are you sure you want to delete the selected data?')
+  // if (confirmed) {
+  //   await del(data)
+  // }
 }
 const delLoading = ref(false)
-const del = async (data) => {
+const del = async (data, delA) => {
   delLoading.value = true
   try {
-    const res = await deleteTaskApi([data.id])
+    const res = await deleteTaskApi([data.id], delA)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -235,13 +282,13 @@ const del = async (data) => {
   }
 }
 const ids = ref<string[]>([])
-const delSelect = async () => {
+const delSelect = async (delA) => {
   const elTableExpose = await getElTableExpose()
   const selectedRows = elTableExpose?.getSelectionRows() || []
   ids.value = selectedRows.map((row) => row.id)
   delLoading.value = true
   try {
-    const res = await deleteTaskApi(ids.value)
+    const res = await deleteTaskApi(ids.value, delA)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()

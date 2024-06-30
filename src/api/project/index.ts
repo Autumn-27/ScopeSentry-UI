@@ -121,6 +121,9 @@ export const getProjectContentDataApi = (id: string): Promise<IResponse<projectC
   return request.post({ url: '/api/project/content', data: { id } })
 }
 
-export const deleteProjectApi = (id: string): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/project/delete', data: { id } })
+export const deleteProjectApi = (
+  ids: string[],
+  delA: boolean
+): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/project/delete', data: { ids, delA } })
 }

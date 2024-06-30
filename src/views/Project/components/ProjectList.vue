@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { Table } from '@/components/Table'
-import { ref } from 'vue'
-import { ElAvatar, ElDropdown, ElDropdownMenu, ElDropdownItem, ElPagination } from 'element-plus'
+import { h, ref, watch } from 'vue'
+import {
+  ElAvatar,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElPagination,
+  ElCheckbox,
+  ElSwitch,
+  ElForm,
+  ElFormItem,
+  ElCheckboxGroup
+} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useRouter } from 'vue-router'
 import { Dialog } from '@/components/Dialog'
 import { defineProps } from 'vue'
 import { ElMessageBox } from 'element-plus'
@@ -30,6 +40,13 @@ const props = defineProps({
   total: {
     type: Number,
     default: 0
+  },
+  multipleSelection: {
+    type: Boolean
+  },
+  selectedRows: {
+    type: Array as () => (string | number)[],
+    default: () => []
   }
 })
 const loading = ref(false)
@@ -43,12 +60,30 @@ const edit = async (id: string) => {
   dialogVisible.value = true
 }
 const del = (id: string) => {
-  ElMessageBox.alert('Are you sure you want to delete the selected data?', '', {
-    confirmButtonText: 'YES',
-    callback: async () => {
-      await deleteProjectApi(id)
-      props.getProjectTag(currentPage.value, pageSize.value)
-    }
+  // ElMessageBox.alert('Are you sure you want to delete the selected data?', '', {
+  //   confirmButtonText: 'YES',
+  //   callback: async () => {
+  //     await deleteProjectApi([id])
+  //     props.getProjectTag(currentPage.value, pageSize.value)
+  //   }
+  // })
+  const deleteAsset = ref<boolean>(false)
+  ElMessageBox({
+    title: 'Delete',
+    draggable: true,
+    // Should pass a function if VNode contains dynamic props
+    message: () =>
+      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
+        h(ElSwitch, {
+          modelValue: deleteAsset.value,
+          'onUpdate:modelValue': (val: boolean) => {
+            deleteAsset.value = val
+          }
+        })
+      ])
+  }).then(async () => {
+    await deleteProjectApi([id], deleteAsset.value)
   })
 }
 const editIcon = useIcon({ icon: 'uil:edit' })
@@ -68,51 +103,90 @@ const pageSize = ref(50)
 const small = ref(false)
 const background = ref(false)
 const disabled = ref(false)
+const emit = defineEmits<{
+  (event: 'update:selectedRows', value: (string | number)[]): void
+}>()
+
+const localSelectedRows = ref([...props.selectedRows])
+
+watch(localSelectedRows, (newVal) => {
+  if (JSON.stringify(newVal) !== JSON.stringify(props.selectedRows)) {
+    emit('update:selectedRows', newVal)
+  }
+  isAllSelected.value = newVal.length === props.tableDataList.length
+})
+
+watch(
+  () => props.selectedRows,
+  (newVal) => {
+    localSelectedRows.value = [...newVal]
+  }
+)
+watch(
+  () => props.tableDataList,
+  (newVal) => {
+    isAllSelected.value = localSelectedRows.value.length === newVal.length
+  }
+)
+const isAllSelected = ref(false)
+const toggleAllSelection = () => {
+  if (isAllSelected.value) {
+    localSelectedRows.value = props.tableDataList.map((item) => item.id)
+  } else {
+    localSelectedRows.value = []
+  }
+}
 </script>
 
 <template>
-  <Table
-    :columns="[]"
-    :data="tableDataList"
-    :loading="loading"
-    custom-content
-    :card-wrap-style="{
-      width: '210px',
-      marginBottom: '20px',
-      marginRight: '20px'
-    }"
-  >
-    <template #content="row">
-      <ElDropdown trigger="click" @command="handleCommand">
-        <div class="flex cursor-pointer">
-          <div class="pr-16px">
-            <template v-if="row.logo != ''">
-              <ElAvatar :src="row.logo" class="avatar" fit="cover" />
-            </template>
-            <template v-else>
-              <ElAvatar class="avatar avatar-placeholder">
-                {{ row.name.charAt(0) }}
-              </ElAvatar>
-            </template>
+  <ElCheckbox v-if="multipleSelection" v-model="isAllSelected" @change="toggleAllSelection">
+    {{ t('common.selectAll') }}
+  </ElCheckbox>
+  <ElCheckboxGroup v-model="localSelectedRows">
+    <Table
+      :columns="[]"
+      :data="tableDataList"
+      :loading="loading"
+      custom-content
+      :card-wrap-style="{
+        width: '210px',
+        marginBottom: '20px',
+        marginRight: '20px'
+      }"
+    >
+      <template #content="row">
+        <ElDropdown trigger="contextmenu" @command="handleCommand">
+          <div class="flex cursor-pointer">
+            <ElCheckbox :value="row.id" class="pr-16px" v-if="multipleSelection" />
+            <div class="pr-16px">
+              <template v-if="row.logo != ''">
+                <ElAvatar :src="row.logo" class="avatar" fit="cover" />
+              </template>
+              <template v-else>
+                <ElAvatar class="avatar avatar-placeholder">
+                  {{ row.name.charAt(0) }}
+                </ElAvatar>
+              </template>
+            </div>
+            <div>
+              <div class="name">{{ row.name }}</div>
+              <div class="assets-info">{{ t('project.totalAssets') }} : {{ row.AssetCount }}</div>
+            </div>
           </div>
-          <div>
-            <div class="name">{{ row.name }}</div>
-            <div class="assets-info">{{ t('project.totalAssets') }} : {{ row.AssetCount }}</div>
-          </div>
-        </div>
-        <template #dropdown>
-          <ElDropdownMenu>
-            <ElDropdownItem :icon="editIcon" :command="{ type: 'edit', id: row.id }">{{
-              t('common.edit')
-            }}</ElDropdownItem>
-            <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
-              t('common.delete')
-            }}</ElDropdownItem>
-          </ElDropdownMenu>
-        </template>
-      </ElDropdown>
-    </template>
-  </Table>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem :icon="editIcon" :command="{ type: 'edit', id: row.id }">{{
+                t('common.edit')
+              }}</ElDropdownItem>
+              <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
+                t('common.delete')
+              }}</ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </template>
+    </Table>
+  </ElCheckboxGroup>
   <ElPagination
     v-model:current-page="currentPage"
     v-model:page-size="pageSize"

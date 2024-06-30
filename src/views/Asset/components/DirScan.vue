@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Icon } from '@/components/Icon'
 import { useTable } from '@/hooks/web/useTable'
 import { ElCard, ElPagination, ElCol, ElRow, ElText } from 'element-plus'
@@ -30,6 +30,11 @@ const searchKeywordsData = [
     keyword: 'project',
     example: 'project="Hackerone"',
     explain: t('searchHelp.project')
+  },
+  {
+    keyword: 'length',
+    example: 'length="1234"',
+    explain: t('searchHelp.length')
   }
 ]
 const searchParams = ref('')
@@ -40,20 +45,25 @@ const handleSearch = (data: any) => {
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
+    field: 'selection',
+    type: 'selection',
+    minWidth: '55'
+  },
+  {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 10
+    minWidth: 55
   },
   {
     field: 'url',
     label: 'URL',
-    minWidth: 60
+    minWidth: 200
   },
   {
     field: 'status',
     label: t('dirScan.status'),
-    minWidth: 60,
+    minWidth: 120,
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
         return <div>-</div>
@@ -84,9 +94,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
+    field: 'length',
+    label: 'Length',
+    minWidth: 120
+  },
+  {
     field: 'msg',
     label: 'Redirect',
-    minWidth: 60
+    minWidth: 200
   }
 ])
 
@@ -103,10 +118,21 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
-const { getList } = tableMethods
+const { getList, getElTableExpose } = tableMethods
 pageSize.value = 20
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
+}
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
 }
 </script>
 
@@ -116,6 +142,7 @@ function tableHeaderColor() {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="DirScanResult"
+    :getElTableExpose="getElTableExpose"
   />
   <ElRow>
     <ElCol>
@@ -129,7 +156,7 @@ function tableHeaderColor() {
           :border="true"
           :loading="loading"
           :resizable="true"
-          max-height="700"
+          :max-height="maxHeight"
           @register="tableRegister"
           :headerCellStyle="tableHeaderColor"
           :style="{

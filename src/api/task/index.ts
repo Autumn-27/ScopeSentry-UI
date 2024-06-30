@@ -119,8 +119,8 @@ export const getTaskContentApi = (id: string): Promise<IResponse<TaskContentData
   return request.post({ url: '/api/task/content', data: { id } })
 }
 
-export const deleteTaskApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/task/delete', data: { ids } })
+export const deleteTaskApi = (ids: string[], delA: boolean): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/task/delete', data: { ids, delA } })
 }
 
 export const retestTaskApi = (id: string): Promise<IResponse<commonRespData>> => {
