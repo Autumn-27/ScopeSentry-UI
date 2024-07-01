@@ -163,7 +163,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       saveLoading.value = false
     }
   })
-  props.getProjectData(0, 0)
+  props.getProjectData(1, 50)
 }
 getPocList()
 const dataLoading = ref(false)

@@ -13,6 +13,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
 import { ref, reactive, onBeforeMount } from 'vue'
 import notification from './components/notification.vue'
+import Deduplication from './components/Deduplication.vue'
 import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
 const { t } = useI18n()
 const form = reactive({
@@ -112,6 +113,7 @@ const saveLoading = ref(false)
     </ElRow>
   </ElCard>
   <notification />
+  <Deduplication />
 </template>
 
 <style scoped>

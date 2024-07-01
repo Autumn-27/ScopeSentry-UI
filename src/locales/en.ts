@@ -475,7 +475,10 @@ export default {
     newWebhookConfig: 'New configuration',
     threadMsg: 'Please configure the number of concurrencies according to the system memory',
     noticeHelp:
-      '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"'
+      '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"',
+    duplicationconfiguration: 'Deduplication Configuration',
+    deduplicationHour: 'Deduplication cycle',
+    deduplicationFlag: 'Deduplication switch'
   },
   form: {
     input: 'Search:'

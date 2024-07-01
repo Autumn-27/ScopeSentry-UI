@@ -120,13 +120,14 @@ const delSelect = async () => {
 
 const selectedKeyword = ref('')
 const opSelect = ref(false)
+const opSelect2 = ref(false)
 const querySearch = (queryString, cb) => {
   if (queryString == '') {
     opSelect.value = false
   }
   if (opSelect.value) {
-    const searchStr = queryString.replace(searchParams.value, '').trim()
-    console.log('Search String for Operators:', searchStr)
+    const searchStr = queryString.replace(selectedKeyword.value, '').trim()
+    console.log(searchStr)
     const results = searchHelpData.filter((item) => item.operator.includes(searchStr))
     cb(results)
   } else {
@@ -144,6 +145,7 @@ const handleSelect = (item) => {
     opSelect.value = true
   } else {
     searchParams.value = `${selectedKeyword.value}${item.operator}`
+    opSelect2.value = true
   }
 }
 

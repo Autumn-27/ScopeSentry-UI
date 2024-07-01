@@ -125,6 +125,17 @@ const crudSchemas = reactive<CrudSchema[]>([
           </ElCol>
         </ElRow>
       )
+    },
+    filters: [
+      { text: t('poc.critical'), value: 6 },
+      { text: t('poc.high'), value: 5 },
+      { text: t('poc.medium'), value: 4 },
+      { text: t('poc.low'), value: 3 },
+      { text: t('poc.info'), value: 2 },
+      { text: t('poc.unknown'), value: 1 }
+    ],
+    filterMethod: (value, row) => {
+      return row.level === value
     }
   },
   {

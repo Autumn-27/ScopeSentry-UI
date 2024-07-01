@@ -470,7 +470,10 @@ export default {
     threadMsg: '请根据系统内存自行配置并发数量(参考文档)',
     noticeConfig: '通知配置',
     newWebhookConfig: '新建配置',
-    noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"'
+    noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"',
+    duplicationconfiguration: '去重配置',
+    deduplicationHour: '去重周期',
+    deduplicationFlag: '去重开关'
   },
   form: {
     input: '搜索'

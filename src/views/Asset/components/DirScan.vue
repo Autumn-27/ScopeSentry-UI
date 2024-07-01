@@ -159,6 +159,18 @@ const setMaxHeight = () => {
           :max-height="maxHeight"
           @register="tableRegister"
           :headerCellStyle="tableHeaderColor"
+          :tooltip-options="{
+            offset: 1,
+            showArrow: false,
+            effect: 'dark',
+            enterable: true,
+            showAfter: 0,
+            popperOptions: {},
+            popperClass: 'test',
+            placement: 'top',
+            hideAfter: 0,
+            disabled: true
+          }"
           :style="{
             fontFamily:
               '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'

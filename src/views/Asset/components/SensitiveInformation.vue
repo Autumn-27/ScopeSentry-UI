@@ -86,6 +86,19 @@ const crudSchemas = reactive<CrudSchema[]>([
       return (
         <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
       )
+    },
+    filters: [
+      { text: 'Red', value: 'red' },
+      { text: 'Green', value: 'green' },
+      { text: 'Cyan', value: 'cyan' },
+      { text: 'Yellow', value: 'yellow' },
+      { text: 'Orange', value: 'orange' },
+      { text: 'Gray', value: 'gray' },
+      { text: 'Pink', value: 'pink' },
+      { text: 'Null', value: 'null' }
+    ],
+    filterMethod: (value, row) => {
+      return row.color === value
     }
   },
   {
