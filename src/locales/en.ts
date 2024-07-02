@@ -478,7 +478,8 @@ export default {
       '*msg* is the message parameter position. eg\\:http://example.com?msg=*mes* or POST "msg":"*msg*"',
     duplicationconfiguration: 'Deduplication Configuration',
     deduplicationHour: 'Deduplication cycle',
-    deduplicationFlag: 'Deduplication switch'
+    deduplicationFlag: 'Deduplication switch',
+    runNowOne: 'Run once immediately'
   },
   form: {
     input: 'Search:'

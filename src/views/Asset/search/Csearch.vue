@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import {
   ElCol,
   ElRow,
@@ -46,27 +46,33 @@ localSearchKeywordsData.push(newKeyword)
 const searchHelpData = [
   {
     operator: '=',
-    meaning: t('searchHelp.like')
+    meaning: t('searchHelp.like'),
+    value: '=""'
   },
   {
     operator: '!=',
-    meaning: t('searchHelp.notIn')
+    meaning: t('searchHelp.notIn'),
+    value: '!=""'
   },
   {
     operator: '==',
-    meaning: t('searchHelp.equal')
+    meaning: t('searchHelp.equal'),
+    value: '==""'
   },
   {
     operator: '&&',
-    meaning: t('searchHelp.and')
+    meaning: t('searchHelp.and'),
+    value: '&&'
   },
   {
     operator: '||',
-    meaning: t('searchHelp.or')
+    meaning: t('searchHelp.or'),
+    value: '||'
   },
   {
     operator: '()',
-    meaning: t('searchHelp.brackets')
+    meaning: t('searchHelp.brackets'),
+    value: '()'
   }
 ]
 const dialogVisible = ref(false)
@@ -127,7 +133,6 @@ const querySearch = (queryString, cb) => {
   }
   if (opSelect.value) {
     const searchStr = queryString.replace(selectedKeyword.value, '').trim()
-    console.log(searchStr)
     const results = searchHelpData.filter((item) => item.operator.includes(searchStr))
     cb(results)
   } else {
@@ -144,7 +149,7 @@ const handleSelect = (item) => {
     searchParams.value = item.keyword
     opSelect.value = true
   } else {
-    searchParams.value = `${selectedKeyword.value}${item.operator}`
+    searchParams.value = `${selectedKeyword.value}${item.value}`
     opSelect2.value = true
   }
 }

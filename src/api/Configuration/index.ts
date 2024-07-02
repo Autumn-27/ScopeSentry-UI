@@ -122,3 +122,54 @@ export const updateNotificationConfigApi = (
     }
   })
 }
+
+interface deduplicationConfigResp {
+  asset: boolean
+  subdomain: boolean
+  SubdoaminTakerResult: boolean
+  UrlScan: boolean
+  crawler: boolean
+  SensitiveResult: boolean
+  DirScanResult: boolean
+  vulnerability: boolean
+  PageMonitoring: boolean
+  hour: number
+  flag: boolean
+  next_run_time: string
+}
+export const getDeduplicationConfigApi = (): Promise<IResponse<deduplicationConfigResp>> => {
+  return request.get({ url: '/api/configuration/deduplication/config' })
+}
+
+export const updateDeduplicationConfigApi = (
+  asset: boolean,
+  subdomain: boolean,
+  SubdoaminTakerResult: boolean,
+  UrlScan: boolean,
+  crawler: boolean,
+  SensitiveResult: boolean,
+  DirScanResult: boolean,
+  vulnerability: boolean,
+  PageMonitoring: boolean,
+  hour: number,
+  flag: boolean,
+  runNow: boolean
+): Promise<IResponse<configRespData>> => {
+  return request.post({
+    url: '/api/configuration/deduplication/save',
+    data: {
+      asset,
+      subdomain,
+      SubdoaminTakerResult,
+      UrlScan,
+      crawler,
+      SensitiveResult,
+      DirScanResult,
+      vulnerability,
+      PageMonitoring,
+      hour,
+      flag,
+      runNow
+    }
+  })
+}

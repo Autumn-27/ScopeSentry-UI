@@ -473,7 +473,8 @@ export default {
     noticeHelp: '*msg*为消息参数位置。eg:http://example.com?msg=*msg*  or POST "msg":"*msg*"',
     duplicationconfiguration: '去重配置',
     deduplicationHour: '去重周期',
-    deduplicationFlag: '去重开关'
+    deduplicationFlag: '去重开关',
+    runNowOne: '立即运行一次'
   },
   form: {
     input: '搜索'

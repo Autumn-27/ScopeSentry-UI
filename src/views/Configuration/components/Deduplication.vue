@@ -12,6 +12,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
 import { reactive, ref } from 'vue'
+import { getDeduplicationConfigApi, updateDeduplicationConfigApi } from '@/api/Configuration'
 const { t } = useI18n()
 const deduplication = reactive({
   asset: false,
@@ -24,10 +25,36 @@ const deduplication = reactive({
   vulnerability: true,
   PageMonitoring: true,
   hour: 3,
-  flag: false
+  flag: false,
+  runNow: false
 })
 const updateNotificationSaveLoading = ref(false)
-const updateNotificationConfig = async () => {}
+const updateDeduplicationConfig = async () => {
+  DeduplicationConfigLoading.value = true
+  await updateDeduplicationConfigApi(
+    deduplication.asset,
+    deduplication.subdomain,
+    deduplication.SubdoaminTakerResult,
+    deduplication.UrlScan,
+    deduplication.crawler,
+    deduplication.SensitiveResult,
+    deduplication.DirScanResult,
+    deduplication.vulnerability,
+    deduplication.PageMonitoring,
+    deduplication.hour,
+    deduplication.flag,
+    deduplication.runNow
+  )
+  DeduplicationConfigLoading.value = false
+}
+const getDeduplicationConfig = async () => {
+  const res = await getDeduplicationConfigApi()
+  Object.assign(deduplication, res.data)
+  nextRunTime.value = res.data.next_run_time
+}
+getDeduplicationConfig()
+const nextRunTime = ref('')
+const DeduplicationConfigLoading = ref(false)
 </script>
 
 <template>
@@ -39,6 +66,11 @@ const updateNotificationConfig = async () => {}
         </ElCol>
       </ElRow>
     </template>
+    <div style="max-width: 600px; margin: 20px 0 0">
+      <ElAlert type="info" :closable="false">
+        <p>{{ t('task.nextTime') }}: {{ nextRunTime }}</p>
+      </ElAlert>
+    </div>
     <ElForm
       :model="deduplication"
       label-width="auto"
@@ -46,13 +78,6 @@ const updateNotificationConfig = async () => {}
       ref="ruleFormRef"
       style="position: relative; top: 1rem"
     >
-      <ElRow>
-        <ElCol :span="7">
-          <ElAlert type="info" :closable="false">
-            <p>"Full Name" label is automatically attached to the input:</p>
-          </ElAlert>
-        </ElCol>
-      </ElRow>
       <ElRow>
         <ElCol :span="3">
           <ElFormItem :label="t('configuration.deduplicationFlag')">
@@ -64,7 +89,17 @@ const updateNotificationConfig = async () => {}
             />
           </ElFormItem>
         </ElCol>
-        <ElCol :span="5">
+        <ElCol :span="3" v-if="deduplication.flag">
+          <ElFormItem :label="t('configuration.runNowOne')">
+            <ElSwitch
+              v-model="deduplication.runNow"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="5" v-if="deduplication.flag">
           <ElFormItem :label="t('configuration.deduplicationHour')" prop="type">
             <ElInputNumber
               v-model="deduplication.hour"
@@ -75,7 +110,7 @@ const updateNotificationConfig = async () => {}
           </ElFormItem>
         </ElCol>
       </ElRow>
-      <ElRow>
+      <ElRow v-if="deduplication.flag">
         <ElCol :span="5">
           <ElFormItem :label="t('asset.assetName')">
             <ElSwitch
@@ -107,7 +142,7 @@ const updateNotificationConfig = async () => {}
           </ElFormItem>
         </ElCol>
       </ElRow>
-      <ElRow>
+      <ElRow v-if="deduplication.flag">
         <ElCol :span="5">
           <ElFormItem :label="t('URL.URLName')">
             <ElSwitch
@@ -139,7 +174,7 @@ const updateNotificationConfig = async () => {}
           </ElFormItem>
         </ElCol>
       </ElRow>
-      <ElRow>
+      <ElRow v-if="deduplication.flag">
         <ElCol :span="5">
           <ElFormItem :label="t('dirScan.dirScanName')">
             <ElSwitch
@@ -176,8 +211,8 @@ const updateNotificationConfig = async () => {}
           <ElFormItem>
             <ElButton
               type="primary"
-              @click="updateNotificationConfig()"
-              :loading="updateNotificationSaveLoading"
+              @click="updateDeduplicationConfig()"
+              :loading="DeduplicationConfigLoading"
               >{{ t('common.submit') }}</ElButton
             >
           </ElFormItem>
