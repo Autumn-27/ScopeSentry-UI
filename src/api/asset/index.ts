@@ -98,9 +98,13 @@ interface SensitiveDataResponse {
 export const getSensitiveResultApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<SensitiveDataResponse>> => {
-  return request.post({ url: '/api/sensitive/result/data', data: { search, pageIndex, pageSize } })
+  return request.post({
+    url: '/api/sensitive/result/data2',
+    data: { search, pageIndex, pageSize, filter }
+  })
 }
 
 export const getSensitiveResultBodyApi = (id: string): Promise<IResponse<SensitiveBody>> => {

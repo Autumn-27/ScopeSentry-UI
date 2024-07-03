@@ -82,7 +82,11 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'color',
     label: 'Level',
     minWidth: 50,
+    columnKey: 'color',
     formatter: (_, __: TableColumn, cellValue: string) => {
+      if (!cellValue) {
+        return
+      }
       return (
         <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
       )
@@ -96,16 +100,16 @@ const crudSchemas = reactive<CrudSchema[]>([
       { text: 'Gray', value: 'gray' },
       { text: 'Pink', value: 'pink' },
       { text: 'Null', value: 'null' }
-    ],
-    filterMethod: (value, row) => {
-      return row.color === value
-    }
+    ]
   },
   {
     field: 'match',
     label: 'Info',
     minWidth: 150,
     formatter: (_, __: TableColumn, cellValue: string[]) => {
+      if (!cellValue) {
+        return
+      }
       const elements = cellValue.map((line, index) => <div key={index}>{line}</div>)
       return (
         <ElScrollbar height="100px">
@@ -123,23 +127,33 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'action',
     label: t('tableDemo.action'),
     formatter: (row, __: TableColumn, _: number) => {
-      return (
-        <>
-          <BaseButton type="primary" onClick={() => action(row.id)}>
-            {t('asset.detail')}
-          </BaseButton>
-        </>
-      )
+      if (row.body_id) {
+        return (
+          <>
+            <BaseButton type="primary" onClick={() => action(row.body_id)}>
+              {t('asset.detail')}
+            </BaseButton>
+          </>
+        )
+      } else {
+        return
+      }
     },
     minWidth: 100
   }
 ])
 
+const filter = reactive<{ [key: string]: any }>({})
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getSensitiveResultApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getSensitiveResultApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter
+    )
     return {
       list: res.data.list,
       total: res.data.total
@@ -171,6 +185,10 @@ const action = async (id) => {
   body.value = res.data.body
   DialogVisible.value = true
 }
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
 </script>
 
 <template>
@@ -190,11 +208,13 @@ const action = async (id) => {
           :columns="allSchemas.tableColumns"
           :data="dataList"
           stripe
+          row-key="_id"
           :border="true"
           :max-height="maxHeight"
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
+          @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
           :tooltip-options="{
             offset: 1,

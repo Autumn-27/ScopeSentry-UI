@@ -103,7 +103,6 @@ const delSelect = async () => {
       const elTableExpose = await props.getElTableExpose()
       const selectedRows = elTableExpose?.getSelectionRows() || []
       ids.value = selectedRows.map((row) => row.id)
-      console.log(ids)
       await delDataApi(ids.value, props.index)
       props.getList()
     })

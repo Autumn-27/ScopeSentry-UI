@@ -22,13 +22,12 @@ const deduplication = reactive({
   crawler: true,
   SensitiveResult: true,
   DirScanResult: true,
-  vulnerability: true,
+  vulnerability: false,
   PageMonitoring: true,
   hour: 3,
   flag: false,
   runNow: false
 })
-const updateNotificationSaveLoading = ref(false)
 const updateDeduplicationConfig = async () => {
   DeduplicationConfigLoading.value = true
   await updateDeduplicationConfigApi(
