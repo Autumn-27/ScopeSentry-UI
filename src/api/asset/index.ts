@@ -118,9 +118,14 @@ interface DirScanDataResponse {
 export const getDirScanApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>,
+  sort: Record<string, any>
 ): Promise<IResponse<DirScanDataResponse>> => {
-  return request.post({ url: '/api/dirscan/result/data', data: { search, pageIndex, pageSize } })
+  return request.post({
+    url: '/api/dirscan/result/data',
+    data: { search, pageIndex, pageSize, filter, sort }
+  })
 }
 
 interface PageMonitoringDataResponse {

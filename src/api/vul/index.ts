@@ -8,7 +8,8 @@ interface vulResultDataResponse {
 export const getVulResultDataApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<vulResultDataResponse>> => {
-  return request.post({ url: '/api/vul/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/vul/data', data: { search, pageIndex, pageSize, filter } })
 }

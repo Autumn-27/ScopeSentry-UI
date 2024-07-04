@@ -63,6 +63,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'status',
     label: t('dirScan.status'),
+    columnKey: 'status',
     minWidth: 120,
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
@@ -91,12 +92,21 @@ const crudSchemas = reactive<CrudSchema[]>([
           </ElCol>
         </ElRow>
       )
-    }
+    },
+    filters: [
+      { text: '200', value: 200 },
+      { text: '301', value: 301 },
+      { text: '302', value: 302 },
+      { text: '401', value: 401 },
+      { text: '403', value: 403 },
+      { text: '500', value: 500 }
+    ]
   },
   {
     field: 'length',
     label: 'Length',
-    minWidth: 120
+    minWidth: 120,
+    sortable: 'custom'
   },
   {
     field: 'msg',
@@ -109,7 +119,13 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getDirScanApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getDirScanApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter,
+      sortBy
+    )
     return {
       list: res.data.list,
       total: res.data.total
@@ -133,6 +149,18 @@ const maxHeight = ref(0)
 const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
+}
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
+const sortBy = reactive<{ [key: string]: any }>({})
+const sortChange = async (column: any) => {
+  const key = column.prop
+  const value = column.order
+  sortBy[key] = value
+  getList()
 }
 </script>
 
@@ -158,6 +186,8 @@ const setMaxHeight = () => {
           :resizable="true"
           :max-height="maxHeight"
           @register="tableRegister"
+          @filter-change="filterChange"
+          @sort-change="sortChange"
           :headerCellStyle="tableHeaderColor"
           :tooltip-options="{
             offset: 1,

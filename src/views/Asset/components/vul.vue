@@ -90,28 +90,29 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'level',
     label: 'Level',
     minWidth: 100,
-    formatter: (_: Recordable, __: TableColumn, levelValue: number) => {
+    columnKey: 'level',
+    formatter: (_: Recordable, __: TableColumn, levelValue: string) => {
       if (levelValue == null) {
         return <div></div>
       }
       let color = ''
       let flag = ''
-      if (levelValue === 6) {
+      if (levelValue === 'critical') {
         color = 'red'
         flag = t('poc.critical')
-      } else if (levelValue === 5) {
+      } else if (levelValue === 'high') {
         color = 'orange'
         flag = t('poc.high')
-      } else if (levelValue === 4) {
+      } else if (levelValue === 'medium') {
         color = 'yellow'
         flag = t('poc.medium')
-      } else if (levelValue === 3) {
+      } else if (levelValue === 'low') {
         color = 'blue'
         flag = t('poc.low')
-      } else if (levelValue === 2) {
+      } else if (levelValue === 'info') {
         color = 'green'
         flag = t('poc.info')
-      } else if (levelValue === 1) {
+      } else if (levelValue === 'unknown') {
         color = 'gray'
         flag = t('poc.unknown')
       }
@@ -127,16 +128,13 @@ const crudSchemas = reactive<CrudSchema[]>([
       )
     },
     filters: [
-      { text: t('poc.critical'), value: 6 },
-      { text: t('poc.high'), value: 5 },
-      { text: t('poc.medium'), value: 4 },
-      { text: t('poc.low'), value: 3 },
-      { text: t('poc.info'), value: 2 },
-      { text: t('poc.unknown'), value: 1 }
-    ],
-    filterMethod: (value, row) => {
-      return row.level === value
-    }
+      { text: t('poc.critical'), value: 'critical' },
+      { text: t('poc.high'), value: 'high' },
+      { text: t('poc.medium'), value: 'medium' },
+      { text: t('poc.low'), value: 'low' },
+      { text: t('poc.info'), value: 'info' },
+      { text: t('poc.unknown'), value: 'unknown' }
+    ]
   },
   {
     field: 'matched',
@@ -168,7 +166,12 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getVulResultDataApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getVulResultDataApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter
+    )
     return {
       list: res.data.list,
       total: res.data.total
@@ -217,22 +220,22 @@ const action = (data: any) => {
   const levelValue = data.level
   color.value = ''
   let flag = ''
-  if (levelValue === 6) {
+  if (levelValue === 'critical') {
     color.value = 'red'
     flag = t('poc.critical')
-  } else if (levelValue === 5) {
+  } else if (levelValue === 'high') {
     color.value = 'orange'
     flag = t('poc.high')
-  } else if (levelValue === 4) {
+  } else if (levelValue === 'medium') {
     color.value = 'yellow'
     flag = t('poc.medium')
-  } else if (levelValue === 3) {
+  } else if (levelValue === 'low') {
     color.value = 'blue'
     flag = t('poc.low')
-  } else if (levelValue === 2) {
+  } else if (levelValue === 'info') {
     color.value = 'green'
     flag = t('poc.info')
-  } else if (levelValue === 1) {
+  } else if (levelValue === 'unknown') {
     color.value = 'gray'
     flag = t('poc.unknown')
   }
@@ -244,6 +247,11 @@ const action = (data: any) => {
   DialogData.Request = data.request
   DialogData.Response = data.response
   DialogVisible.value = true
+}
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
 }
 </script>
 
@@ -269,6 +277,7 @@ const action = (data: any) => {
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
+          @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
           :style="{
             fontFamily:
@@ -299,15 +308,9 @@ const action = (data: any) => {
   >
     <ElDescriptions :border="true" :column="2">
       <ElDescriptionsItem label="URL">{{ DialogData.URL }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="Level">
-        <ElRow :gutter="20">
-          <ElCol :span="1">
-            <Icon icon="clarity:circle-solid" :color="color" />
-          </ElCol>
-          <ElCol :span="5">
-            <ElText type="info">{{ DialogData.Level }}</ElText>
-          </ElCol>
-        </ElRow>
+      <ElDescriptionsItem label="Level" width="100">
+        <Icon icon="clarity:circle-solid" :color="color" />
+        <ElText type="info">{{ DialogData.Level }}</ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="Vulnerability">{{ DialogData.Vulnerability }}</ElDescriptionsItem>
       <ElDescriptionsItem label="Matched">{{ DialogData.Matched }}</ElDescriptionsItem>

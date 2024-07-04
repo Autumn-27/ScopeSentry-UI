@@ -89,7 +89,7 @@ export default {
     endTime: '完成时间',
     fileSize: '文件大小',
     state: '状态',
-    wait: '等待',
+    run: '进行中',
     success: '成功',
     fail: '失败',
     type: '类型',

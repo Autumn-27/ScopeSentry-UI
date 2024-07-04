@@ -46,9 +46,10 @@ const exportColums = reactive<TableColumn[]>([
   {
     field: 'state',
     label: t('export.state'),
+    width: '160',
     formatter: (_: Recordable, __: TableColumn, value: number) => {
       if (value == 0) {
-        return <ElTag type="info">{t('export.wait')}</ElTag>
+        return <ElTag type="info">{t('export.run')}</ElTag>
       } else if (value == 1) {
         return <ElTag type="success">{t('export.success')}</ElTag>
       } else {

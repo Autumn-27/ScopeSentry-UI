@@ -89,7 +89,7 @@ export default {
     endTime: 'Complete Time',
     fileSize: 'File Size',
     state: 'State',
-    wait: 'Wait',
+    run: 'running',
     success: 'Success',
     fail: 'Fail',
     type: 'Type',
