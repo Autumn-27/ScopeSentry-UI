@@ -60,9 +60,10 @@ interface SubdomainDataResponse {
 export const getSubdomainApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
-  return request.post({ url: '/api/subdomain/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/subdomain/data', data: { search, pageIndex, pageSize, filter } })
 }
 
 interface URLDataResponse {

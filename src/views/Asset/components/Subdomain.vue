@@ -74,7 +74,15 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'type',
     label: t('subdomain.recordType'),
-    minWidth: '200'
+    minWidth: '200',
+    columnKey: 'type',
+    filters: [
+      { text: 'A', value: 'A' },
+      { text: 'NS', value: 'NS' },
+      { text: 'CNAME', value: 'CNAME' },
+      { text: 'PTR', value: 'PTR' },
+      { text: 'TXT', value: 'TXT' }
+    ]
   },
   {
     field: 'value',
@@ -111,7 +119,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getSubdomainApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getSubdomainApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total
@@ -121,10 +129,16 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
-getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
+
+getList()
 </script>
 
 <template>
@@ -149,6 +163,7 @@ function tableHeaderColor() {
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
+          @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
           :style="{
             fontFamily:

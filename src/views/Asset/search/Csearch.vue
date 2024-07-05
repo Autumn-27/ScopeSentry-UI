@@ -152,8 +152,6 @@ const handleSelect = (item) => {
     opSelect2.value = true
   }
 }
-
-// @keyup.enter="$props.handleSearch(searchParams)"
 </script>
 
 <template>
