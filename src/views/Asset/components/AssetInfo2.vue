@@ -462,7 +462,7 @@ const changeTags = (type, value) => {
                   round
                   size="small"
                   checked
-                  @on-click="changeTags('port', portItem.value)"
+                  @click="changeTags('port', portItem.value)"
                   >{{ portItem.value }}
                 </ElTag>
               </ElCol>
