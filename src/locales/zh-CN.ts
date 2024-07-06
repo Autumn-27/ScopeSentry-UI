@@ -430,6 +430,7 @@ export default {
     currentResponseBody: '当前响应体'
   },
   project: {
+    project: '项目',
     addProject: '新建项目',
     totalAssets: '总资产',
     projectName: '项目名称',

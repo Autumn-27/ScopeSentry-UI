@@ -433,6 +433,7 @@ export default {
     currentResponseBody: 'Current ResponseBody'
   },
   project: {
+    project: 'Project',
     addProject: 'Add Project',
     totalAssets: 'Total Assets',
     projectName: 'Project Name',

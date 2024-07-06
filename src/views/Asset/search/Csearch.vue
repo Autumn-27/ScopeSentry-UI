@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
 import {
   ElCol,
   ElRow,
@@ -11,13 +11,13 @@ import {
   ElText,
   ElDivider,
   ElAutocomplete,
-  ElForm,
-  ElFormItem,
+  ElIcon,
   ElDropdown,
   ElDropdownMenu,
   ElDropdownItem,
   ElMessageBox,
-  ElMessage
+  ElMessage,
+  ElTreeSelect
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -35,6 +35,8 @@ const props = defineProps<{
   }[]
   index: string
   getElTableExpose: () => void
+  handleFilterSearch: (string, any) => void
+  projectList: Project[]
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -43,7 +45,7 @@ const newKeyword = {
   explain: t('searchHelp.taskName')
 }
 localSearchKeywordsData.push(newKeyword)
-const searchHelpData = [
+const AssignmentHelp = [
   {
     operator: '=',
     meaning: t('searchHelp.like'),
@@ -58,23 +60,29 @@ const searchHelpData = [
     operator: '==',
     meaning: t('searchHelp.equal'),
     value: '==""'
-  },
+  }
+]
+const logicHelp = [
   {
     operator: '&&',
     meaning: t('searchHelp.and'),
-    value: '&&'
+    value: '&&',
+    logic: '1'
   },
   {
     operator: '||',
     meaning: t('searchHelp.or'),
-    value: '||'
+    value: '||',
+    logic: '1'
   },
   {
     operator: '()',
     meaning: t('searchHelp.brackets'),
-    value: '()'
+    value: '()',
+    logic: '1'
   }
 ]
+const searchHelpData = AssignmentHelp.concat(logicHelp)
 const dialogVisible = ref(false)
 const getHelp = () => {
   dialogVisible.value = true
@@ -113,45 +121,96 @@ const delSelect = async () => {
       })
     })
 }
-// const querySearch = (queryString, cb) => {
-//   const results = localSearchKeywordsData.filter((item) => {
-//     return item.keyword.toLowerCase().includes(queryString.toLowerCase())
-//   })
-//   cb(results)
-// }
-// const handleSelect = (item) => {
-//   searchParams.value = item.keyword
-// }
 
 const selectedKeyword = ref('')
 const opSelect = ref(false)
 const opSelect2 = ref(false)
+let keyword = ref(true)
+let assignmen = ref(false)
+let logic = ref(false)
 const querySearch = (queryString, cb) => {
+  selectedKeyword.value = queryString
+  console.log(queryString)
   if (queryString == '') {
-    opSelect.value = false
+    keyword.value = true
+    logic.value = false
+    assignmen.value = false
   }
-  if (opSelect.value) {
-    const searchStr = queryString.replace(selectedKeyword.value, '').trim()
-    const results = searchHelpData.filter((item) => item.operator.includes(searchStr))
-    cb(results)
-  } else {
+  if (keyword.value) {
+    console.log('第一')
+    if (logic.value) {
+      queryString = queryString.replace(selectedKeyword.value, '').trim()
+    }
     const results = localSearchKeywordsData.filter((item) => {
       return item.keyword.toLowerCase().includes(queryString.toLowerCase())
     })
     cb(results)
+    return
   }
+  if (assignmen.value) {
+    console.log('第2')
+    const searchStr = queryString.replace(selectedKeyword.value, '').trim()
+    const results = AssignmentHelp.filter((item) => item.operator.includes(searchStr))
+    cb(results)
+    return
+  }
+  if (logic.value && queryString.endsWith(' ')) {
+    console.log('第3')
+    const searchStr = queryString.replace(searchParams.value, '').trim()
+    const results = logicHelp.filter((item) => item.operator.includes(searchStr))
+    cb(results)
+    return
+  }
+  cb([])
+  return
 }
 
 const handleSelect = (item) => {
+  console.log(item)
   if (item.keyword) {
-    selectedKeyword.value = item.keyword
-    searchParams.value = item.keyword
+    console.log('handleSelect 1')
+    let key = ''
+    if (logic.value) {
+      key = selectedKeyword.value + item.keyword
+    } else {
+      key = item.keyword
+    }
+    selectedKeyword.value = key
+    searchParams.value = key
     opSelect.value = true
-  } else {
+    keyword.value = false
+    assignmen.value = true
+  } else if (item.logic) {
+    console.log('handleSelect 2')
     searchParams.value = `${selectedKeyword.value}${item.value}`
+    selectedKeyword.value = searchParams.value
+    keyword.value = true
+  } else {
+    console.log('handleSelect 3')
+    searchParams.value = `${selectedKeyword.value}${item.value}`
+    selectedKeyword.value = searchParams.value
     opSelect2.value = true
+    assignmen.value = false
+    logic.value = true
   }
 }
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const projectLoading = ref(false)
+const projectValue = ref([])
+const filterChange = async () => {
+  console.log(projectValue.value)
+  props.handleFilterSearch(searchParams.value, { project: projectValue.value })
+}
+watch(
+  () => projectValue.value,
+  (newValue) => {
+    filterChange()
+  }
+)
 </script>
 
 <template>
@@ -170,67 +229,70 @@ const handleSelect = (item) => {
       </ElCol>
     </ElRow> -->
     <ElRow class="row-bg" :gutter="20">
-      <ElCol :span="24" :xs="24" :sm="12" :md="8">
-        <ElForm>
-          <ElFormItem
-            :label="t('form.input')"
-            size="large"
-            label-width="auto"
-            style="max-width: 600px"
-          >
-            <ElAutocomplete
-              v-model="searchParams"
-              :fetch-suggestions="querySearch"
-              @select="handleSelect"
-              style="width: 100%"
-            >
-              <template #append>
-                <ElButton
-                  @click="getHelp"
-                  text
-                  class="icon-button"
-                  :icon="help"
-                  style="display: contents"
-                />
-              </template>
-              <template #default="{ item }">
-                <span style="float: left">{{ item.keyword || item.operator }}</span>
-                <span style="float: right; color: var(--el-text-color-secondary); font-size: 13px">
-                  {{ item.explain || item.meaning }}
-                </span>
-              </template>
-            </ElAutocomplete>
-          </ElFormItem>
-        </ElForm>
+      <ElCol :span="8">
+        {{ t('form.input') }}
+        <ElAutocomplete
+          v-model="searchParams"
+          :fetch-suggestions="querySearch"
+          popperClass="my-autocomplete"
+          @select="handleSelect"
+          style="width: 90%"
+        >
+          <template #append>
+            <ElButton
+              @click="getHelp"
+              text
+              class="icon-button"
+              :icon="help"
+              style="display: contents"
+            />
+          </template>
+          <template #default="{ item }">
+            <span style="float: left">{{ item.keyword || item.operator }}</span>
+            <span style="float: right; color: var(--el-text-color-secondary); font-size: 13px">
+              {{ item.explain || item.meaning }}
+            </span>
+          </template>
+        </ElAutocomplete>
       </ElCol>
-      <ElCol :span="24" :xs="24" :sm="12" :md="16">
-        <div class="flex flex-wrap items-center mb-4">
-          <ElButton
-            size="large"
-            type="primary"
-            :icon="searchicon"
-            @click="$props.handleSearch(searchParams)"
-          >
-            {{ t('form.input') }}
+      <ElCol :span="1.5"
+        ><ElButton type="primary" :icon="searchicon" @click="$props.handleSearch(searchParams)">
+          {{ t('form.input') }}
+        </ElButton>
+      </ElCol>
+      <ElCol :span="1.5">
+        <ElButton type="primary" @click="openExport" :icon="exporticon">
+          {{ t('asset.export') }}
+        </ElButton>
+      </ElCol>
+      <ElCol :span="4">
+        {{ t('project.project') }}:
+        <ElTreeSelect
+          :loading="projectLoading"
+          style="width: 80%"
+          v-model="projectValue"
+          :data="$props.projectList"
+          multiple
+          filterable
+          show-checkbox
+          collapse-tags
+          :max-collapse-tags="1"
+        />
+      </ElCol>
+      <ElCol :span="6" :xs="6" :sm="6" :md="6">
+        <ElDropdown trigger="click">
+          <ElButton plain class="custom-button align-bottom">
+            {{ t('common.operation') }}
+            <ElIcon class="el-icon--right"><elDropdownicon /></ElIcon>
           </ElButton>
-          <ElButton size="large" type="primary" @click="openExport" :icon="exporticon">
-            {{ t('asset.export') }}
-          </ElButton>
-          <ElDivider direction="vertical" />
-          <ElDropdown trigger="click">
-            <ElButton plain class="custom-button align-bottom">
-              {{ t('common.operation') }}
-              <ElIcon class="el-icon--right"><elDropdownicon /></ElIcon>
-            </ElButton>
-            <template #dropdown>
-              <ElDropdownMenu>
-                <ElDropdownItem :icon="deleteicon" @click="delSelect">{{
-                  t('common.delete')
-                }}</ElDropdownItem>
-              </ElDropdownMenu>
-            </template>
-          </ElDropdown>
-        </div>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem :icon="deleteicon" @click="delSelect">{{
+                t('common.delete')
+              }}</ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
       </ElCol>
     </ElRow>
   </ContentWrap>
@@ -282,5 +344,24 @@ const handleSelect = (item) => {
   box-shadow: none !important;
   border-color: inherit !important;
   border-width: 1px !important;
+}
+.my-autocomplete .el-scrollbar__view {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.my-autocomplete li {
+  line-height: normal;
+  padding: 7px;
+}
+.my-autocomplete li .name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.my-autocomplete li .addr {
+  font-size: 12px;
+  color: #b4b4b4;
+}
+.my-autocomplete li .highlighted .addr {
+  color: #ddd;
 }
 </style>

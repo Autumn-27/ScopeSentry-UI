@@ -9,7 +9,14 @@ import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getSubdomaintakerApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
-
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'domain',
@@ -101,7 +108,12 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getSubdomaintakerApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getSubdomaintakerApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter
+    )
     return {
       list: res.data.list,
       total: res.data.total
@@ -115,6 +127,12 @@ const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
+const filter = reactive<{ [key: string]: any }>({})
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -124,6 +142,8 @@ function tableHeaderColor() {
     :searchKeywordsData="searchKeywordsData"
     index="SubdoaminTakerResult"
     :getElTableExpose="getElTableExpose"
+    :projectList="$props.projectList"
+    :handleFilterSearch="handleFilterSearch"
   />
   <ElRow>
     <ElCol>

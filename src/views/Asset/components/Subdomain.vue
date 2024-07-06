@@ -9,6 +9,14 @@ import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getSubdomainApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'ip',
@@ -137,7 +145,11 @@ const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
   getList()
 }
-
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 getList()
 </script>
 
@@ -148,6 +160,8 @@ getList()
     :searchKeywordsData="searchKeywordsData"
     index="subdomain"
     :getElTableExpose="getElTableExpose"
+    :projectList="$props.projectList"
+    :handleFilterSearch="handleFilterSearch"
   />
   <ElRow>
     <ElCol>

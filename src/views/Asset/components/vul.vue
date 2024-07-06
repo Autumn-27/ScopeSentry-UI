@@ -20,7 +20,14 @@ import { Icon } from '@iconify/vue'
 import Csearch from '../search/Csearch.vue'
 import { BaseButton } from '@/components/Button'
 const { t } = useI18n()
-
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'url',

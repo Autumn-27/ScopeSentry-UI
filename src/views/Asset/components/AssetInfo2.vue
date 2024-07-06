@@ -32,7 +32,14 @@ import { useRouter } from 'vue-router'
 import Csearch from '../search/Csearch.vue'
 const { push } = useRouter()
 const { t } = useI18n()
-
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'app',
@@ -118,19 +125,22 @@ let AssetstatisticsData: Ref<{
   Icon: []
 })
 const getAssetstatistics = async () => {
+  AssetstatisticsData.value.Port = []
+  AssetstatisticsData.value.Service = []
+  AssetstatisticsData.value.Product = []
   staticLoading.value = true
   AssetstatisticsData.value.Icon = []
   const [portRes, serviceRes, productRes] = await Promise.all([
-    getAssetStatisticsPortApi(searchParams.value),
-    getAssetStatisticsTypeApi(searchParams.value),
-    getAssetStatisticsappApi(searchParams.value)
+    getAssetStatisticsPortApi(searchParams.value, filter),
+    getAssetStatisticsTypeApi(searchParams.value, filter),
+    getAssetStatisticsappApi(searchParams.value, filter)
   ])
 
   AssetstatisticsData.value.Port = portRes.data.Port
   AssetstatisticsData.value.Service = serviceRes.data.Service
   AssetstatisticsData.value.Product = productRes.data.Product
   staticLoading.value = false
-  let iconRes = await getAssetStatisticsiconApi(searchParams.value)
+  let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter)
   AssetstatisticsData.value.Icon = iconRes.data.Icon
 }
 
@@ -370,13 +380,13 @@ const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     getAssetstatistics()
     const { currentPage, pageSize } = tableState
-    const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
@@ -397,7 +407,12 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
 }
-getList()
+const filter = reactive<{ [key: string]: any }>({})
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -407,6 +422,8 @@ getList()
     :searchKeywordsData="searchKeywordsData"
     index="asset"
     :getElTableExpose="getElTableExpose"
+    :projectList="$props.projectList"
+    :handleFilterSearch="handleFilterSearch"
   />
   <ElRow :gutter="3">
     <ElCol :span="3">

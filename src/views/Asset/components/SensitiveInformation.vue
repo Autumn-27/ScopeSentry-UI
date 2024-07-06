@@ -12,7 +12,14 @@ import { Icon } from '@iconify/vue'
 import { BaseButton } from '@/components/Button'
 import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
-
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'url',
@@ -189,6 +196,11 @@ const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
   getList()
 }
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -198,6 +210,7 @@ const filterChange = async (newFilters: any) => {
     :searchKeywordsData="searchKeywordsData"
     index="SensitiveResult"
     :getElTableExpose="getElTableExpose"
+    :handleFilterSearch="handleFilterSearch"
   />
   <ElRow>
     <ElCol>
@@ -208,7 +221,7 @@ const filterChange = async (newFilters: any) => {
           :columns="allSchemas.tableColumns"
           :data="dataList"
           stripe
-          row-key="_id"
+          rowKey="_id"
           :border="true"
           :max-height="maxHeight"
           :loading="loading"

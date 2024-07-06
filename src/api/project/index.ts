@@ -15,6 +15,10 @@ export const getProjectDataApi = (
   return request.post({ url: '/api/project/data', data: { search, pageIndex, pageSize } })
 }
 
+export const getProjectAllApi = async () => {
+  return request.get({ url: '/api/project/all' })
+}
+
 export const addProjectDataApi = (
   name: string,
   tag: string,

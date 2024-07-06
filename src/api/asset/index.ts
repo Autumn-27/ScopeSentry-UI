@@ -23,29 +23,42 @@ interface AssetDataResponse {
 export const getAssetApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<AssetDataResponse>> => {
-  return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize, filter } })
 }
 
 export const getAssetStatisticsApi = (search: string): Promise<IResponse<AssetStatistics>> => {
   return request.post({ url: '/api/asset/statistics2', data: { search } })
 }
 
-export const getAssetStatisticsPortApi = (search: string): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/port', data: { search } })
+export const getAssetStatisticsPortApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/port', data: { search, filter } })
 }
 
-export const getAssetStatisticsTypeApi = (search: string): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/type', data: { search } })
+export const getAssetStatisticsTypeApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/type', data: { search, filter } })
 }
 
-export const getAssetStatisticsiconApi = (search: string): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/icon', data: { search } })
+export const getAssetStatisticsiconApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/icon', data: { search, filter } })
 }
 
-export const getAssetStatisticsappApi = (search: string): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/app', data: { search } })
+export const getAssetStatisticsappApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/app', data: { search, filter } })
 }
 
 export const getAssetDetailApi = (id: string): Promise<IResponse<AssetDetail>> => {
@@ -74,9 +87,10 @@ interface URLDataResponse {
 export const getURLApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<URLDataResponse>> => {
-  return request.post({ url: '/api/url/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/url/data', data: { search, pageIndex, pageSize, filter } })
 }
 
 interface CrawlerDataResponse {
@@ -87,9 +101,10 @@ interface CrawlerDataResponse {
 export const getCrawlerApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<CrawlerDataResponse>> => {
-  return request.post({ url: '/api/crawler/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/crawler/data', data: { search, pageIndex, pageSize, filter } })
 }
 
 interface SensitiveDataResponse {
@@ -165,9 +180,13 @@ interface SubdomaintakerDataResponse {
 export const getSubdomaintakerApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<SubdomaintakerDataResponse>> => {
-  return request.post({ url: '/api/subdomaintaker/data', data: { search, pageIndex, pageSize } })
+  return request.post({
+    url: '/api/subdomaintaker/data',
+    data: { search, pageIndex, pageSize, filter }
+  })
 }
 
 export const delDataApi = (ids: string[], index: string): Promise<IResponse<commonRespData>> => {

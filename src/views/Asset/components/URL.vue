@@ -9,7 +9,14 @@ import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getURLApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
-
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const props = defineProps<{
+  projectList: Project[]
+}>()
 const searchKeywordsData = [
   {
     keyword: 'url',
@@ -86,7 +93,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getURLApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getURLApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total
@@ -111,6 +118,12 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
 }
+const filter = reactive<{ [key: string]: any }>({})
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -120,6 +133,8 @@ const setMaxHeight = () => {
     :searchKeywordsData="searchKeywordsData"
     index="UrlScan"
     :getElTableExpose="getElTableExpose"
+    :projectList="$props.projectList"
+    :handleFilterSearch="handleFilterSearch"
   />
   <ElRow>
     <ElCol>
