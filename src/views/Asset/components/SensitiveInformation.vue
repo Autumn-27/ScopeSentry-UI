@@ -211,6 +211,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     index="SensitiveResult"
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
+    :projectList="$props.projectList"
   />
   <ElRow>
     <ElCol>

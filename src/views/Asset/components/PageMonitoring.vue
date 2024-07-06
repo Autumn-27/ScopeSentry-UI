@@ -187,13 +187,18 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getPageMonitoringApi(searchParams.value, currentPage.value, pageSize.value)
+    const res = await getPageMonitoringApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter
+    )
     return {
       list: res.data.list,
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
@@ -212,6 +217,16 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
 }
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -221,6 +236,8 @@ const setMaxHeight = () => {
     :searchKeywordsData="searchKeywordsData"
     index="PageMonitoring"
     :getElTableExpose="getElTableExpose"
+    :handleFilterSearch="handleFilterSearch"
+    :projectList="$props.projectList"
   />
   <ElRow>
     <ElCol>

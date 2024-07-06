@@ -17,7 +17,8 @@ import {
   ElDropdownItem,
   ElMessageBox,
   ElMessage,
-  ElTreeSelect
+  ElTreeSelect,
+  ElTag
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -37,6 +38,7 @@ const props = defineProps<{
   getElTableExpose: () => void
   handleFilterSearch: (string, any) => void
   projectList: Project[]
+  dynamicTags?: string[]
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -211,6 +213,27 @@ watch(
     filterChange()
   }
 )
+const localDynamicTags = ref(props.dynamicTags ? [...props.dynamicTags] : [])
+
+// 监听 props.dynamicTags 的变化，并同步到本地状态
+watch(
+  () => props.dynamicTags,
+  (newTags) => {
+    if (newTags) {
+      localDynamicTags.value = [...newTags]
+    } else {
+      localDynamicTags.value = []
+    }
+  }
+)
+const handleClose = (tag: string) => {
+  if (localDynamicTags.value) {
+    const index = localDynamicTags.value.indexOf(tag)
+    if (index > -1) {
+      localDynamicTags.value.splice(index, 1)
+    }
+  }
+}
 </script>
 
 <template>
@@ -293,6 +316,23 @@ watch(
             </ElDropdownMenu>
           </template>
         </ElDropdown>
+      </ElCol>
+    </ElRow>
+    <ElRow style="margin-top: 10px; left: 30px">
+      <ElCol :span="24">
+        <div class="flex gap-2">
+          <ElTag
+            v-for="tag in localDynamicTags"
+            :key="tag"
+            closable
+            :disable-transitions="false"
+            type="info"
+            size="small"
+            @close="handleClose(tag)"
+          >
+            {{ tag }}
+          </ElTag>
+        </div>
       </ElCol>
     </ElRow>
   </ContentWrap>

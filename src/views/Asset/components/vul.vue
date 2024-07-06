@@ -260,6 +260,11 @@ const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
   getList()
 }
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -269,6 +274,8 @@ const filterChange = async (newFilters: any) => {
     :searchKeywordsData="searchKeywordsData"
     index="vulnerability"
     :getElTableExpose="getElTableExpose"
+    :handleFilterSearch="handleFilterSearch"
+    :projectList="$props.projectList"
   />
   <ElRow>
     <ElCol>

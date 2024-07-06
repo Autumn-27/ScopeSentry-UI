@@ -151,9 +151,13 @@ interface PageMonitoringDataResponse {
 export const getPageMonitoringApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<PageMonitoringDataResponse>> => {
-  return request.post({ url: '/api/page/monitoring/result', data: { search, pageIndex, pageSize } })
+  return request.post({
+    url: '/api/page/monitoring/result',
+    data: { search, pageIndex, pageSize, filter }
+  })
 }
 
 export const getPageMonitoringResponseApi = (

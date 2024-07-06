@@ -413,6 +413,11 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   searchParams.value = data
   getList()
 }
+const dynamicTags = ref<string[]>([])
+const changeTags = (type, value) => {
+  const key = `${type}=${value}`
+  dynamicTags.value.push(key)
+}
 </script>
 
 <template>
@@ -424,6 +429,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"
+    :dynamicTags="dynamicTags"
   />
   <ElRow :gutter="3">
     <ElCol :span="3">
@@ -451,7 +457,14 @@ const handleFilterSearch = (data: any, newFilters: any) => {
             </template>
             <ElRow v-for="(portItem, index) in AssetstatisticsData.Port" :key="index">
               <ElCol :span="12">
-                <ElTag effect="light" round size="small">{{ portItem.value }} </ElTag>
+                <ElTag
+                  effect="light"
+                  round
+                  size="small"
+                  checked
+                  @on-click="changeTags('port', portItem.value)"
+                  >{{ portItem.value }}
+                </ElTag>
               </ElCol>
               <ElCol :span="12" style="text-align: end">
                 <ElText size="small">{{ portItem.number }}</ElText>

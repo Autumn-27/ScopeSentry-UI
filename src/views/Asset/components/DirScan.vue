@@ -169,6 +169,11 @@ const sortChange = async (column: any) => {
   sortBy[key] = value
   getList()
 }
+const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.assign(filter, newFilters)
+  searchParams.value = data
+  getList()
+}
 </script>
 
 <template>
@@ -178,6 +183,8 @@ const sortChange = async (column: any) => {
     :searchKeywordsData="searchKeywordsData"
     index="DirScanResult"
     :getElTableExpose="getElTableExpose"
+    :handleFilterSearch="handleFilterSearch"
+    :projectList="$props.projectList"
   />
   <ElRow>
     <ElCol>
