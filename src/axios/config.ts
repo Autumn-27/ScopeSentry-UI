@@ -28,6 +28,10 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
 }
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
+  if (response?.headers['content-type'] == 'application/octet-stream') {
+    console.log('ddd')
+    return response
+  }
   if (response?.config?.responseType === 'blob') {
     // 如果是文件流，直接过
     return response

@@ -20,7 +20,9 @@ import { ElMessageBox } from 'element-plus'
 import { deleteProjectApi } from '@/api/project'
 import AddProject from './AddProject.vue'
 import { useIcon } from '@/hooks/web/useIcon'
+import { useRouter } from 'vue-router'
 const { t } = useI18n()
+const { push } = useRouter()
 interface Recordable {
   id: string
   name: string
@@ -136,6 +138,9 @@ const toggleAllSelection = () => {
     localSelectedRows.value = []
   }
 }
+const action = (id: string) => {
+  push(`/project-management/project-detail?id=${id}`)
+}
 </script>
 
 <template>
@@ -177,6 +182,9 @@ const toggleAllSelection = () => {
             <ElDropdownMenu>
               <ElDropdownItem :icon="editIcon" :command="{ type: 'edit', id: row.id }">{{
                 t('common.edit')
+              }}</ElDropdownItem>
+              <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
+                t('common.delete')
               }}</ElDropdownItem>
               <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
                 t('common.delete')

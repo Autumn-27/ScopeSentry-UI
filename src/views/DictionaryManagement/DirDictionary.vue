@@ -1,42 +1,23 @@
 <script setup lang="ts">
-import { ElRow, ElCol, ElButton } from 'element-plus'
+import { ElRow, ElCol, ElButton, ElUpload, ElFormItem, ElForm } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
-import { ref, onBeforeMount } from 'vue'
-import { Codemirror } from 'vue-codemirror'
-import { javascript } from '@codemirror/lang-javascript'
-import { oneDark } from '@codemirror/theme-one-dark'
-import { getDirDictionaryApi, saveDirDictionaryApi } from '@/api/DictionaryManagement'
+import { ref } from 'vue'
+import { useUserStore } from '@/store/modules/user'
+import { getDirDictionaryApi } from '@/api/DictionaryManagement'
 const { t } = useI18n()
-const dict = ref(``)
-const extensions = [javascript(), oneDark]
-onBeforeMount(async () => {
-  try {
-    const res = await getDirDictionaryApi()
-
-    if (res.code === 200) {
-      dict.value = res.data.dict
-    } else {
-      console.error(`API request failed with status code ${res.code}`)
-    }
-  } catch (error) {
-    console.error('An error occurred while fetching the subdomain dictionary:', error)
-  }
-})
-const confirmAdd = async () => {
-  const confirmed = window.confirm('Do you want to save the data?')
-  if (confirmed) {
-    await save()
-  }
+const getData = async () => {
+  const response = await getDirDictionaryApi()
+  const url = window.URL.createObjectURL(new Blob([response.data]))
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', 'dirdict') // 设置文件名
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
-const save = async () => {
-  saveLoading.value = true
-  const res = await saveDirDictionaryApi(dict.value)
-  if (res.code == 200) {
-    saveLoading.value = false
-  }
-}
-const saveLoading = ref(false)
+const userStore = useUserStore()
+const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
 </script>
 
 <template>
@@ -46,21 +27,18 @@ const saveLoading = ref(false)
         <ElCol :span="3" style="height: 100%">
           <span>{{ t('router.dirDictionary') }}</span>
         </ElCol>
-        <ElCol :span="2" :offset="19">
-          <ElButton type="primary" @click="confirmAdd" @loading="saveLoading">{{
-            t('common.save')
-          }}</ElButton>
-        </ElCol>
       </ElRow>
     </template>
-    <codemirror
-      v-model="dict"
-      :style="{ height: '800px' }"
-      :autofocus="true"
-      :indent-with-tab="true"
-      :tab-size="2"
-      :extensions="extensions"
-    />
+    <ElForm>
+      <ElFormItem :label="t('common.upload')">
+        <ElUpload class="upload-demo" action="/api/dictionary/dir/save" :headers="uploadHeaders">
+          <ElButton type="primary" size="small">Click to upload</ElButton>
+        </ElUpload>
+      </ElFormItem>
+      <ElFormItem :label="t('common.download')">
+        <ElButton type="primary" size="small" @click="getData">Download</ElButton>
+      </ElFormItem>
+    </ElForm>
   </ElCard>
 </template>
 

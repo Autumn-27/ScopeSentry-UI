@@ -1,5 +1,7 @@
 export default {
   common: {
+    upload: 'upload',
+    download: 'download',
     operation: 'Operation',
     selectAll: 'Select All',
     multipleSelection: 'Multiple Selection',

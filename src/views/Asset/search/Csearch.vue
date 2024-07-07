@@ -39,6 +39,7 @@ const props = defineProps<{
   handleFilterSearch: (string, any) => void
   projectList: Project[]
   dynamicTags?: string[]
+  handleClose?: (string) => void
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -213,9 +214,23 @@ watch(
     filterChange()
   }
 )
-const localDynamicTags = ref(props.dynamicTags ? [...props.dynamicTags] : [])
-
-// 监听 props.dynamicTags 的变化，并同步到本地状态
+const localDynamicTags = ref<string[]>(props.dynamicTags ? [...props.dynamicTags] : [])
+const tagClickFilterSearch = () => {
+  const dictionary: { [key: string]: string[] } = {}
+  console.log(localDynamicTags.value)
+  console.log('Updated dictionary:', dictionary)
+  localDynamicTags.value.forEach((tag) => {
+    const [key, value] = tag.split('=')
+    if (key in dictionary) {
+      dictionary[key].push(value)
+    } else {
+      dictionary[key] = [value]
+    }
+  })
+  dictionary['project'] = projectValue.value
+  console.log('Updated dictionary:', dictionary)
+  props.handleFilterSearch(searchParams.value, dictionary)
+}
 watch(
   () => props.dynamicTags,
   (newTags) => {
@@ -224,14 +239,15 @@ watch(
     } else {
       localDynamicTags.value = []
     }
-  }
+    tagClickFilterSearch()
+  },
+  { immediate: true }
 )
-const handleClose = (tag: string) => {
-  if (localDynamicTags.value) {
-    const index = localDynamicTags.value.indexOf(tag)
-    if (index > -1) {
-      localDynamicTags.value.splice(index, 1)
-    }
+function handleCloseTag(tag: string) {
+  if (props.handleClose) {
+    props.handleClose(tag)
+  } else {
+    console.warn('handleClose function is not defined')
   }
 }
 </script>
@@ -328,7 +344,7 @@ const handleClose = (tag: string) => {
             :disable-transitions="false"
             type="info"
             size="small"
-            @close="handleClose(tag)"
+            @close="handleCloseTag(tag)"
           >
             {{ tag }}
           </ElTag>

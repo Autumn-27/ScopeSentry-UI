@@ -1,5 +1,7 @@
 export default {
   common: {
+    upload: '上传',
+    download: '下载',
     operation: '操作',
     selectAll: '全选',
     multipleSelection: '多选',

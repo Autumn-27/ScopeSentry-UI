@@ -106,6 +106,7 @@ const setMaxHeight = () => {
 }
 const filter = reactive<{ [key: string]: any }>({})
 const handleFilterSearch = (data: any, newFilters: any) => {
+  Object.keys(filter).forEach((key) => delete filter[key])
   Object.assign(filter, newFilters)
   searchParams.value = data
   getList()

@@ -416,7 +416,20 @@ const handleFilterSearch = (data: any, newFilters: any) => {
 const dynamicTags = ref<string[]>([])
 const changeTags = (type, value) => {
   const key = `${type}=${value}`
-  dynamicTags.value.push(key)
+  console.log(key)
+  dynamicTags.value = [...dynamicTags.value, key]
+}
+const handleClose = (tag: string) => {
+  if (dynamicTags.value) {
+    const [key, value] = tag.split('=')
+    if (key in filter && Array.isArray(filter[key])) {
+      filter[key] = filter[key].filter((item: string) => item !== value)
+      if (filter[key].length === 0) {
+        delete filter[key]
+      }
+    }
+    dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
+  }
 }
 </script>
 
@@ -430,6 +443,7 @@ const changeTags = (type, value) => {
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"
     :dynamicTags="dynamicTags"
+    :handleClose="handleClose"
   />
   <ElRow :gutter="3">
     <ElCol :span="3">
@@ -455,16 +469,16 @@ const changeTags = (type, value) => {
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.port') }}</ElText>
             </template>
-            <ElRow v-for="(portItem, index) in AssetstatisticsData.Port" :key="index">
+            <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
               <ElCol :span="12">
-                <ElTag
-                  effect="light"
-                  round
-                  size="small"
-                  checked
+                <div
                   @click="changeTags('port', portItem.value)"
-                  >{{ portItem.value }}
-                </ElTag>
+                  style="display: inline-block; cursor: pointer"
+                >
+                  <ElTag effect="light" round size="small">
+                    {{ portItem.value }}
+                  </ElTag>
+                </div>
               </ElCol>
               <ElCol :span="12" style="text-align: end">
                 <ElText size="small">{{ portItem.number }}</ElText>
@@ -475,9 +489,16 @@ const changeTags = (type, value) => {
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.service') }}</ElText>
             </template>
-            <ElRow v-for="(serviceItem, index) in AssetstatisticsData.Service" :key="index">
+            <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
               <ElCol :span="12">
-                <ElTag effect="light" round size="small">{{ serviceItem.value }} </ElTag>
+                <div
+                  @click="changeTags('protocol', serviceItem.value)"
+                  style="display: inline-block; cursor: pointer"
+                >
+                  <ElTag effect="light" round size="small">
+                    {{ serviceItem.value }}
+                  </ElTag>
+                </div>
               </ElCol>
               <ElCol :span="12" style="text-align: end">
                 <ElText size="small">{{ serviceItem.number }}</ElText>
@@ -488,9 +509,16 @@ const changeTags = (type, value) => {
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.products') }}</ElText>
             </template>
-            <ElRow v-for="(productItem, index) in AssetstatisticsData.Product" :key="index">
+            <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
               <ElCol :span="12">
-                <ElTag effect="light" round size="small">{{ productItem.value }} </ElTag>
+                <div
+                  @click="changeTags('app', productItem.value)"
+                  style="display: inline-block; cursor: pointer"
+                >
+                  <ElTag effect="light" round size="small">
+                    {{ productItem.value }}
+                  </ElTag>
+                </div>
               </ElCol>
               <ElCol :span="12" style="text-align: end">
                 <ElText size="small">{{ productItem.number }}</ElText>
@@ -502,13 +530,14 @@ const changeTags = (type, value) => {
               <ElText tag="b" size="small">icon</ElText>
             </template>
             <ElRow style="margin-top: 10px; margin-left: 10px">
-              <ElCol :span="8" v-for="(iconItem, index) in AssetstatisticsData.Icon" :key="index">
+              <ElCol :span="8" v-for="iconItem in AssetstatisticsData.Icon" :key="iconItem.value">
                 <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
                   <ElTooltip :content="iconItem.icon_hash" placement="top-start">
                     <img
                       :src="'data:image/png;base64,' + iconItem.value"
                       alt="Icon"
                       style="width: 30px; height: 30px"
+                      @click="changeTags('icon', iconItem.icon_hash)"
                     />
                   </ElTooltip>
                 </ElBadge>
