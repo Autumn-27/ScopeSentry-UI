@@ -444,7 +444,9 @@ export default {
     cycle: '监控周期',
     projectDetail: '项目信息',
     CreatTime: '创建时间',
-    msgProjectTag: '请输入项目TAG'
+    msgProjectTag: '请输入项目TAG',
+    aggregation: '聚合',
+    overview: '概况'
   },
   poc: {
     pocName: 'POC名称',

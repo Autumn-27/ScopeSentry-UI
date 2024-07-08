@@ -90,11 +90,14 @@ const del = (id: string) => {
 }
 const editIcon = useIcon({ icon: 'uil:edit' })
 const delIcon = useIcon({ icon: 'material-symbols:delete-outline' })
+const data = useIcon({ icon: 'carbon:data-vis-1' })
 const handleCommand = (command: string | number | object) => {
   if (command['type'] == 'edit') {
     edit(command['id'])
-  } else {
+  } else if (command['type'] == 'del') {
     del(command['id'])
+  } else {
+    action(command['id'])
   }
 }
 const handlePageChange = () => {
@@ -186,8 +189,8 @@ const action = (id: string) => {
               <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
                 t('common.delete')
               }}</ElDropdownItem>
-              <ElDropdownItem :icon="delIcon" :command="{ type: 'del', id: row.id }">{{
-                t('common.delete')
+              <ElDropdownItem :icon="data" :command="{ type: 'aggregation', id: row.id }">{{
+                t('project.aggregation')
               }}</ElDropdownItem>
             </ElDropdownMenu>
           </template>

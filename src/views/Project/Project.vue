@@ -26,6 +26,7 @@ const { t } = useI18n()
 let allProjectData = reactive({})
 let tabNames = ref<string[]>([])
 let tagNum = reactive({})
+const projectListLoading = ref(false)
 const getProjectTag = async (pageIndex: number, pageSize: number) => {
   if (pageIndex === 0) {
     pageIndex = currentPage.value
@@ -61,10 +62,12 @@ const currentPage = ref(1)
 const currentpageSize = ref(50)
 
 const loading = ref(false)
-const handleSearch = () => {
+const handleSearch = async () => {
   loading.value = true
-  getProjectTag(currentPage.value, currentpageSize.value)
+  projectListLoading.value = true
+  await getProjectTag(currentPage.value, currentpageSize.value)
   loading.value = false
+  projectListLoading.value = false
 }
 handleSearch()
 const multipleSelection = ref(false)
@@ -149,7 +152,7 @@ const selectedRowIds = ref([])
         </ElDropdown>
       </ElCol>
     </ElRow>
-    <ElTabs class="demo-tabs">
+    <ElTabs class="demo-tabs" v-loading="projectListLoading">
       <ElTabPane :label="`All (${tagNum['All']})`"
         ><ProjectList
           :tableDataList="allProjectData['All']"

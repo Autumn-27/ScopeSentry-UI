@@ -4,10 +4,10 @@ import { reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter, useRoute } from 'vue-router'
 import { DescriptionsSchema } from '@/components/Descriptions'
-import { Descriptions } from '@/components/Descriptions'
 import { getAssetDetailApi } from '@/api/asset'
-import PanelGroup from '@/views/Dashboard/components/PanelGroup.vue'
-
+import { ElTabs } from 'element-plus'
+import { ElTabPane } from 'element-plus'
+import Dashboard from './components/Dashboard.vue'
 const { push, go } = useRouter()
 
 const { t } = useI18n()
@@ -41,28 +41,22 @@ const schema = reactive<DescriptionsSchema[]>([
 ])
 const descriptionsDoading = ref(true)
 let assetData = reactive({})
-const getTableDet = async () => {
-  const res = await getAssetDetailApi(query.id as string)
-  if (res) {
-    assetData = Object.assign(assetData, res?.data || {})
-    descriptionsDoading.value = false
-  }
-}
-getTableDet()
+// const getTableDet = async () => {
+//   const res = await getAssetDetailApi(query.id as string)
+//   if (res) {
+//     assetData = Object.assign(assetData, res?.data || {})
+//     descriptionsDoading.value = false
+//   }
+// }
+// getTableDet()
 </script>
 
 <template>
-  <PanelGroup />
-  <ContentDetailWrap
-    :title="t('exampleDemo.detail')"
-    @back="push('/project-management/index')"
-    v-loading="descriptionsDoading"
-  >
-    <template #header>
-      <BaseButton @click="go(-1)">
-        {{ t('common.back') }}
-      </BaseButton>
-    </template>
-    <Descriptions :title="t('project.projectDetail')" :schema="schema" :data="assetData" />
-  </ContentDetailWrap>
+  <ElTabs type="border-card">
+    <ElTabPane :label="t('project.overview')"><Dashboard /></ElTabPane>
+    <ElTabPane :label="t('subdomain.subdomainName')" />
+    <ElTabPane :label="t('task.subdomainTakeover')"> xxx </ElTabPane>
+    <ElTabPane :label="t('URL.URLName')">xxxx</ElTabPane>
+    <ElTabPane :label="t('crawler.crawlerName')">xxx</ElTabPane>
+  </ElTabs>
 </template>

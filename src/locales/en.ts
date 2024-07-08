@@ -447,7 +447,9 @@ export default {
     cycle: 'Monitoring Cycle',
     projectDetail: 'Project Detail',
     CreatTime: 'Creat Time',
-    msgProjectTag: 'Please enter the project TAG'
+    msgProjectTag: 'Please enter the project TAG',
+    aggregation: 'Aggregation',
+    overview: 'Overview'
   },
   poc: {
     pocName: 'POC Name',
