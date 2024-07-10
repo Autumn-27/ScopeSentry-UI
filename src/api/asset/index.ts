@@ -61,6 +61,13 @@ export const getAssetStatisticsappApi = (
   return request.post({ url: '/api/asset/statistics/app', data: { search, filter } })
 }
 
+export const getAssetStatisticsTitleApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<AssetStatistics>> => {
+  return request.post({ url: '/api/asset/statistics/title', data: { search, filter } })
+}
+
 export const getAssetDetailApi = (id: string): Promise<IResponse<AssetDetail>> => {
   return request.post({ url: '/api/asset/detail', data: { id } })
 }

@@ -19,6 +19,7 @@ export type AssetStatistics = {
   Service: { value: string; number: number }[]
   Product: { value: string; number: number }[]
   Icon: { value: string; number: number; icon_hash: string }[]
+  Title: { value: string; number: number }[]
 }
 
 export type AssetDetail = {

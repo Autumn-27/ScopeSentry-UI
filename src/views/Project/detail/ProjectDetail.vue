@@ -8,8 +8,7 @@ import { getAssetDetailApi } from '@/api/asset'
 import { ElTabs } from 'element-plus'
 import { ElTabPane } from 'element-plus'
 import Dashboard from './components/Dashboard.vue'
-const { push, go } = useRouter()
-
+import Subdomain from './components/Subdomain.vue'
 const { t } = useI18n()
 const { query } = useRoute()
 const schema = reactive<DescriptionsSchema[]>([
@@ -54,7 +53,7 @@ let assetData = reactive({})
 <template>
   <ElTabs type="border-card">
     <ElTabPane :label="t('project.overview')"><Dashboard /></ElTabPane>
-    <ElTabPane :label="t('subdomain.subdomainName')" />
+    <ElTabPane :label="t('subdomain.subdomainName')"><Subdomain /></ElTabPane>
     <ElTabPane :label="t('task.subdomainTakeover')"> xxx </ElTabPane>
     <ElTabPane :label="t('URL.URLName')">xxxx</ElTabPane>
     <ElTabPane :label="t('crawler.crawlerName')">xxx</ElTabPane>

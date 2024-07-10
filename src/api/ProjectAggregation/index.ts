@@ -50,3 +50,26 @@ interface VulDataResponse {
 export const getProjectVulDataApi = (id: string): Promise<IResponse<VulDataResponse>> => {
   return request.post({ url: '/api/project_aggregation/project/vul/data', data: { id } })
 }
+
+export type SubdomainData = {
+  id: string
+  host: string
+  type: string
+  value: string[]
+  ip: string[]
+  time: string
+}
+
+interface SubdomainDataResponse {
+  list: SubdomainData[]
+  total: number
+}
+export const getProjectSubdomainDataApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/project_aggregation/project/subdomain/data',
+    data: { search, filter }
+  })
+}

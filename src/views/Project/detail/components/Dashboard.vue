@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, watch } from 'vue'
+import { reactive, Ref, ref, watch } from 'vue'
 import { Echart } from '@/components/Echart'
 import {
   ElRow,
@@ -14,11 +14,12 @@ import {
   ElTag,
   ElDivider,
   ElSkeleton,
-  ElAside,
   ElTable,
   ElTableColumn,
   ElText,
-  ElSpace
+  ElSpace,
+  ElCollapseItem,
+  ElCollapse
 } from 'element-plus'
 import { useRoute } from 'vue-router'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -29,6 +30,12 @@ import {
   getProjectVulLevelCountApi
 } from '@/api/ProjectAggregation'
 import { EChartsOption } from 'echarts'
+import {
+  getAssetStatisticsappApi,
+  getAssetStatisticsPortApi,
+  getAssetStatisticsTitleApi,
+  getAssetStatisticsTypeApi
+} from '@/api/asset'
 const { t } = useI18n()
 const { query } = useRoute()
 let projectInfo = reactive({
@@ -191,8 +198,49 @@ const getProjectVulData = async () => {
   }
   projectVulDataLoading.value = false
 }
+
+let AssetstatisticsData: Ref<{
+  Port: { value: number; number: number }[]
+  Service: { value: string; number: number }[]
+  Product: { value: string; number: number }[]
+  Icon: { value: string; number: number; icon_hash: string }[]
+  Title: { value: string; number: number }[]
+}> = ref({
+  Port: [],
+  Service: [],
+  Product: [],
+  Icon: [],
+  Title: []
+})
+const filter = reactive<{ [key: string]: any }>({})
+const getAssetstatistics = async () => {
+  filter.project = [query.id as string]
+  AssetstatisticsData.value.Port = []
+  AssetstatisticsData.value.Service = []
+  AssetstatisticsData.value.Product = []
+  AssetstatisticsData.value.Icon = []
+  AssetstatisticsData.value.Title = []
+  const [portRes, serviceRes, productRes, titleRes] = await Promise.all([
+    getAssetStatisticsPortApi('', filter),
+    getAssetStatisticsTypeApi('', filter),
+    getAssetStatisticsappApi('', filter),
+    getAssetStatisticsTitleApi('', filter)
+  ])
+
+  AssetstatisticsData.value.Port = portRes.data.Port
+  AssetstatisticsData.value.Service = serviceRes.data.Service
+  AssetstatisticsData.value.Product = productRes.data.Product
+  AssetstatisticsData.value.Title = titleRes.data.Title
+  console.log(titleRes.data)
+}
+
 const getAllApi = async () => {
-  await Promise.all([getProjectInfo(), getProjectVulLevelInfo(), getProjectVulData()])
+  await Promise.all([
+    getProjectInfo(),
+    getProjectVulLevelInfo(),
+    getProjectVulData(),
+    getAssetstatistics()
+  ])
 }
 getAllApi()
 </script>
@@ -359,6 +407,76 @@ getAllApi()
                 </ElTableColumn>
               </ElTable>
             </ElSkeleton>
+          </ElCol>
+        </ElRow>
+      </ElCard>
+    </ElCol>
+  </ElRow>
+  <ElRow :gutter="20">
+    <ElCol :span="4">
+      <ElCard shadow="hover" class="mb-20px">
+        <template #header>
+          <ElText tag="b">{{ t('asset.port') }}</ElText>
+        </template>
+        <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
+          <ElCol :span="12">
+            <ElTag effect="light" round size="small">
+              {{ portItem.value }}
+            </ElTag>
+          </ElCol>
+          <ElCol :span="12" style="text-align: end">
+            <ElText size="small">{{ portItem.number }}</ElText>
+          </ElCol>
+        </ElRow>
+      </ElCard>
+    </ElCol>
+    <ElCol :span="5">
+      <ElCard shadow="hover" class="mb-20px">
+        <template #header>
+          <ElText tag="b">{{ t('asset.service') }}</ElText>
+        </template>
+        <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
+          <ElCol :span="12">
+            <ElTag effect="light" round size="small">
+              {{ serviceItem.value }}
+            </ElTag>
+          </ElCol>
+          <ElCol :span="12" style="text-align: end">
+            <ElText size="small">{{ serviceItem.number }}</ElText>
+          </ElCol>
+        </ElRow>
+      </ElCard>
+    </ElCol>
+    <ElCol :span="6">
+      <ElCard shadow="hover" class="mb-20px">
+        <template #header>
+          <ElText tag="b">{{ t('asset.products') }}</ElText>
+        </template>
+        <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
+          <ElCol :span="12">
+            <ElTag effect="light" round size="small">
+              {{ productItem.value }}
+            </ElTag>
+          </ElCol>
+          <ElCol :span="12" style="text-align: end">
+            <ElText size="small">{{ productItem.number }}</ElText>
+          </ElCol>
+        </ElRow>
+      </ElCard>
+    </ElCol>
+    <ElCol :span="9">
+      <ElCard shadow="hover" class="mb-20px">
+        <template #header>
+          <ElText tag="b">{{ t('asset.title') }}</ElText>
+        </template>
+        <ElRow v-for="titleItem in AssetstatisticsData.Title" :key="titleItem.value">
+          <ElCol :span="18">
+            <ElTag effect="light" round size="small">
+              {{ titleItem.value }}
+            </ElTag>
+          </ElCol>
+          <ElCol :span="5" style="text-align: end">
+            <ElText size="small">{{ titleItem.number }}</ElText>
           </ElCol>
         </ElRow>
       </ElCard>
