@@ -16,7 +16,7 @@ import {
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { useRoute } from 'vue-router'
-import { getProjectSubdomainDataApi } from '@/api/ProjectAggregation'
+import { getProjectPortDataApi, getProjectSubdomainDataApi } from '@/api/ProjectAggregation'
 import { delDataApi } from '@/api/asset'
 const { t } = useI18n()
 const { query } = useRoute()
@@ -56,20 +56,20 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '30'
   },
   {
-    field: 'host',
-    label: t('subdomain.subdomainName'),
-    minWidth: '200',
+    field: 'port',
+    label: t('asset.port'),
+    minWidth: '100',
     slots: {
       header: () => {
         return (
           <div>
-            <span>{t('subdomain.subdomainName')}</span>
+            <span>{t('asset.port')}</span>
             <ElInput
-              v-model={hostValue.value}
+              v-model={portValue.value}
               placeholder="Search"
-              style="width: 200px; margin-left: 10px;"
+              style="width: 80px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('sub_host')}
+              onChange={() => filterSearchChange('port_port')}
             />
           </div>
         )
@@ -77,40 +77,20 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'type',
-    label: t('subdomain.recordType'),
+    field: 'domain',
+    label: t('asset.domain'),
     minWidth: '200',
-    columnKey: 'type',
-    filters: [
-      { text: 'A', value: 'A' },
-      { text: 'NS', value: 'NS' },
-      { text: 'CNAME', value: 'CNAME' },
-      { text: 'PTR', value: 'PTR' },
-      { text: 'TXT', value: 'TXT' }
-    ]
-  },
-  {
-    field: 'value',
-    label: t('subdomain.recordValue'),
-    minWidth: '250',
-    formatter: (_: Recordable, __: TableColumn, RecordValue: string[]) => {
-      let content = ''
-      RecordValue.forEach((item, _) => {
-        content += `${item}\r\n`
-      })
-      return content
-    },
     slots: {
       header: () => {
         return (
           <div>
-            <span>{t('subdomain.recordValue')}</span>
+            <span>{t('asset.domain')}</span>
             <ElInput
-              v-model={valueValue.value}
+              v-model={domainValue.value}
               placeholder="Search"
-              style="width: 200px; margin-left: 10px;"
+              style="width: 80px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('sub_value')}
+              onChange={() => filterSearchChange('port_domain')}
             />
           </div>
         )
@@ -120,14 +100,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'ip',
     label: 'IP',
-    minWidth: '150',
-    formatter: (_: Recordable, __: TableColumn, IPValue: string[]) => {
-      let content = ''
-      IPValue.forEach((item, _) => {
-        content += `${item}\r\n`
-      })
-      return content
-    },
+    minWidth: '250',
     slots: {
       header: () => {
         return (
@@ -136,9 +109,9 @@ const crudSchemas = reactive<CrudSchema[]>([
             <ElInput
               v-model={ipValue.value}
               placeholder="Search"
-              style="width: 180px; margin-left: 10px;"
+              style="width: 200px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('sub_ip')}
+              onChange={() => filterSearchChange('port_ip')}
             />
           </div>
         )
@@ -146,7 +119,28 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'time',
+    field: 'protocol',
+    label: t('asset.service'),
+    minWidth: '250',
+    slots: {
+      header: () => {
+        return (
+          <div>
+            <span>{t('asset.service')}</span>
+            <ElInput
+              v-model={protocolValue.value}
+              placeholder="Search"
+              style="width: 200px; margin-left: 10px;"
+              size="small"
+              onChange={() => filterSearchChange('port_protocol')}
+            />
+          </div>
+        )
+      }
+    }
+  },
+  {
+    field: 'timestamp',
     label: t('asset.time'),
     minWidth: '200'
   }
@@ -155,7 +149,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const res = await getProjectSubdomainDataApi('', filter, fq)
+    const res = await getProjectPortDataApi('', filter, fq)
     return {
       list: res.data.list
     }
@@ -167,21 +161,24 @@ const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
-
-const hostValue = ref('')
-const valueValue = ref('')
+const portValue = ref('')
+const domainValue = ref('')
 const ipValue = ref('')
+const protocolValue = ref('')
 const fq = reactive<{ [key: string]: any }>({})
 const filterSearchChange = async (type: string) => {
   let value = ''
-  if (type == 'sub_host') {
-    value = hostValue.value
+  if (type == 'port_port') {
+    value = portValue.value
   }
-  if (type == 'sub_value') {
-    value = valueValue.value
+  if (type == 'port_domain') {
+    value = domainValue.value
   }
-  if (type == 'sub_ip') {
+  if (type == 'port_ip') {
     value = ipValue.value
+  }
+  if (type == 'port_protocol') {
+    value = protocolValue.value
   }
   fq[type] = value
   getList()
@@ -236,7 +233,6 @@ const changeDeleteDisplay = async () => {
           :border="true"
           :loading="loading"
           @selection-change="changeDeleteDisplay"
-          defaultExpandAll
           rowKey="id"
           :resizable="true"
           @register="tableRegister"

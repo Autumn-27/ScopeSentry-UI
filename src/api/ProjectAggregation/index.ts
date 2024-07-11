@@ -66,10 +66,22 @@ interface SubdomainDataResponse {
 }
 export const getProjectSubdomainDataApi = (
   search: string,
-  filter: Record<string, any>
+  filter: Record<string, any>,
+  fq: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
   return request.post({
     url: '/api/project_aggregation/project/subdomain/data',
-    data: { search, filter }
+    data: { search, filter, fq }
+  })
+}
+
+export const getProjectPortDataApi = (
+  search: string,
+  filter: Record<string, any>,
+  fq: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/project_aggregation/project/port/data',
+    data: { search, filter, fq }
   })
 }
