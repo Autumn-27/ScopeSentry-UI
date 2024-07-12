@@ -16,7 +16,7 @@ import {
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { useRoute } from 'vue-router'
-import { getProjectPortDataApi, getProjectSubdomainDataApi } from '@/api/ProjectAggregation'
+import { getProjectServiceDataApi } from '@/api/ProjectAggregation'
 import { delDataApi } from '@/api/asset'
 const { t } = useI18n()
 const { query } = useRoute()
@@ -56,14 +56,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '30'
   },
   {
-    field: 'port',
-    label: t('asset.port'),
+    field: 'service',
+    label: t('asset.service'),
     minWidth: '100',
     slots: {
       header: () => {
         return (
           <div>
-            <span>{t('asset.port')}</span>
+            <span>{t('asset.service')}</span>
             <ElInput
               v-model={portValue.value}
               placeholder="Search"
@@ -119,14 +119,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'protocol',
-    label: t('asset.service'),
+    field: 'port',
+    label: t('asset.port'),
     minWidth: '250',
     slots: {
       header: () => {
         return (
           <div>
-            <span>{t('asset.service')}</span>
+            <span>{t('asset.port')}</span>
             <ElInput
               v-model={protocolValue.value}
               placeholder="Search"
@@ -149,7 +149,7 @@ const crudSchemas = reactive<CrudSchema[]>([
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const res = await getProjectPortDataApi('', filter, fq)
+    const res = await getProjectServiceDataApi('', filter, fq)
     return {
       list: res.data.list
     }

@@ -85,3 +85,14 @@ export const getProjectPortDataApi = (
     data: { search, filter, fq }
   })
 }
+
+export const getProjectServiceDataApi = (
+  search: string,
+  filter: Record<string, any>,
+  fq: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/project_aggregation/project/service/data',
+    data: { search, filter, fq }
+  })
+}

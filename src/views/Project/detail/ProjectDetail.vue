@@ -10,6 +10,7 @@ import { ElTabPane } from 'element-plus'
 import Dashboard from './components/Dashboard.vue'
 import Subdomain from './components/Subdomain.vue'
 import Port from './components/Port.vue'
+import Service from './components/Service.vue'
 const { t } = useI18n()
 const { query } = useRoute()
 const schema = reactive<DescriptionsSchema[]>([
@@ -56,7 +57,7 @@ let assetData = reactive({})
     <ElTabPane :label="t('project.overview')"><Dashboard /></ElTabPane>
     <ElTabPane :label="t('subdomain.subdomainName')"><Subdomain /></ElTabPane>
     <ElTabPane :label="t('asset.port')"> <Port /></ElTabPane>
-    <ElTabPane :label="t('asset.service')">xxxx</ElTabPane>
+    <ElTabPane :label="t('asset.service')"><Service /></ElTabPane>
     <ElTabPane :label="t('crawler.crawlerName')">xxx</ElTabPane>
   </ElTabs>
 </template>
