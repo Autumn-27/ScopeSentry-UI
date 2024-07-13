@@ -3,11 +3,12 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElCol, ElRow } from 'element-plus'
-import { Table } from '@/components/Table'
+import { ElCard, ElPagination, ElCol, ElRow, ElText } from 'element-plus'
+import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { getURLApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
+import { Icon } from '@/components/Icon'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -68,6 +69,54 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: 250
   },
   {
+    field: 'status',
+    label: t('dirScan.status'),
+    columnKey: 'status',
+    minWidth: 120,
+    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
+      if (statusValue == null) {
+        return <div>-</div>
+      }
+      let color = ''
+      if (statusValue < 300) {
+        color = '#2eb98a'
+      } else if (statusValue < 400) {
+        color = '#ff5252'
+      } else {
+        color = '#ff5252'
+      }
+      return (
+        <ElRow gutter={1}>
+          <ElCol span={1}>
+            <Icon
+              icon="clarity:circle-solid"
+              color={color}
+              size={10}
+              style={'transform: translateY(8%)'}
+            />
+          </ElCol>
+          <ElCol span={2}>
+            <ElText>{statusValue}</ElText>
+          </ElCol>
+        </ElRow>
+      )
+    },
+    filters: [
+      { text: '200', value: 200 },
+      { text: '301', value: 301 },
+      { text: '302', value: 302 },
+      { text: '401', value: 401 },
+      { text: '403', value: 403 },
+      { text: '500', value: 500 }
+    ]
+  },
+  {
+    field: 'length',
+    label: 'Length',
+    minWidth: 120,
+    sortable: 'custom'
+  },
+  {
     field: 'source',
     label: t('URL.source'),
     minWidth: 100
@@ -124,6 +173,10 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   searchParams.value = data
   getList()
 }
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
 </script>
 
 <template>
@@ -150,6 +203,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
           :loading="loading"
           :resizable="true"
           @register="tableRegister"
+          @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
           :style="{
             fontFamily:
