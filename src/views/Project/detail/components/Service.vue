@@ -228,7 +228,6 @@ const changeDeleteDisplay = async () => {
         <Table
           :columns="allSchemas.tableColumns"
           :data="dataList"
-          stripe
           :max-height="maxHeight"
           :border="true"
           :loading="loading"

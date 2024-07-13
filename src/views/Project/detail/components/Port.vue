@@ -11,7 +11,8 @@ import {
   ElMessageBox,
   ElMessage,
   ElButton,
-  ElDivider
+  ElDivider,
+  ElText
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -59,6 +60,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'port',
     label: t('asset.port'),
     minWidth: '100',
+    formatter: (row, __: TableColumn, domainValue: string) => {
+      return (
+        <>
+          <ElText>{domainValue}</ElText>
+          <ElText type="info">{row.count}</ElText>
+        </>
+      )
+    },
     slots: {
       header: () => {
         return (
@@ -195,7 +204,7 @@ const delSelect = async () => {
       const elTableExpose = await getElTableExpose()
       const selectedRows = elTableExpose?.getSelectionRows() || []
       ids.value = selectedRows.map((row) => row.id)
-      await delDataApi(ids.value, 'subdomain')
+      await delDataApi(ids.value, 'asset')
       getList()
     })
     .catch(() => {
@@ -228,7 +237,6 @@ const changeDeleteDisplay = async () => {
         <Table
           :columns="allSchemas.tableColumns"
           :data="dataList"
-          stripe
           :max-height="maxHeight"
           :border="true"
           :loading="loading"

@@ -304,8 +304,8 @@ const handleCheckAll = (val: CheckboxValueType) => {
       <ElCol :span="12">
         <ElFormItem :label="t('task.config')" prop="type" v-if="taskForm.subdomainScan">
           <ElCheckboxGroup v-model="taskForm.subdomainConfig">
-            <ElCheckbox label="Subfinder" name="subdomainConfig" :checked="true" />
-            <ElCheckbox label="Ksubdomain" name="subdomainConfig" :checked="true" />
+            <ElCheckbox label="Subfinder" name="subdomainConfig" />
+            <ElCheckbox label="Ksubdomain" name="subdomainConfig" />
           </ElCheckboxGroup>
         </ElFormItem>
       </ElCol>
