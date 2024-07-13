@@ -12,36 +12,6 @@ import Subdomain from './components/Subdomain.vue'
 import Port from './components/Port.vue'
 import Service from './components/Service.vue'
 const { t } = useI18n()
-const { query } = useRoute()
-const schema = reactive<DescriptionsSchema[]>([
-  {
-    field: 'name',
-    label: t('project.projectName'),
-    span: 8
-  },
-  {
-    field: 'cycle',
-    label: t('project.cycle'),
-    span: 8
-  },
-  {
-    field: 'creatTime',
-    label: t('project.CreatTime'),
-    span: 8
-  },
-  {
-    field: 'TAG',
-    label: 'TAG',
-    span: 8
-  },
-  {
-    field: 'scope',
-    label: t('project.projectScope'),
-    span: 16
-  }
-])
-const descriptionsDoading = ref(true)
-let assetData = reactive({})
 // const getTableDet = async () => {
 //   const res = await getAssetDetailApi(query.id as string)
 //   if (res) {
@@ -58,6 +28,5 @@ let assetData = reactive({})
     <ElTabPane :label="t('subdomain.subdomainName')"><Subdomain /></ElTabPane>
     <ElTabPane :label="t('asset.port')"> <Port /></ElTabPane>
     <ElTabPane :label="t('asset.service')"><Service /></ElTabPane>
-    <ElTabPane :label="t('crawler.crawlerName')">xxx</ElTabPane>
   </ElTabs>
 </template>

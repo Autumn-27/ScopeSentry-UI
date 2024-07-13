@@ -241,7 +241,7 @@ watch(
     }
     tagClickFilterSearch()
   },
-  { immediate: true }
+  { immediate: false }
 )
 function handleCloseTag(tag: string) {
   if (props.handleClose) {

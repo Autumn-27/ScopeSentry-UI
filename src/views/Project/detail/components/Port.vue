@@ -11,13 +11,12 @@ import {
   ElMessageBox,
   ElMessage,
   ElButton,
-  ElDivider,
   ElText
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { useRoute } from 'vue-router'
-import { getProjectPortDataApi, getProjectSubdomainDataApi } from '@/api/ProjectAggregation'
+import { getProjectPortDataApi } from '@/api/ProjectAggregation'
 import { delDataApi } from '@/api/asset'
 const { t } = useI18n()
 const { query } = useRoute()
@@ -33,11 +32,6 @@ const setMaxHeight = () => {
   maxHeight.value = screenHeight * 0.8
 }
 
-const searchParams = ref('')
-const handleSearch = (data: any) => {
-  searchParams.value = data
-  getList()
-}
 const filter = reactive<{ [key: string]: any }>({})
 filter.project = [query.id as string]
 const filterChange = async (newFilters: any) => {
@@ -61,10 +55,13 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.port'),
     minWidth: '100',
     formatter: (row, __: TableColumn, domainValue: string) => {
+      if (!row.count) {
+        return <ElText>{domainValue}</ElText>
+      }
       return (
         <>
           <ElText>{domainValue}</ElText>
-          <ElText type="info">{row.count}</ElText>
+          <ElText type="info">({row.count})</ElText>
         </>
       )
     },

@@ -212,8 +212,10 @@ let AssetstatisticsData: Ref<{
   Icon: [],
   Title: []
 })
+const projectStatisLoading = ref(false)
 const filter = reactive<{ [key: string]: any }>({})
 const getAssetstatistics = async () => {
+  projectStatisLoading.value = true
   filter.project = [query.id as string]
   AssetstatisticsData.value.Port = []
   AssetstatisticsData.value.Service = []
@@ -231,7 +233,7 @@ const getAssetstatistics = async () => {
   AssetstatisticsData.value.Service = serviceRes.data.Service
   AssetstatisticsData.value.Product = productRes.data.Product
   AssetstatisticsData.value.Title = titleRes.data.Title
-  console.log(titleRes.data)
+  projectStatisLoading.value = false
 }
 
 const getAllApi = async () => {
@@ -413,74 +415,76 @@ getAllApi()
     </ElCol>
   </ElRow>
   <ElRow :gutter="20">
-    <ElCol :span="4">
-      <ElCard shadow="hover" class="mb-20px">
-        <template #header>
-          <ElText tag="b">{{ t('asset.port') }}</ElText>
-        </template>
-        <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
-          <ElCol :span="12">
-            <ElTag effect="light" round size="small">
-              {{ portItem.value }}
-            </ElTag>
-          </ElCol>
-          <ElCol :span="12" style="text-align: end">
-            <ElText size="small">{{ portItem.number }}</ElText>
-          </ElCol>
-        </ElRow>
-      </ElCard>
-    </ElCol>
-    <ElCol :span="5">
-      <ElCard shadow="hover" class="mb-20px">
-        <template #header>
-          <ElText tag="b">{{ t('asset.service') }}</ElText>
-        </template>
-        <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
-          <ElCol :span="12">
-            <ElTag effect="light" round size="small">
-              {{ serviceItem.value }}
-            </ElTag>
-          </ElCol>
-          <ElCol :span="12" style="text-align: end">
-            <ElText size="small">{{ serviceItem.number }}</ElText>
-          </ElCol>
-        </ElRow>
-      </ElCard>
-    </ElCol>
-    <ElCol :span="6">
-      <ElCard shadow="hover" class="mb-20px">
-        <template #header>
-          <ElText tag="b">{{ t('asset.products') }}</ElText>
-        </template>
-        <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
-          <ElCol :span="12">
-            <ElTag effect="light" round size="small">
-              {{ productItem.value }}
-            </ElTag>
-          </ElCol>
-          <ElCol :span="12" style="text-align: end">
-            <ElText size="small">{{ productItem.number }}</ElText>
-          </ElCol>
-        </ElRow>
-      </ElCard>
-    </ElCol>
-    <ElCol :span="9">
-      <ElCard shadow="hover" class="mb-20px">
-        <template #header>
-          <ElText tag="b">{{ t('asset.title') }}</ElText>
-        </template>
-        <ElRow v-for="titleItem in AssetstatisticsData.Title" :key="titleItem.value">
-          <ElCol :span="18">
-            <ElTag effect="light" round size="small">
-              {{ titleItem.value }}
-            </ElTag>
-          </ElCol>
-          <ElCol :span="5" style="text-align: end">
-            <ElText size="small">{{ titleItem.number }}</ElText>
-          </ElCol>
-        </ElRow>
-      </ElCard>
-    </ElCol>
+    <ElSkeleton :loading="projectStatisLoading" animated>
+      <ElCol :span="4">
+        <ElCard shadow="hover" class="mb-20px">
+          <template #header>
+            <ElText tag="b">{{ t('asset.port') }}</ElText>
+          </template>
+          <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
+            <ElCol :span="12">
+              <ElTag effect="light" round size="small">
+                {{ portItem.value }}
+              </ElTag>
+            </ElCol>
+            <ElCol :span="12" style="text-align: end">
+              <ElText size="small">{{ portItem.number }}</ElText>
+            </ElCol>
+          </ElRow>
+        </ElCard>
+      </ElCol>
+      <ElCol :span="5">
+        <ElCard shadow="hover" class="mb-20px">
+          <template #header>
+            <ElText tag="b">{{ t('asset.service') }}</ElText>
+          </template>
+          <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
+            <ElCol :span="12">
+              <ElTag effect="light" round size="small">
+                {{ serviceItem.value }}
+              </ElTag>
+            </ElCol>
+            <ElCol :span="12" style="text-align: end">
+              <ElText size="small">{{ serviceItem.number }}</ElText>
+            </ElCol>
+          </ElRow>
+        </ElCard>
+      </ElCol>
+      <ElCol :span="6">
+        <ElCard shadow="hover" class="mb-20px">
+          <template #header>
+            <ElText tag="b">{{ t('asset.products') }}</ElText>
+          </template>
+          <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
+            <ElCol :span="12">
+              <ElTag effect="light" round size="small">
+                {{ productItem.value }}
+              </ElTag>
+            </ElCol>
+            <ElCol :span="12" style="text-align: end">
+              <ElText size="small">{{ productItem.number }}</ElText>
+            </ElCol>
+          </ElRow>
+        </ElCard>
+      </ElCol>
+      <ElCol :span="9">
+        <ElCard shadow="hover" class="mb-20px">
+          <template #header>
+            <ElText tag="b">{{ t('asset.title') }}</ElText>
+          </template>
+          <ElRow v-for="titleItem in AssetstatisticsData.Title" :key="titleItem.value">
+            <ElCol :span="18">
+              <ElTag effect="light" round size="small">
+                {{ titleItem.value }}
+              </ElTag>
+            </ElCol>
+            <ElCol :span="5" style="text-align: end">
+              <ElText size="small">{{ titleItem.number }}</ElText>
+            </ElCol>
+          </ElRow>
+        </ElCard>
+      </ElCol>
+    </ElSkeleton>
   </ElRow>
 </template>
 <style scoped>

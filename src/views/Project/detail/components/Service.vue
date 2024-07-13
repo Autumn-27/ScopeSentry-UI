@@ -11,7 +11,8 @@ import {
   ElMessageBox,
   ElMessage,
   ElButton,
-  ElDivider
+  ElDivider,
+  ElText
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -59,17 +60,28 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'service',
     label: t('asset.service'),
     minWidth: '100',
+    formatter: (row, __: TableColumn, domainValue: string) => {
+      if (!row.count) {
+        return <ElText>{domainValue}</ElText>
+      }
+      return (
+        <>
+          <ElText>{domainValue}</ElText>
+          <ElText type="info">({row.count})</ElText>
+        </>
+      )
+    },
     slots: {
       header: () => {
         return (
           <div>
             <span>{t('asset.service')}</span>
             <ElInput
-              v-model={portValue.value}
+              v-model={serviceValue.value}
               placeholder="Search"
               style="width: 80px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('port_port')}
+              onChange={() => filterSearchChange('service_service')}
             />
           </div>
         )
@@ -90,7 +102,7 @@ const crudSchemas = reactive<CrudSchema[]>([
               placeholder="Search"
               style="width: 80px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('port_domain')}
+              onChange={() => filterSearchChange('service_domain')}
             />
           </div>
         )
@@ -111,7 +123,7 @@ const crudSchemas = reactive<CrudSchema[]>([
               placeholder="Search"
               style="width: 200px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('port_ip')}
+              onChange={() => filterSearchChange('service_ip')}
             />
           </div>
         )
@@ -128,11 +140,11 @@ const crudSchemas = reactive<CrudSchema[]>([
           <div>
             <span>{t('asset.port')}</span>
             <ElInput
-              v-model={protocolValue.value}
+              v-model={portValue.value}
               placeholder="Search"
               style="width: 200px; margin-left: 10px;"
               size="small"
-              onChange={() => filterSearchChange('port_protocol')}
+              onChange={() => filterSearchChange('service_port')}
             />
           </div>
         )
@@ -164,21 +176,21 @@ function tableHeaderColor() {
 const portValue = ref('')
 const domainValue = ref('')
 const ipValue = ref('')
-const protocolValue = ref('')
+const serviceValue = ref('')
 const fq = reactive<{ [key: string]: any }>({})
 const filterSearchChange = async (type: string) => {
   let value = ''
-  if (type == 'port_port') {
+  if (type == 'service_port') {
     value = portValue.value
   }
-  if (type == 'port_domain') {
+  if (type == 'service_domain') {
     value = domainValue.value
   }
-  if (type == 'port_ip') {
+  if (type == 'service_ip') {
     value = ipValue.value
   }
-  if (type == 'port_protocol') {
-    value = protocolValue.value
+  if (type == 'service_service') {
+    value = serviceValue.value
   }
   fq[type] = value
   getList()

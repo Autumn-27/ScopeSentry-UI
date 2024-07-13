@@ -236,7 +236,6 @@ const changeDeleteDisplay = async () => {
           :border="true"
           :loading="loading"
           @selection-change="changeDeleteDisplay"
-          defaultExpandAll
           rowKey="id"
           :resizable="true"
           @register="tableRegister"

@@ -202,7 +202,6 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
-getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
