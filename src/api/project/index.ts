@@ -20,6 +20,7 @@ export const getProjectAllApi = async () => {
 }
 
 export const addProjectDataApi = (
+  runNow: boolean,
   name: string,
   tag: string,
   target: string,
@@ -45,6 +46,7 @@ export const addProjectDataApi = (
   return request.post({
     url: '/api/project/add',
     data: {
+      runNow,
       name,
       tag,
       target,
@@ -70,6 +72,7 @@ export const addProjectDataApi = (
   })
 }
 export const updateProjectDataApi = (
+  runNow: boolean,
   id: string,
   name: string,
   tag: string,
@@ -96,6 +99,7 @@ export const updateProjectDataApi = (
   return request.post({
     url: '/api/project/update',
     data: {
+      runNow,
       id,
       name,
       tag,

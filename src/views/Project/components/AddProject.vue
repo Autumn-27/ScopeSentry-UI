@@ -95,6 +95,7 @@ const getPocList = async () => {
 }
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
+const runNow = ref(false)
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
@@ -102,6 +103,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       if (props.projectid == '') {
         const res = await addProjectDataApi(
+          runNow.value,
           projectForm.name,
           projectForm.tag,
           projectForm.target,
@@ -130,6 +132,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         saveLoading.value = false
       } else {
         const res = await updateProjectDataApi(
+          runNow.value,
           props.projectid,
           projectForm.name,
           projectForm.tag,
@@ -290,7 +293,23 @@ const handleCheckAll = (val: CheckboxValueType) => {
         </ElFormItem>
       </ElCol>
     </ElRow>
-    <ElTooltip :content="t('task.selectNodeMsg')" placement="top" v-if="projectForm.scheduledTasks">
+    <ElRow>
+      <ElCol>
+        <ElFormItem :label="t('configuration.runNowOne')">
+          <ElSwitch
+            v-model="runNow"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElTooltip
+      :content="t('task.selectNodeMsg')"
+      placement="top"
+      v-if="projectForm.scheduledTasks || runNow"
+    >
       <ElFormItem :label="t('task.nodeSelect')" prop="node">
         <ElSelectV2
           v-model="projectForm.node"
@@ -317,7 +336,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         </ElSelectV2>
       </ElFormItem>
     </ElTooltip>
-    <div v-if="projectForm.scheduledTasks">
+    <div v-if="projectForm.scheduledTasks || runNow">
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
         t('task.duplicates')
       }}</ElDivider>
