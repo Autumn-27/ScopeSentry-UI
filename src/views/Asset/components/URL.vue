@@ -86,7 +86,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         color = '#ff5252'
       }
       return (
-        <ElRow gutter={1}>
+        <ElRow gutter={20}>
           <ElCol span={1}>
             <Icon
               icon="clarity:circle-solid"
@@ -103,11 +103,19 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     filters: [
       { text: '200', value: 200 },
+      { text: '201', value: 201 },
+      { text: '204', value: 204 },
       { text: '301', value: 301 },
       { text: '302', value: 302 },
+      { text: '304', value: 304 },
+      { text: '400', value: 400 },
       { text: '401', value: 401 },
       { text: '403', value: 403 },
-      { text: '500', value: 500 }
+      { text: '404', value: 404 },
+      { text: '500', value: 500 },
+      { text: '502', value: 502 },
+      { text: '503', value: 503 },
+      { text: '504', value: 504 }
     ]
   },
   {
@@ -142,7 +150,13 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getURLApi(searchParams.value, currentPage.value, pageSize.value, filter)
+    const res = await getURLApi(
+      searchParams.value,
+      currentPage.value,
+      pageSize.value,
+      filter,
+      sortBy
+    )
     return {
       list: res.data.list,
       total: res.data.total
@@ -160,7 +174,13 @@ onMounted(() => {
   setMaxHeight()
   window.addEventListener('resize', setMaxHeight)
 })
-
+const sortBy = reactive<{ [key: string]: any }>({})
+const sortChange = async (column: any) => {
+  const key = column.prop
+  const value = column.order
+  sortBy[key] = value
+  getList()
+}
 const maxHeight = ref(0)
 
 const setMaxHeight = () => {
@@ -202,6 +222,7 @@ const filterChange = async (newFilters: any) => {
           :border="true"
           :loading="loading"
           :resizable="true"
+          @sort-change="sortChange"
           @register="tableRegister"
           @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"

@@ -35,3 +35,10 @@ export const updateSensitiveDataApi = (
 export const deleteSensitiveDataApi = (ids: string[]): Promise<IResponse<sensitiveRespData>> => {
   return request.post({ url: '/api/sensitive/delete', data: { ids } })
 }
+
+export const updateStateSensitiveDataApi = (
+  ids: string[],
+  state: boolean
+): Promise<IResponse<sensitiveRespData>> => {
+  return request.post({ url: '/api/sensitive/update/state', data: { ids, state } })
+}

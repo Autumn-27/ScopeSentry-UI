@@ -95,9 +95,10 @@ export const getURLApi = (
   search: string,
   pageIndex: number,
   pageSize: number,
-  filter: Record<string, any>
+  filter: Record<string, any>,
+  sort: Record<string, any>
 ): Promise<IResponse<URLDataResponse>> => {
-  return request.post({ url: '/api/url/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({ url: '/api/url/data', data: { search, pageIndex, pageSize, filter, sort } })
 }
 
 interface CrawlerDataResponse {

@@ -102,11 +102,19 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     filters: [
       { text: '200', value: 200 },
+      { text: '201', value: 201 },
+      { text: '204', value: 204 },
       { text: '301', value: 301 },
       { text: '302', value: 302 },
+      { text: '304', value: 304 },
+      { text: '400', value: 400 },
       { text: '401', value: 401 },
       { text: '403', value: 403 },
-      { text: '500', value: 500 }
+      { text: '404', value: 404 },
+      { text: '500', value: 500 },
+      { text: '502', value: 502 },
+      { text: '503', value: 503 },
+      { text: '504', value: 504 }
     ]
   },
   {

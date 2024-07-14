@@ -9,7 +9,11 @@ import { Icon } from '@/components/Icon'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
 import { BaseButton } from '@/components/Button'
-import { getSensitiveDataApi, deleteSensitiveDataApi } from '@/api/sensitive'
+import {
+  getSensitiveDataApi,
+  deleteSensitiveDataApi,
+  updateStateSensitiveDataApi
+} from '@/api/sensitive'
 import Detail from './components/Detail.vue'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -147,6 +151,7 @@ const del = async (data) => {
 }
 const ids = ref<string[]>([])
 const delSelect = async () => {
+  ids.value = []
   const elTableExpose = await getElTableExpose()
   const selectedRows = elTableExpose?.getSelectionRows() || []
   ids.value = selectedRows.map((row) => row.id)
@@ -166,6 +171,17 @@ const confirmDelete = async () => {
   const confirmed = window.confirm('Are you sure you want to delete the selected data?')
   if (confirmed) {
     await delSelect()
+  }
+}
+const updateState = async (state) => {
+  const confirmed = window.confirm('Are you sure you want to update the selected data?')
+  if (confirmed) {
+    ids.value = []
+    const elTableExpose = await getElTableExpose()
+    const selectedRows = elTableExpose?.getSelectionRows() || []
+    ids.value = selectedRows.map((row) => row.id)
+    await updateStateSensitiveDataApi(ids.value, state)
+    getList()
   }
 }
 </script>
@@ -191,6 +207,16 @@ const confirmDelete = async () => {
       <ElCol :span="1">
         <div class="mb-10px">
           <ElButton type="primary" @click="addSensitive">{{ t('common.new') }}</ElButton>
+        </div>
+      </ElCol>
+      <ElCol :span="1">
+        <div class="mb-10px">
+          <ElButton type="success" @click="updateState(true)">{{ t('common.on') }}</ElButton>
+        </div>
+      </ElCol>
+      <ElCol :span="1">
+        <div class="mb-10px">
+          <ElButton type="danger" @click="updateState(false)">{{ t('common.off') }}</ElButton>
         </div>
       </ElCol>
       <ElCol :span="1">

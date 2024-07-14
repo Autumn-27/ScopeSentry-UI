@@ -52,7 +52,7 @@ const levelOptions = [
   },
   {
     value: 4,
-    label: 'info'
+    label: 'medium'
   },
   {
     value: 3,
@@ -60,7 +60,7 @@ const levelOptions = [
   },
   {
     value: 2,
-    label: 'medium'
+    label: 'info'
   },
   {
     value: 1,

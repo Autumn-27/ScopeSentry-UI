@@ -259,6 +259,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'status',
     label: t('asset.status'),
     minWidth: '85',
+    columnKey: 'statuscode',
     formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
       if (statusValue == null) {
         return <div>-</div>
@@ -286,7 +287,23 @@ const crudSchemas = reactive<CrudSchema[]>([
           </ElCol>
         </ElRow>
       )
-    }
+    },
+    filters: [
+      { text: '200', value: 200 },
+      { text: '201', value: 201 },
+      { text: '204', value: 204 },
+      { text: '301', value: 301 },
+      { text: '302', value: 302 },
+      { text: '304', value: 304 },
+      { text: '400', value: 400 },
+      { text: '401', value: 401 },
+      { text: '403', value: 403 },
+      { text: '404', value: 404 },
+      { text: '500', value: 500 },
+      { text: '502', value: 502 },
+      { text: '503', value: 503 },
+      { text: '504', value: 504 }
+    ]
   },
   {
     field: 'banner',
@@ -371,6 +388,10 @@ const crudSchemas = reactive<CrudSchema[]>([
   }
 ])
 
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
 const action = (id: string) => {
   push(`/asset-information/asset-detail?id=${id}`)
 }
@@ -560,6 +581,7 @@ const handleClose = (tag: string) => {
               :max-height="maxHeight"
               :border="true"
               :loading="loading"
+              @filter-change="filterChange"
               :rowStyle="rowstyle"
               :resizable="true"
               @register="tableRegister"

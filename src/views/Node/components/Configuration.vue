@@ -48,6 +48,8 @@ onMounted(() => {
   }
 })
 const ruleFormRef = ref<FormInstance>()
+
+const oldName = localForm.value.name
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
@@ -55,6 +57,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       let res
       res = await updateNodeConfigDataApi(
+        oldName,
         localForm.value.name,
         localForm.value.maxTaskNum,
         localForm.value.dirscanThread,
@@ -79,7 +82,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 <template>
   <ElForm :model="localForm" label-width="auto" status-icon ref="ruleFormRef">
     <ElFormItem :label="t('node.nodeName')" prop="name">
-      <ElInput v-model="localForm.name" disabled />
+      <ElInput v-model="localForm.name" />
     </ElFormItem>
     <ElFormItem :label="t('configuration.maxTaskNum')" prop="MaxTaskNum">
       <ElInput v-model="localForm.maxTaskNum" />

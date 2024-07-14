@@ -18,6 +18,7 @@ export const getNodeDataOnlineApi = (): Promise<IResponse<NodeDataOnlineResponse
 }
 
 export const updateNodeConfigDataApi = (
+  oldName: string,
   name: string,
   maxTaskNum: string,
   dirscanThread: string,
@@ -30,6 +31,7 @@ export const updateNodeConfigDataApi = (
   return request.post({
     url: '/api/node/config/update',
     data: {
+      oldName,
       name,
       maxTaskNum,
       dirscanThread,
