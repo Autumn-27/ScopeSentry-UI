@@ -188,6 +188,7 @@ const setMaxHeight = () => {
 const DialogVisible = ref(false)
 const body = ref('')
 const action = async (id) => {
+  id.replace('md5==', '')
   const res = await getSensitiveResultBodyApi(id)
   body.value = res.data.body
   DialogVisible.value = true
