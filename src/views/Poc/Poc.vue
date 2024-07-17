@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText } from 'element-plus'
+import { ElButton, ElCol, ElInput, ElRow, ElText, ElUpload, ElTooltip } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { Icon } from '@/components/Icon'
@@ -11,6 +11,7 @@ import { BaseButton } from '@/components/Button'
 import { getPocDataApi, getPocContentApi, deletePocDataApi } from '@/api/poc'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
+import { useUserStore } from '@/store/modules/user'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -172,6 +173,9 @@ const confirmDelete = async () => {
     await delSelect()
   }
 }
+const userStore = useUserStore()
+const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
+const uploadicon = useIcon({ icon: 'material-symbols:upload-sharp' })
 </script>
 
 <template>
@@ -201,6 +205,13 @@ const confirmDelete = async () => {
             {{ t('common.delete') }}
           </BaseButton>
         </div>
+      </ElCol>
+      <ElCol :span="1">
+        <ElTooltip :content="t('common.uploadMsg')" placement="top">
+          <ElUpload class="upload-demo" action="/api/poc/data/import" :headers="uploadHeaders">
+            <ElButton :icon="uploadicon">{{ t('common.import') }}</ElButton>
+          </ElUpload>
+        </ElTooltip>
       </ElCol>
     </ElRow>
     <Table

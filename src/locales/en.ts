@@ -1,5 +1,8 @@
 export default {
   common: {
+    import: 'Import',
+    uploadMsg:
+      'Batch import only supports nuclei. Put the yaml file into a zip and upload it. You can directly download and upload the nuclei official poc library, and the poc will be automatically extracted.',
     upload: 'upload',
     download: 'download',
     operation: 'Operation',
