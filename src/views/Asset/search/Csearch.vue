@@ -40,6 +40,7 @@ const props = defineProps<{
   projectList: Project[]
   dynamicTags?: string[]
   handleClose?: (string) => void
+  openAggregation?: () => void
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -98,6 +99,7 @@ const searchicon = useIcon({ icon: 'iconoir:search' })
 const help = useIcon({ icon: 'tdesign:chat-bubble-help' })
 const elDropdownicon = useIcon({ icon: 'ri:arrow-drop-down-line' })
 const exporticon = useIcon({ icon: 'ph:export-light' })
+const aggregationIcon = useIcon({ icon: 'carbon:data-vis-1' })
 const deleteicon = useIcon({ icon: 'openmoji:delete' })
 const exportDialogVisible = ref(false)
 const openExport = () => {
@@ -318,7 +320,7 @@ function handleCloseTag(tag: string) {
           :max-collapse-tags="1"
         />
       </ElCol>
-      <ElCol :span="6" :xs="6" :sm="6" :md="6">
+      <ElCol :span="1.5" :xs="1.5" :sm="1.5" :md="1.5">
         <ElDropdown trigger="click">
           <ElButton plain class="custom-button align-bottom">
             {{ t('common.operation') }}
@@ -332,6 +334,16 @@ function handleCloseTag(tag: string) {
             </ElDropdownMenu>
           </template>
         </ElDropdown>
+      </ElCol>
+      <ElCol :span="2" :xs="2" :sm="2" :md="2">
+        <ElButton
+          type="success"
+          @click="$props.openAggregation"
+          :icon="aggregationIcon"
+          v-if="index == 'SensitiveResult'"
+        >
+          {{ t('project.aggregation') }}
+        </ElButton>
       </ElCol>
     </ElRow>
     <ElRow style="margin-top: 10px; left: 30px">

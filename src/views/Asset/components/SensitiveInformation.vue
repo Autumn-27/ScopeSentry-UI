@@ -3,7 +3,16 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElCol, ElRow, ElScrollbar } from 'element-plus'
+import {
+  ElCard,
+  ElPagination,
+  ElCol,
+  ElRow,
+  ElScrollbar,
+  ElDrawer,
+  ElTable,
+  ElTableColumn
+} from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -202,6 +211,18 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   searchParams.value = data
   getList()
 }
+const drawerFlag = ref(false)
+
+const openAggregation = () => {
+  drawerFlag.value = true
+}
+const aggregationData = ref<
+  {
+    name: string
+    level: number
+    quantity: number
+  }[]
+>([])
 </script>
 
 <template>
@@ -213,6 +234,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"
+    :openAggregation="openAggregation"
   />
   <ElRow>
     <ElCol>
@@ -274,6 +296,22 @@ const handleFilterSearch = (data: any, newFilters: any) => {
       <div :style="{ whiteSpace: 'pre-line' }">{{ body }}</div>
     </ElScrollbar>
   </Dialog>
+  <ElDrawer
+    v-model="drawerFlag"
+    :title="t('sensitiveInformation.sensAggre')"
+    direction="rtl"
+    size="30%"
+  >
+    <ElTable :data="aggregationData">
+      <ElTableColumn
+        :prop="t('sensitiveInformation.sensitiveName')"
+        :label="t('sensitiveInformation.sensitiveName')"
+        width="180"
+      />
+      <ElTableColumn prop="Level" label="Level" width="180" />
+      <ElTableColumn :prop="t('common.quantity')" :label="t('common.quantity')" width="180" />
+    </ElTable>
+  </ElDrawer>
 </template>
 
 <style lang="less" scoped>

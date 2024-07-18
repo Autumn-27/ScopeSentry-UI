@@ -2,7 +2,16 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElUpload, ElTooltip } from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElInput,
+  ElRow,
+  ElText,
+  ElUpload,
+  ElTooltip,
+  ElMessage
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { Icon } from '@/components/Icon'
@@ -176,6 +185,10 @@ const confirmDelete = async () => {
 const userStore = useUserStore()
 const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
 const uploadicon = useIcon({ icon: 'material-symbols:upload-sharp' })
+const uploadSuccess = async () => {
+  console.log('导入中')
+  ElMessage.success('导入中')
+}
 </script>
 
 <template>
@@ -206,8 +219,8 @@ const uploadicon = useIcon({ icon: 'material-symbols:upload-sharp' })
           </BaseButton>
         </div>
       </ElCol>
-      <ElCol :span="1">
-        <ElTooltip :content="t('common.uploadMsg')" placement="top">
+      <ElCol :span="3">
+        <ElTooltip :content="t('common.uploadMsg')" placement="top" @on-success="uploadSuccess">
           <ElUpload class="upload-demo" action="/api/poc/data/import" :headers="uploadHeaders">
             <ElButton :icon="uploadicon">{{ t('common.import') }}</ElButton>
           </ElUpload>

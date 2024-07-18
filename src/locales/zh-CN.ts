@@ -1,5 +1,6 @@
 export default {
   common: {
+    quantity: '数量',
     import: '导入',
     uploadMsg:
       '批量导入，只支持nuclei，将yaml文件放入zip中上传，可直接将nuclei官方poc库下载上传会自动提取poc。',
@@ -418,7 +419,8 @@ export default {
     sensitiveColor: '颜色',
     sensitiveRegular: '正则',
     sensitiveNameMsg: '请输入规则名称',
-    sensitiveRegularMsg: '请输入正则表达式'
+    sensitiveRegularMsg: '请输入正则表达式',
+    sensAggre: '敏感信息名称聚合'
   },
   dirScan: {
     dirScanName: '目录扫描',

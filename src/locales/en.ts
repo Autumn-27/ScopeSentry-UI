@@ -1,5 +1,6 @@
 export default {
   common: {
+    quantity: 'Quantity',
     import: 'Import',
     uploadMsg:
       'Batch import only supports nuclei. Put the yaml file into a zip and upload it. You can directly download and upload the nuclei official poc library, and the poc will be automatically extracted.',
@@ -421,7 +422,8 @@ export default {
     sensitiveColor: 'Color',
     sensitiveRegular: 'Regular',
     sensitiveNameMsg: 'Please enter a rule name',
-    sensitiveRegularMsg: 'Please enter a regular expression'
+    sensitiveRegularMsg: 'Please enter a regular expression',
+    sensAggre: 'Aggregation of sensitive information names'
   },
   dirScan: {
     dirScanName: 'DirScan',
