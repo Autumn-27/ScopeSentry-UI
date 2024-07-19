@@ -11,12 +11,13 @@ import {
   ElScrollbar,
   ElDrawer,
   ElTable,
-  ElTableColumn
+  ElTableColumn,
+  ElTag
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getSensitiveResultApi, getSensitiveResultBodyApi } from '@/api/asset'
+import { getSensitiveNamesApi, getSensitiveResultApi, getSensitiveResultBodyApi } from '@/api/asset'
 import { Icon } from '@iconify/vue'
 import { BaseButton } from '@/components/Button'
 import Csearch from '../search/Csearch.vue'
@@ -69,7 +70,7 @@ const searchKeywordsData = [
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data
-  getList()
+  callFunctionsConcurrently()
 }
 
 const crudSchemas = reactive<CrudSchema[]>([
@@ -204,12 +205,12 @@ const action = async (id) => {
 }
 const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
-  getList()
+  callFunctionsConcurrently()
 }
 const handleFilterSearch = (data: any, newFilters: any) => {
   Object.assign(filter, newFilters)
   searchParams.value = data
-  getList()
+  callFunctionsConcurrently()
 }
 const drawerFlag = ref(false)
 
@@ -219,10 +220,60 @@ const openAggregation = () => {
 const aggregationData = ref<
   {
     name: string
-    level: number
-    quantity: number
+    color: string
+    count: number
   }[]
 >([])
+
+const getSensNames = async () => {
+  try {
+    const res = await getSensitiveNamesApi(searchParams.value, filter)
+    if (res && res.data && Array.isArray(res.data.list)) {
+      aggregationData.value = res.data.list.map((data) => ({
+        name: data.name,
+        color: data.color,
+        count: data.count
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching node data:', error)
+  } finally {
+  }
+}
+getSensNames()
+const callFunctionsConcurrently = async () => {
+  try {
+    await Promise.all([getList(), getSensNames()])
+    console.log('Both getList and getSensNames have completed')
+  } catch (error) {
+    console.error('Error occurred while executing getList and getSensNames:', error)
+  }
+}
+const addSensNameSearch = async (name: string) => {
+  console.log(name)
+  if (searchParams.value == '') {
+    searchParams.value = 'sname="' + name + '"'
+  }
+  console.log(searchParams.value)
+}
+const dynamicTags = ref<string[]>([])
+const changeTags = (type, value) => {
+  const key = `${type}=${value}`
+  console.log(key)
+  dynamicTags.value = [...dynamicTags.value, key]
+}
+const handleClose = (tag: string) => {
+  if (dynamicTags.value) {
+    const [key, value] = tag.split('=')
+    if (key in filter && Array.isArray(filter[key])) {
+      filter[key] = filter[key].filter((item: string) => item !== value)
+      if (filter[key].length === 0) {
+        delete filter[key]
+      }
+    }
+    dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
+  }
+}
 </script>
 
 <template>
@@ -235,6 +286,8 @@ const aggregationData = ref<
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"
     :openAggregation="openAggregation"
+    :dynamicTags="dynamicTags"
+    :handleClose="handleClose"
   />
   <ElRow>
     <ElCol>
@@ -303,13 +356,22 @@ const aggregationData = ref<
     size="30%"
   >
     <ElTable :data="aggregationData">
-      <ElTableColumn
-        :prop="t('sensitiveInformation.sensitiveName')"
-        :label="t('sensitiveInformation.sensitiveName')"
-        width="180"
-      />
-      <ElTableColumn prop="Level" label="Level" width="180" />
-      <ElTableColumn :prop="t('common.quantity')" :label="t('common.quantity')" width="180" />
+      <ElTableColumn prop="name" :label="t('sensitiveInformation.sensitiveName')" width="180">
+        <template #default="scope">
+          <div
+            style="display: flex; align-items: center"
+            @click="changeTags('sname', scope.row.name)"
+          >
+            <ElTag>{{ scope.row.name }}</ElTag>
+          </div>
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="color" label="color" width="180">
+        <template #default="scope">
+          <ElTag :color="scope.row.color" round effect="plain" size="small" style="width: 20px" />
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="count" :label="t('common.quantity')" width="180" />
     </ElTable>
   </ElDrawer>
 </template>

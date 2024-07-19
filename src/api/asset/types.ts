@@ -78,6 +78,12 @@ export type SensitiveData = {
   match: string[]
 }
 
+export type SensitiveNames = {
+  color: string
+  name: string
+  count: number
+}
+
 export type SensitiveBody = {
   body: string
 }

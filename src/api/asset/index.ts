@@ -12,7 +12,8 @@ import {
   SubdomaintakerData,
   SensitiveBody,
   PageMResponse,
-  PageMHistory
+  PageMHistory,
+  SensitiveNames
 } from './types'
 import { commonRespData } from '../scommon/types'
 
@@ -135,6 +136,19 @@ export const getSensitiveResultBodyApi = (id: string): Promise<IResponse<Sensiti
   return request.post({ url: '/api/sensitive/result/body', data: { id } })
 }
 
+interface SensitiveNamesResponse {
+  list: SensitiveNames[]
+}
+
+export const getSensitiveNamesApi = (
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<SensitiveNamesResponse>> => {
+  return request.post({
+    url: '/api/sensitive/result/names',
+    data: { search, filter }
+  })
+}
 interface DirScanDataResponse {
   list: DirScanData[]
   total: number

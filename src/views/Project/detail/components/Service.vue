@@ -207,7 +207,7 @@ const delSelect = async () => {
       const elTableExpose = await getElTableExpose()
       const selectedRows = elTableExpose?.getSelectionRows() || []
       ids.value = selectedRows.map((row) => row.id)
-      await delDataApi(ids.value, 'subdomain')
+      await delDataApi(ids.value, 'asset')
       getList()
     })
     .catch(() => {
