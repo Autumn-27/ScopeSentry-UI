@@ -61,6 +61,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('subdomain.subdomainName'),
     minWidth: '200',
     formatter: (row, __: TableColumn, hostValue: string) => {
+      if (!row.count) {
+        return <ElText>{hostValue}</ElText>
+      }
       return (
         <>
           <ElText>{hostValue}</ElText>
