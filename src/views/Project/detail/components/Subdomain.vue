@@ -11,7 +11,8 @@ import {
   ElMessageBox,
   ElMessage,
   ElButton,
-  ElDivider
+  ElDivider,
+  ElText
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -59,6 +60,14 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'host',
     label: t('subdomain.subdomainName'),
     minWidth: '200',
+    formatter: (row, __: TableColumn, hostValue: string) => {
+      return (
+        <>
+          <ElText>{hostValue}</ElText>
+          <ElText type="info">({row.count})</ElText>
+        </>
+      )
+    },
     slots: {
       header: () => {
         return (

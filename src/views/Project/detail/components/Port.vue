@@ -54,13 +54,13 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'port',
     label: t('asset.port'),
     minWidth: '100',
-    formatter: (row, __: TableColumn, domainValue: string) => {
+    formatter: (row, __: TableColumn, portValue: string) => {
       if (!row.count) {
-        return <ElText>{domainValue}</ElText>
+        return <ElText>{portValue}</ElText>
       }
       return (
         <>
-          <ElText>{domainValue}</ElText>
+          <ElText>{portValue}</ElText>
           <ElText type="info">({row.count})</ElText>
         </>
       )
