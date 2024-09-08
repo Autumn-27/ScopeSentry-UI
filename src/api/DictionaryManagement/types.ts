@@ -8,3 +8,9 @@ export type portDictData = {
   name: string
   value: string
 }
+
+export type fileData = {
+  id: string
+  name: string
+  size: string
+}

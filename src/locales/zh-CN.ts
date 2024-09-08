@@ -1,5 +1,6 @@
 export default {
   common: {
+    filesize: '大小',
     quantity: '数量',
     import: '导入',
     uploadMsg:

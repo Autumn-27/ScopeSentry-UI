@@ -9,10 +9,10 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { useTable } from '@/hooks/web/useTable'
 import { BaseButton } from '@/components/Button'
 import {
-  createDirDictApi,
-  deleteDirDictDataApi,
+  createSubdomainDictApi,
+  deleteSubdomainDictDataApi,
   downloadDirDictApi,
-  getDirDictListApi
+  getSubdomainDictListApi
 } from '@/api/DictionaryManagement'
 import { useUserStore } from '@/store/modules/user'
 const { t } = useI18n()
@@ -44,7 +44,7 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'upload',
     label: t('common.upload'),
     formatter: (row, __: TableColumn, _: string) => {
-      const uploadAction = `/api/dictionary/dir/save?id=${row.id}`
+      const uploadAction = `/api/dictionary/subdomain/save?id=${row.id}`
       return h('div', [
         h(
           ElUpload,
@@ -97,7 +97,7 @@ const nodeColums = reactive<TableColumn[]>([
 ])
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const res = await getDirDictListApi()
+    const res = await getSubdomainDictListApi()
     return {
       list: res.data.list
     }
@@ -121,7 +121,7 @@ const del = async (data) => {
   }
   delLoading.value = true
   try {
-    const res = await deleteDirDictDataApi([data.id])
+    const res = await deleteSubdomainDictDataApi([data.id])
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -138,7 +138,7 @@ const delSelect = async () => {
   ids.value = selectedRows.map((row) => row.id)
   delLoading.value = true
   try {
-    const res = await deleteDirDictDataApi(ids.value)
+    const res = await deleteSubdomainDictDataApi(ids.value)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -164,7 +164,7 @@ async function customRequest(option) {
     formData.append('file', file)
     formData.append('name', form.value.name)
     // 在这里可以处理实际的文件数据
-    await createDirDictApi(formData) // 传递文件和其他参数
+    await createSubdomainDictApi(formData) // 传递文件和其他参数
     getList() // 假设 getList 是一个用于获取更新后的数据的函数
     dialogVisible.value = false
     ElMessage.success('Upload success')
@@ -185,7 +185,7 @@ const downloadFile = async (id) => {
   const url = window.URL.createObjectURL(new Blob([response.data]))
   const link = document.createElement('a')
   link.href = url
-  link.setAttribute('download', 'dirdict') // 设置文件名
+  link.setAttribute('download', 'subdomainDict') // 设置文件名
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

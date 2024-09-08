@@ -1,5 +1,6 @@
 export default {
   common: {
+    filesize: 'Size',
     quantity: 'Quantity',
     import: 'Import',
     uploadMsg:

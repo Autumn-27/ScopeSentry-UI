@@ -1,4 +1,4 @@
 export type commonRespData = {
-  code: string
+  code: number
   message: string
 }
