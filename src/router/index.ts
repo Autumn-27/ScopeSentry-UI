@@ -261,16 +261,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
-        path: 'subdomain_bak',
-        component: () => import('@/views/DictionaryManagement/SubdomainDictionary_bak.vue'),
-        name: 'Subdomain management1',
-        meta: {
-          title: t('router.subdomainDictionary'),
-          icon: 'iconoir:dns',
-          noCache: true
-        }
-      },
-      {
         path: 'dir',
         component: () => import('@/views/DictionaryManagement/DirDictionary.vue'),
         name: 'Dir management',
