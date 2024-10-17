@@ -3,9 +3,11 @@ export default {
     filesize: '大小',
     quantity: '数量',
     import: '导入',
+    category: '分类',
     uploadMsg:
       '批量导入，只支持nuclei，将yaml文件放入zip中上传，可直接将nuclei官方poc库下载上传会自动提取poc。',
     upload: '上传',
+    cover: '覆盖',
     download: '下载',
     operation: '操作',
     selectAll: '全选',

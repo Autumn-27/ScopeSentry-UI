@@ -1,13 +1,6 @@
 import request from '@/axios'
 import type { dictRespData, fileData, portDictData } from './types'
 import { commonRespData } from '../scommon/types'
-export const getSubdomainDictionaryApi = () => {
-  return request.get({ url: '/api/dictionary/subdomain/data' })
-}
-
-export const saveSubdomainDictionaryApi = (dict: string): Promise<IResponse<dictRespData>> => {
-  return request.post({ url: '/api/dictionary/subdomain/save', data: { dict } })
-}
 
 interface portDictDataResponse {
   list: portDictData[]
@@ -43,14 +36,14 @@ interface fileDataResponse {
   list: fileData[]
 }
 
-export const getDirDictListApi = (): Promise<IResponse<fileDataResponse>> => {
-  return request.post({ url: '/api/dictionary/dir/list' })
+export const getManagetListApi = (): Promise<IResponse<fileDataResponse>> => {
+  return request.get({ url: '/api/dictionary/manage/list' })
 }
 
-export const createDirDictApi = (formData: FormData): Promise<IResponse<commonRespData>> => {
+export const createDictApi = (formData: FormData): Promise<IResponse<commonRespData>> => {
   // 发送 POST 请求
   return request.post({
-    url: '/api/dictionary/dir/add',
+    url: '/api/dictionary/manage/create',
     method: 'post',
     data: formData,
     headers: {
@@ -59,34 +52,10 @@ export const createDirDictApi = (formData: FormData): Promise<IResponse<commonRe
   })
 }
 
-export const downloadDirDictApi = (id: string) => {
-  return request.get({ url: '/api/dictionary/dir/download?id=' + id })
+export const downloadDictApi = (id: string) => {
+  return request.get({ url: '/api/dictionary/manage/download?id=' + id })
 }
 
-export const deleteDirDictDataApi = (ids: string[]): Promise<IResponse<dictRespData>> => {
-  return request.post({ url: '/api/dictionary/dir/delete', data: { ids } })
-}
-
-export const getSubdomainDictListApi = (): Promise<IResponse<fileDataResponse>> => {
-  return request.post({ url: '/api/dictionary/subdomain/list' })
-}
-
-export const createSubdomainDictApi = (formData: FormData): Promise<IResponse<commonRespData>> => {
-  // 发送 POST 请求
-  return request.post({
-    url: '/api/dictionary/subdomain/add',
-    method: 'post',
-    data: formData,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    } as any
-  })
-}
-
-export const downloadSubdomainDictApi = (id: string) => {
-  return request.get({ url: '/api/dictionary/subdomain/download?id=' + id })
-}
-
-export const deleteSubdomainDictDataApi = (ids: string[]): Promise<IResponse<dictRespData>> => {
-  return request.post({ url: '/api/dictionary/subdomain/delete', data: { ids } })
+export const deleteDictApi = (ids: string[]): Promise<IResponse<dictRespData>> => {
+  return request.post({ url: '/api/dictionary/manage/delete', data: { ids } })
 }

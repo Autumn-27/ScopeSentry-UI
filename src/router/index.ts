@@ -251,25 +251,35 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'subdomain',
-        component: () => import('@/views/DictionaryManagement/SubdomainDictionary.vue'),
-        name: 'Subdomain management',
+        path: 'manage',
+        component: () => import('@/views/DictionaryManagement/manage.vue'),
+        name: 'Dictionary management',
         meta: {
-          title: t('router.subdomainDictionary'),
-          icon: 'iconoir:dns',
+          title: t('router.dictionaryManagement'),
+          icon: 'arcticons:dictionaryformids',
           noCache: true
         }
       },
-      {
-        path: 'dir',
-        component: () => import('@/views/DictionaryManagement/DirDictionary.vue'),
-        name: 'Dir management',
-        meta: {
-          title: t('router.dirDictionary'),
-          icon: 'octicon:file-directory-24',
-          noCache: true
-        }
-      },
+      // {
+      //   path: 'subdomain',
+      //   component: () => import('@/views/DictionaryManagement/SubdomainDictionary.vue'),
+      //   name: 'Subdomain management',
+      //   meta: {
+      //     title: t('router.subdomainDictionary'),
+      //     icon: 'iconoir:dns',
+      //     noCache: true
+      //   }
+      // },
+      // {
+      //   path: 'dir',
+      //   component: () => import('@/views/DictionaryManagement/DirDictionary.vue'),
+      //   name: 'Dir management',
+      //   meta: {
+      //     title: t('router.dirDictionary'),
+      //     icon: 'octicon:file-directory-24',
+      //     noCache: true
+      //   }
+      // },
       {
         path: 'port',
         component: () => import('@/views/DictionaryManagement/PortDictionary.vue'),
