@@ -76,9 +76,13 @@ const nodeColums = reactive<TableColumn[]>([
             class: 'upload-demo',
             action: uploadAction,
             headers: uploadHeaders,
-            onSuccess: () => {
-              // 上传成功后的处理逻辑
-              ElMessage.success('Upload success')
+            onSuccess: (response) => {
+              console.log(response.code)
+              if (response.code === 200) {
+                ElMessage.success('Upload succes')
+              } else {
+                ElMessage.error('Upload failed')
+              }
               getList()
             },
             onError: (err) => {
