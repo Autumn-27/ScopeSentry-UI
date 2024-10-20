@@ -87,8 +87,8 @@ const searchKeywordsData = [
     explain: t('searchHelp.domain')
   },
   {
-    keyword: 'protocol',
-    example: 'protocol="ssh"',
+    keyword: 'service',
+    example: 'service="ssh"',
     explain: t('searchHelp.protocol')
   },
   {
@@ -159,7 +159,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'domain',
     label: t('asset.domain'),
-    minWidth: '200',
+    minWidth: '220',
     formatter: (row, __: TableColumn, domainValue: string) => {
       return (
         <div class="flex">
@@ -170,7 +170,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             color="#409eff"
           />
           <ElLink href={row.url} underline={false}>
-            {domainValue}
+            {row.service + '://' + domainValue}
           </ElLink>
         </div>
       )
@@ -199,7 +199,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'port',
     label: t('asset.port') + '/' + t('asset.service'),
-    minWidth: '110',
+    minWidth: '120',
     formatter: (raw, __: TableColumn, statusValue: number) => {
       if (raw.service == '') {
         return <div>{statusValue}</div>
@@ -209,7 +209,7 @@ const crudSchemas = reactive<CrudSchema[]>([
             <div>{statusValue}</div>
             <ElTag
               type="info"
-              effect="light"
+              effect="dark"
               round
               size="small"
               style={'top: 2px; left:6px; position:relative'}
@@ -254,6 +254,27 @@ const crudSchemas = reactive<CrudSchema[]>([
         </ElRow>
       )
     }
+  },
+  {
+    field: 'tags',
+    label: 'TAG',
+    fit: 'true',
+    formatter: (_: Recordable, __: TableColumn, tags: string[]) => {
+      if (tags.length > 0) {
+        return (
+          <ElRow>
+            {tags.map((tag) => (
+              <ElCol span={12} key={tag}>
+                <ElTag>{tag}</ElTag>
+              </ElCol>
+            ))}
+          </ElRow>
+        )
+      } else {
+        return ''
+      }
+    },
+    minWidth: '200'
   },
   {
     field: 'status',
@@ -326,44 +347,53 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '200',
     formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
       if (ProductsValue.length != 0) {
-        if (ProductsValue.length > 1) {
-          let contentTool = ''
-          if (Array.isArray(ProductsValue)) {
-            // It's an array, you can use forEach
-            ProductsValue.forEach((item, _) => {
-              contentTool += `<div>${item}</div>`
-            })
-          } else {
-            console.error('ProductsValue is not an array')
-          }
-          return (
-            <div class="flex">
-              <ElTag type="success" effect="light" round>
-                {ProductsValue[0]}
-              </ElTag>
-              <ElTooltip
-                class="box-item"
-                effect="dark"
-                placement="top-start"
-                content={contentTool}
-                popper-class="tagtooltip"
-                rawContent
-              >
-                <ElTag type="info" effect="plain" round style={'left:3px; position:relative'}>
-                  {t('asset.total')} {ProductsValue.length} {t('asset.p')}
-                </ElTag>
-              </ElTooltip>
-            </div>
-          )
-        } else {
-          return (
-            <div class="flex">
-              <ElTag type="success" effect="light">
-                {ProductsValue[0]}
-              </ElTag>
-            </div>
-          )
-        }
+        return (
+          <ElRow style={{ flexWrap: 'wrap' }}>
+            {ProductsValue.map((product) => (
+              <ElCol span={12} key={product}>
+                <ElTag type={'success'}>{product}</ElTag>
+              </ElCol>
+            ))}
+          </ElRow>
+        )
+        // if (ProductsValue.length > 1) {
+        //   let contentTool = ''
+        //   if (Array.isArray(ProductsValue)) {
+        //     // It's an array, you can use forEach
+        //     ProductsValue.forEach((item, _) => {
+        //       contentTool += `<div>${item}</div>`
+        //     })
+        //   } else {
+        //     console.error('ProductsValue is not an array')
+        //   }
+        //   return (
+        //     <div class="flex">
+        //       <ElTag type="success" effect="light" round>
+        //         {ProductsValue[0]}
+        //       </ElTag>
+        //       <ElTooltip
+        //         class="box-item"
+        //         effect="dark"
+        //         placement="top-start"
+        //         content={contentTool}
+        //         popper-class="tagtooltip"
+        //         rawContent
+        //       >
+        //         <ElTag type="info" effect="plain" round style={'left:3px; position:relative'}>
+        //           {t('asset.total')} {ProductsValue.length} {t('asset.p')}
+        //         </ElTag>
+        //       </ElTooltip>
+        //     </div>
+        //   )
+        // } else {
+        //   return (
+        //     <div class="flex">
+        //       <ElTag type="success" effect="light">
+        //         {ProductsValue[0]}
+        //       </ElTag>
+        //     </div>
+        //   )
+        // }
       }
     }
   },
@@ -375,6 +405,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
+    fixed: 'right',
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -418,16 +449,6 @@ function rowstyle() {
   return { maxheight: '10px' }
 }
 const activeNames = ref(['1', '2', '3', '4', '5'])
-onMounted(() => {
-  setMaxHeight()
-  window.addEventListener('resize', setMaxHeight)
-})
-const maxHeight = ref(0)
-
-const setMaxHeight = () => {
-  const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.7
-}
 const filter = reactive<{ [key: string]: any }>({})
 const handleFilterSearch = (data: any, newFilters: any) => {
   Object.assign(filter, newFilters)
@@ -573,12 +594,9 @@ const handleClose = (tag: string) => {
         <ElCol :span="24">
           <ElCard>
             <Table
-              v-model:pageSize="pageSize"
-              v-model:currentPage="currentPage"
               :columns="allSchemas.tableColumns"
               :data="dataList"
               stripe
-              :max-height="maxHeight"
               :border="true"
               :loading="loading"
               @filter-change="filterChange"
