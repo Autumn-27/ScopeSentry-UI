@@ -154,12 +154,12 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: '30'
+    minWidth: '15'
   },
   {
     field: 'domain',
     label: t('asset.domain'),
-    minWidth: '220',
+    minWidth: '200',
     formatter: (row, __: TableColumn, domainValue: string) => {
       return (
         <div class="flex">
@@ -179,7 +179,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'ip',
     label: t('asset.IP'),
-    minWidth: '160',
+    minWidth: '130',
     formatter: (row, __: TableColumn, ipValue: string) => {
       return (
         <div class="flex">
@@ -199,7 +199,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'port',
     label: t('asset.port') + '/' + t('asset.service'),
-    minWidth: '120',
+    minWidth: '110',
     formatter: (raw, __: TableColumn, statusValue: number) => {
       if (raw.service == '') {
         return <div>{statusValue}</div>
@@ -264,7 +264,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         return (
           <ElRow>
             {tags.map((tag) => (
-              <ElCol span={12} key={tag}>
+              <ElCol span={24} key={tag}>
                 <ElTag>{tag}</ElTag>
               </ElCol>
             ))}
@@ -274,7 +274,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         return ''
       }
     },
-    minWidth: '200'
+    minWidth: '130'
   },
   {
     field: 'status',
@@ -344,13 +344,13 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'products',
     label: t('asset.products'),
-    minWidth: '200',
+    minWidth: '100',
     formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
       if (ProductsValue.length != 0) {
         return (
           <ElRow style={{ flexWrap: 'wrap' }}>
             {ProductsValue.map((product) => (
-              <ElCol span={12} key={product}>
+              <ElCol span={24} key={product}>
                 <ElTag type={'success'}>{product}</ElTag>
               </ElCol>
             ))}
@@ -400,7 +400,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: '180'
+    minWidth: '170'
   },
   {
     field: 'action',
@@ -649,6 +649,7 @@ const handleClose = (tag: string) => {
 .el-button {
   margin-top: 10px;
 }
+
 :deep(.el-popper.is-dark) {
   max-width: 50% !important;
   line-height: 24px;

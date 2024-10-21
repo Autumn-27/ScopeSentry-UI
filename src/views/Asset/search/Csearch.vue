@@ -306,7 +306,7 @@ function handleCloseTag(tag: string) {
           {{ t('asset.export') }}
         </ElButton>
       </ElCol>
-      <ElCol :span="4">
+      <ElCol :span="5">
         {{ t('project.project') }}:
         <ElTreeSelect
           :loading="projectLoading"
