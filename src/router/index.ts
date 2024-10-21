@@ -135,6 +135,16 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           icon: 'mdi:invoice-scheduled-outline',
           noCache: true
         }
+      },
+      {
+        path: 'ScanTemplate',
+        component: () => import('@/views/Task/ScheduledTask.vue'),
+        name: 'ScanTemplate',
+        meta: {
+          title: t('router.scanTemplate'),
+          icon: 'icon-park:page-template',
+          noCache: true
+        }
       }
     ]
   },

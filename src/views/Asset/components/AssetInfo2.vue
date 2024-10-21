@@ -224,7 +224,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'title',
     label: t('asset.title'),
-    minWidth: '160',
+    minWidth: '150',
     formatter: (row: Recordable, __: TableColumn, title: string) => {
       if (title == null || title == '') {
         title = ''
@@ -339,12 +339,12 @@ const crudSchemas = reactive<CrudSchema[]>([
         </ElScrollbar>
       )
     },
-    minWidth: '200'
+    minWidth: '190'
   },
   {
     field: 'products',
     label: t('asset.products'),
-    minWidth: '100',
+    minWidth: '110',
     formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
       if (ProductsValue.length != 0) {
         return (

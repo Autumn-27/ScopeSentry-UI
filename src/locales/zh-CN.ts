@@ -227,6 +227,7 @@ export default {
     taskManagement: '任务管理',
     scanTask: '扫描任务',
     scheduledTask: '计划任务',
+    scanTemplate: '扫描模板',
     nodeManagement: '节点管理',
     projectManagement: '项目管理',
     projectDetail: '项目信息',

@@ -228,6 +228,7 @@ export default {
     taskManagement: 'Task',
     scanTask: 'Scan Tasks',
     scheduledTask: 'Scheduled Tasks',
+    scanTemplate: 'Scan Template',
     nodeManagement: 'Node',
     projectDetail: 'Project Detail',
     vulFingerprint: 'Vul-Fingerprint',
