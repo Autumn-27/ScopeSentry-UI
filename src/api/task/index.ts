@@ -202,3 +202,11 @@ export const addScheduledTaskPageMonitApi = (url: string): Promise<IResponse<tas
     }
   })
 }
+
+interface TaskDataResponse {
+  list: TaskData[]
+  total: number
+}
+export const getTemplateDataApi = (search: string): Promise<IResponse<TaskDataResponse>> => {
+  return request.post({ url: '/api/task/template/data', data: { search } })
+}

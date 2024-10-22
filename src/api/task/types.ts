@@ -54,3 +54,12 @@ export type ScheduledTaskData = {
   nextTime: string
   state: string
 }
+
+export type ScanTemplateData = {
+  ID: string
+  name: string
+  taskNum: string
+  progress: string
+  creatTime: string
+  endTime: string
+}

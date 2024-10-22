@@ -1,0 +1,307 @@
+<script setup lang="tsx">
+import { ContentWrap } from '@/components/ContentWrap'
+import { useI18n } from '@/hooks/web/useI18n'
+import { ref, reactive, h, onMounted } from 'vue'
+import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 'element-plus'
+import { Table, TableColumn } from '@/components/Table'
+import { useTable } from '@/hooks/web/useTable'
+import { useIcon } from '@/hooks/web/useIcon'
+import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
+import { Dialog } from '@/components/Dialog'
+import { BaseButton } from '@/components/Button'
+import AddTask from './components/AddTask.vue'
+
+const searchicon = useIcon({ icon: 'iconoir:search' })
+const { t } = useI18n()
+const search = ref('')
+const handleSearch = () => {
+  getList()
+}
+const taskColums = reactive<TableColumn[]>([
+  {
+    field: 'selection',
+    type: 'selection',
+    minWidth: 55
+  },
+  {
+    field: 'name',
+    label: t('task.templateName')
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    formatter: (row, __: TableColumn, _: number) => {
+      console.log(row)
+      const retestButton = h(
+        BaseButton,
+        {
+          type: 'warning',
+          onClick: () => confirmRetest(row)
+        },
+        t('task.retest')
+      )
+      return (
+        <>
+          <BaseButton type="success" onClick={() => getTaskContent(row)}>
+            {t('common.view')}
+          </BaseButton>
+          {retestButton}
+          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
+            {t('common.delete')}
+          </BaseButton>
+          <BaseButton type="primary" onClick={() => getProgressInfo(row.id)}>
+            {t('task.taskProgress')}
+          </BaseButton>
+        </>
+      )
+    }
+  }
+])
+
+const progressDialogVisible = ref(false)
+let getProgressInfoID = ''
+const getProgressInfo = async (id) => {
+  getProgressInfoID = id
+  progressDialogVisible.value = true
+}
+const progresscloseDialog = () => {
+  progressDialogVisible.value = false
+}
+const { tableRegister, tableState, tableMethods } = useTable({
+  fetchDataApi: async () => {
+    const { currentPage, pageSize } = tableState
+    const res = await getTaskDataApi(search.value, currentPage.value, pageSize.value)
+    return {
+      list: res.data.list,
+      total: res.data.total
+    }
+  },
+  immediate: false
+})
+const { loading, dataList, total, currentPage, pageSize } = tableState
+pageSize.value = 20
+const { getList, getElTableExpose } = tableMethods
+function tableHeaderColor() {
+  return { background: 'var(--el-fill-color-light)' }
+}
+const dialogVisible = ref(false)
+
+let DialogTitle = t('task.addTask')
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+let taskForm = reactive({
+  name: '',
+  target: '',
+  node: [] as string[],
+  subdomainScan: true,
+  duplicates: 'None',
+  subdomainConfig: [],
+  urlScan: true,
+  sensitiveInfoScan: true,
+  pageMonitoring: 'JS',
+  crawlerScan: true,
+  vulScan: false,
+  vulList: [],
+  portScan: false,
+  ports: '',
+  dirScan: true,
+  waybackurl: true,
+  scheduledTasks: true,
+  hour: 24,
+  allNode: false
+})
+
+let Create = ref(true)
+const getTaskContent = async (data) => {
+  const res = await getTaskContentApi(data.id)
+  if (res.code === 200) {
+    const result = res.data
+    taskForm.name = result.name
+    taskForm.target = result.target
+    taskForm.node = result.node
+    taskForm.subdomainScan = result.subdomainScan
+    taskForm.subdomainConfig = result.subdomainConfig
+    taskForm.urlScan = result.urlScan
+    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
+    taskForm.pageMonitoring = result.pageMonitoring
+    taskForm.crawlerScan = result.crawlerScan
+    taskForm.vulScan = result.vulScan
+    taskForm.vulList = result.vulList
+    taskForm.portScan = result.portScan
+    taskForm.ports = result.ports
+    taskForm.dirScan = result.dirScan
+    taskForm.waybackurl = result.waybackurl
+    taskForm.scheduledTasks = result.scheduledTasks
+    taskForm.hour = result.hour
+    taskForm.allNode = result.allNode
+    taskForm.duplicates = result.duplicates
+  }
+  dialogVisible.value = true
+  Create.value = false
+  DialogTitle = t('common.view')
+}
+const confirmDeleteSelect = async () => {
+  const deleteAssetS = ref<boolean | string | number>(false)
+  ElMessageBox({
+    title: 'Delete',
+    draggable: true,
+    // Should pass a function if VNode contains dynamic props
+    message: () =>
+      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
+        h(ElSwitch, {
+          modelValue: deleteAssetS.value,
+          'onUpdate:modelValue': (val: boolean | string | number) => {
+            deleteAssetS.value = val
+          }
+        })
+      ])
+  }).then(async () => {
+    await delSelect(deleteAssetS.value)
+  })
+}
+
+const confirmDelete = async (data) => {
+  const deleteAsset = ref<boolean | string | number>(false)
+  ElMessageBox({
+    title: 'Delete',
+    draggable: true,
+    // Should pass a function if VNode contains dynamic props
+    message: () =>
+      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
+        h(ElSwitch, {
+          modelValue: deleteAsset.value,
+          'onUpdate:modelValue': (val: boolean | string | number) => {
+            deleteAsset.value = val
+          }
+        })
+      ])
+  }).then(async () => {
+    await del(data, deleteAsset.value)
+  })
+}
+const delLoading = ref(false)
+const del = async (data, delA) => {
+  delLoading.value = true
+  try {
+    const res = await deleteTaskApi([data.id], delA)
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+const ids = ref<string[]>([])
+const delSelect = async (delA) => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.id)
+  delLoading.value = true
+  try {
+    const res = await deleteTaskApi(ids.value, delA)
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.75
+}
+</script>
+
+<template>
+  <ContentWrap>
+    <ElRow>
+      <ElCol :span="1">
+        <ElText class="mx-1" style="position: relative; top: 8px">
+          {{ t('task.templateName') }}:
+        </ElText>
+      </ElCol>
+      <ElCol :span="5">
+        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
+      </ElCol>
+      <ElCol :span="5" style="position: relative; left: 16px">
+        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
+          >Search</ElButton
+        >
+      </ElCol>
+    </ElRow>
+    <ElRow>
+      <ElCol style="position: relative; top: 16px">
+        <div class="mb-10px">
+          <BaseButton type="primary" @click="addTask">{{ t('task.addTemplate') }}</BaseButton>
+          <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
+            {{ t('task.deleteTemplate') }}
+          </BaseButton>
+        </div>
+      </ElCol>
+    </ElRow>
+    <div style="position: relative; top: 12px">
+      <Table
+        :tooltip-options="{
+          offset: 1,
+          showArrow: false,
+          effect: 'dark',
+          enterable: false,
+          showAfter: 0,
+          popperOptions: {},
+          popperClass: 'test',
+          placement: 'bottom',
+          hideAfter: 0,
+          disabled: true
+        }"
+        v-model:pageSize="pageSize"
+        v-model:currentPage="currentPage"
+        :columns="taskColums"
+        :data="dataList"
+        stripe
+        :border="true"
+        :loading="loading"
+        :max-height="maxHeight"
+        :resizable="true"
+        :pagination="{
+          total: total,
+          pageSizes: [20, 30, 50, 100, 200, 500, 1000]
+        }"
+        @register="tableRegister"
+        :headerCellStyle="tableHeaderColor"
+        :style="{
+          fontFamily:
+            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+        }"
+      />
+    </div>
+  </ContentWrap>
+  <Dialog
+    v-model="dialogVisible"
+    :title="DialogTitle"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <AddTask
+      :closeDialog="closeDialog"
+      :getList="getList"
+      :vTaskForm="taskForm"
+      :create="Create"
+      taskid=""
+      :schedule="false"
+    />
+  </Dialog>
+</template>

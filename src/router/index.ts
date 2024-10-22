@@ -138,11 +138,29 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       },
       {
         path: 'ScanTemplate',
-        component: () => import('@/views/Task/ScheduledTask.vue'),
+        component: () => import('@/views/Task/ScanTemplate.vue'),
         name: 'ScanTemplate',
         meta: {
           title: t('router.scanTemplate'),
           icon: 'icon-park:page-template',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/plugin-management',
+    component: Layout,
+    name: 'Plugin Management',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/Plugins/plugin.vue'),
+        name: 'PluginManagement',
+        meta: {
+          title: t('router.pluginsManager'),
+          icon: 'mingcute:plugin-2-fill',
           noCache: true
         }
       }
