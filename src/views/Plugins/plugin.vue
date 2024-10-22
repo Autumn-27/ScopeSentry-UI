@@ -2,17 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
-import {
-  ElButton,
-  ElCol,
-  ElInput,
-  ElRow,
-  ElText,
-  ElProgress,
-  ElTag,
-  ElMessageBox,
-  ElSwitch
-} from 'element-plus'
+import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -20,7 +10,6 @@ import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from 
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
-import ProgressInfo from './components/ProgressInfo.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
