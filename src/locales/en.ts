@@ -1,5 +1,6 @@
 export default {
   common: {
+    log: 'Log',
     filesize: 'Size',
     quantity: 'Quantity',
     import: 'Import',
@@ -458,10 +459,15 @@ export default {
     amount: 'Asset Quantity'
   },
   plugin: {
-    name: 'Name',
+    name: 'Plugin Name',
     version: 'Version',
     parameter: 'Parameter',
-    introduction: 'Introduction'
+    introduction: 'Introduction',
+    new: 'New Plugin',
+    delete: 'Delete Plugin',
+    module: 'Module',
+    help: 'Parameter Help',
+    source: 'Source'
   },
   workplace: {
     goodMorning: 'Good morning',

@@ -6,10 +6,11 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
-import AddTask from './components/AddTask.vue'
+import { getPluginDataApi } from '@/api/plugins'
+import detail from './components/detail.vue'
+import { string } from 'vue-types'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -25,18 +26,19 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'name',
-    label: t('plugin.name'),
-    minWidth: 100
+    label: t('plugin.name')
+  },
+  {
+    field: 'module',
+    label: t('plugin.module')
   },
   {
     field: 'version',
-    label: t('plugin.version'),
-    minWidth: 70
+    label: t('plugin.version')
   },
   {
     field: 'parameter',
-    label: t('plugin.parameter'),
-    minWidth: 200
+    label: t('plugin.parameter')
   },
   {
     field: 'introduction',
@@ -46,23 +48,12 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: '420',
     formatter: (row, __: TableColumn, _: number) => {
-      console.log(row)
-      const retestButton = h(
-        BaseButton,
-        {
-          type: 'warning',
-          onClick: () => confirmRetest(row)
-        },
-        t('task.retest')
-      )
       return (
         <>
-          <BaseButton type="success" onClick={() => getTaskContent(row)}>
-            {t('common.view')}
+          <BaseButton type="success" onClick={() => editPlugin(row.id)}>
+            {t('common.edit')}
           </BaseButton>
-          {retestButton}
           <BaseButton type="danger" onClick={() => confirmDelete(row)}>
             {t('common.delete')}
           </BaseButton>
@@ -75,13 +66,13 @@ const taskColums = reactive<TableColumn[]>([
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getTaskDataApi(search.value, currentPage.value, pageSize.value)
+    const res = await getPluginDataApi(search.value, currentPage.value, pageSize.value)
     return {
       list: res.data.list,
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 pageSize.value = 20
@@ -90,86 +81,12 @@ function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
 const dialogVisible = ref(false)
-const addTask = async () => {
-  DialogTitle = t('task.addTask')
-  Create.value = true
-  taskForm.name = ''
-  taskForm.target = ''
-  taskForm.node = []
-  taskForm.subdomainScan = true
-  taskForm.duplicates = 'None'
-  taskForm.subdomainConfig = []
-  taskForm.urlScan = true
-  taskForm.sensitiveInfoScan = true
-  taskForm.pageMonitoring = 'JS'
-  taskForm.crawlerScan = true
-  taskForm.vulScan = false
-  taskForm.vulList = []
-  taskForm.portScan = false
-  taskForm.ports = ''
-  taskForm.dirScan = true
-  taskForm.waybackurl = true
-  taskForm.scheduledTasks = true
-  taskForm.hour = 24
-  taskForm.allNode = false
-  dialogVisible.value = true
-}
 
-let DialogTitle = t('task.addTask')
+let DialogTitle = t('plugin.new')
 const closeDialog = () => {
   dialogVisible.value = false
 }
-let taskForm = reactive({
-  name: '',
-  target: '',
-  node: [] as string[],
-  subdomainScan: true,
-  duplicates: 'None',
-  subdomainConfig: [],
-  urlScan: true,
-  sensitiveInfoScan: true,
-  pageMonitoring: 'JS',
-  crawlerScan: true,
-  vulScan: false,
-  vulList: [],
-  portScan: false,
-  ports: '',
-  dirScan: true,
-  waybackurl: true,
-  scheduledTasks: true,
-  hour: 24,
-  allNode: false
-})
 
-let Create = ref(true)
-const getTaskContent = async (data) => {
-  const res = await getTaskContentApi(data.id)
-  if (res.code === 200) {
-    const result = res.data
-    taskForm.name = result.name
-    taskForm.target = result.target
-    taskForm.node = result.node
-    taskForm.subdomainScan = result.subdomainScan
-    taskForm.subdomainConfig = result.subdomainConfig
-    taskForm.urlScan = result.urlScan
-    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
-    taskForm.pageMonitoring = result.pageMonitoring
-    taskForm.crawlerScan = result.crawlerScan
-    taskForm.vulScan = result.vulScan
-    taskForm.vulList = result.vulList
-    taskForm.portScan = result.portScan
-    taskForm.ports = result.ports
-    taskForm.dirScan = result.dirScan
-    taskForm.waybackurl = result.waybackurl
-    taskForm.scheduledTasks = result.scheduledTasks
-    taskForm.hour = result.hour
-    taskForm.allNode = result.allNode
-    taskForm.duplicates = result.duplicates
-  }
-  dialogVisible.value = true
-  Create.value = false
-  DialogTitle = t('common.view')
-}
 const confirmDeleteSelect = async () => {
   const deleteAssetS = ref<boolean | string | number>(false)
   ElMessageBox({
@@ -217,59 +134,45 @@ const confirmDelete = async (data) => {
 }
 const delLoading = ref(false)
 const del = async (data, delA) => {
-  delLoading.value = true
-  try {
-    const res = await deleteTaskApi([data.id], delA)
-    console.log('Data deleted successfully:', res)
-    delLoading.value = false
-    getList()
-  } catch (error) {
-    console.error('Error deleting data:', error)
-    delLoading.value = false
-    getList()
-  }
+  // delLoading.value = true
+  // try {
+  //   const res = await deleteTaskApi([data.id], delA)
+  //   console.log('Data deleted successfully:', res)
+  //   delLoading.value = false
+  //   getList()
+  // } catch (error) {
+  //   console.error('Error deleting data:', error)
+  //   delLoading.value = false
+  //   getList()
+  // }
 }
 const ids = ref<string[]>([])
 const delSelect = async (delA) => {
-  const elTableExpose = await getElTableExpose()
-  const selectedRows = elTableExpose?.getSelectionRows() || []
-  ids.value = selectedRows.map((row) => row.id)
-  delLoading.value = true
-  try {
-    const res = await deleteTaskApi(ids.value, delA)
-    console.log('Data deleted successfully:', res)
-    delLoading.value = false
-    getList()
-  } catch (error) {
-    console.error('Error deleting data:', error)
-    delLoading.value = false
-    getList()
-  }
+  // const elTableExpose = await getElTableExpose()
+  // const selectedRows = elTableExpose?.getSelectionRows() || []
+  // ids.value = selectedRows.map((row) => row.id)
+  // delLoading.value = true
+  // try {
+  //   const res = await deleteTaskApi(ids.value, delA)
+  //   console.log('Data deleted successfully:', res)
+  //   delLoading.value = false
+  //   getList()
+  // } catch (error) {
+  //   console.error('Error deleting data:', error)
+  //   delLoading.value = false
+  //   getList()
+  // }
 }
-const confirmRetest = async (data) => {
-  const confirmed = window.confirm('Are you sure you want to retest?')
-  if (confirmed) {
-    await retestTask(data)
-  }
-}
-const retestTask = async (data) => {
-  try {
-    await retestTaskApi(data.id)
-    getList()
-  } catch (error) {
-    console.error('Error deleting data:', error)
-    getList()
-  }
-}
-onMounted(() => {
-  setMaxHeight()
-  window.addEventListener('resize', setMaxHeight)
-})
-const maxHeight = ref(0)
 
-const setMaxHeight = () => {
-  const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.75
+const addPlugin = async () => {
+  dialogVisible.value = true
+}
+
+const id = ref('')
+
+const editPlugin = async (data) => {
+  id.value = data
+  dialogVisible.value = true
 }
 </script>
 
@@ -277,7 +180,7 @@ const setMaxHeight = () => {
   <ContentWrap>
     <ElRow>
       <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('task.taskName') }}:</ElText>
+        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('plugin.name') }}:</ElText>
       </ElCol>
       <ElCol :span="5">
         <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
@@ -291,9 +194,9 @@ const setMaxHeight = () => {
     <ElRow>
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
-          <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
+          <BaseButton type="primary" @click="addPlugin">{{ t('plugin.new') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
-            {{ t('task.delTask') }}
+            {{ t('plugin.delete') }}
           </BaseButton>
         </div>
       </ElCol>
@@ -319,7 +222,6 @@ const setMaxHeight = () => {
         stripe
         :border="true"
         :loading="loading"
-        :max-height="maxHeight"
         :resizable="true"
         :pagination="{
           total: total,
@@ -340,13 +242,6 @@ const setMaxHeight = () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <AddTask
-      :closeDialog="closeDialog"
-      :getList="getList"
-      :vTaskForm="taskForm"
-      :create="Create"
-      taskid=""
-      :schedule="false"
-    />
+    <detail :closeDialog="closeDialog" :getList="getList" :id="id" />
   </Dialog>
 </template>

@@ -1,5 +1,6 @@
 export default {
   common: {
+    log: '日志',
     filesize: '大小',
     quantity: '数量',
     import: '导入',
@@ -455,10 +456,15 @@ export default {
     amount: '资产数量'
   },
   plugin: {
-    name: '名称',
+    name: '插件名称',
     version: '版本',
     parameter: '参数',
-    introduction: '简介'
+    introduction: '简介',
+    new: '新建插件',
+    delete: '删除插件',
+    module: '模块',
+    help: '参数说明',
+    source: '源码'
   },
   workplace: {
     goodMorning: '早安',
