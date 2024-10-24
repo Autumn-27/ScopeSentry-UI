@@ -16,6 +16,7 @@ import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getPluginDetailApi } from '@/api/plugins'
 
 const { t } = useI18n()
 
@@ -37,6 +38,20 @@ const form = ref({
   source: ''
 })
 
+const resetForm = () => {
+  console.log('清空')
+  form.value = {
+    name: '',
+    version: '',
+    module: '',
+    parameter: '',
+    help: '',
+    introduction: '',
+    source: ''
+  }
+  content.value = '' // 清空 Codemirror 编辑器内容
+}
+
 // 校验规则
 const rules = ref({
   name: [{ required: true, message: '', trigger: 'blur' }],
@@ -46,8 +61,16 @@ const rules = ref({
 
 // 模块选项
 const moduleOptions = ref([
-  { label: '模块一', value: 'module1' },
-  { label: '模块二', value: 'module2' }
+  { label: 'TargetHandler', value: 'TargetHandler' },
+  { label: 'SubdomainScan', value: 'SubdomainScan' },
+  { label: 'SubdomainSecurity', value: 'SubdomainSecurity' },
+  { label: 'PortScanPreparation', value: 'PortScanPreparation' },
+  { label: 'PortScan', value: 'PortScan' },
+  { label: 'AssetMapping', value: 'AssetMapping' },
+  { label: 'URLScan', value: 'URLScan' },
+  { label: 'WebCrawler', value: 'WebCrawler' },
+  { label: 'DirScan', value: 'DirScan' },
+  { label: 'VulnerabilityScan', value: 'VulnerabilityScan' }
 ])
 
 // Codemirror 配置
@@ -56,6 +79,7 @@ const extensions = [javascript(), oneDark]
 
 // 检查是新建还是编辑
 onBeforeMount(async () => {
+  resetForm()
   if (props.id) {
     // 如果有 id，则查询该 id 的内容
     await fetchData(props.id)
@@ -64,23 +88,23 @@ onBeforeMount(async () => {
 
 // 根据 id 查询配置数据
 const fetchData = async (id: string) => {
-  //   try {
-  //     const res = await getConfigurationById(id)
-  //     if (res.code === 200) {
-  //       const data = res.data
-  //       form.value.name = data.name
-  //       form.value.version = data.version
-  //       form.value.module = data.module
-  //       form.value.parameter = data.parameter
-  //       form.value.help = data.help
-  //       form.value.introduction = data.introduction
-  //       content.value = data.source
-  //     } else {
-  //       ElMessage.error(`数据加载失败：${res.message}`)
-  //     }
-  //   } catch (error) {
-  //     console.error('查询数据时发生错误:', error)
-  //   }
+  try {
+    const res = await getPluginDetailApi(id)
+    if (res.code === 200) {
+      const data = res.data
+      form.value.name = data.name
+      form.value.version = data.version
+      form.value.module = data.module
+      form.value.parameter = data.parameter
+      form.value.help = data.help
+      form.value.introduction = data.introduction
+      content.value = data.source
+    } else {
+      ElMessage.error(`数据加载失败：${res.message}`)
+    }
+  } catch (error) {
+    console.error('查询数据时发生错误:', error)
+  }
 }
 
 const save = async () => {
@@ -93,7 +117,9 @@ const saveLoading = ref(false)
 watch(
   () => props.id,
   async (newId) => {
-    if (newId) {
+    if (newId === '') {
+      resetForm()
+    } else {
       await fetchData(newId)
     }
   }
@@ -101,7 +127,7 @@ watch(
 </script>
 
 <template>
-  <ElForm :model="form" :rules="rules" ref="formRef" label-width="100px">
+  <ElForm :model="form" :rules="rules" label-width="100px">
     <ElRow :gutter="20">
       <!-- Name -->
       <ElCol :span="12">

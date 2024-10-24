@@ -12,3 +12,7 @@ export const getPluginDataApi = (
 ): Promise<IResponse<pluginDataResponse>> => {
   return request.post({ url: '/api/plugin/list', data: { search, pageIndex, pageSize } })
 }
+
+export const getPluginDetailApi = (id: string): Promise<IResponse<pluginData>> => {
+  return request.post({ url: '/api/plugin/detail', data: { id } })
+}

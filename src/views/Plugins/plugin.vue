@@ -10,7 +10,6 @@ import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import { getPluginDataApi } from '@/api/plugins'
 import detail from './components/detail.vue'
-import { string } from 'vue-types'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -30,7 +29,8 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'module',
-    label: t('plugin.module')
+    label: t('plugin.module'),
+    columnKey: 'module'
   },
   {
     field: 'version',
@@ -165,6 +165,7 @@ const delSelect = async (delA) => {
 }
 
 const addPlugin = async () => {
+  id.value = ''
   dialogVisible.value = true
 }
 
@@ -172,6 +173,7 @@ const id = ref('')
 
 const editPlugin = async (data) => {
   id.value = data
+  DialogTitle = t('common.edit')
   dialogVisible.value = true
 }
 </script>

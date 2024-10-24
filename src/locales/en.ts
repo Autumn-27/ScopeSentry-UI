@@ -246,7 +246,9 @@ export default {
     portDictionary: 'Port',
     configuration: 'Configuration',
     login: 'Login',
-    pluginsManager: 'Plugins Manager'
+    pluginsManager: 'Plugins Manager',
+    dashboard: 'Dashboard',
+    document: 'Document'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'
@@ -459,7 +461,7 @@ export default {
     amount: 'Asset Quantity'
   },
   plugin: {
-    name: 'Plugin Name',
+    name: 'Name',
     version: 'Version',
     parameter: 'Parameter',
     introduction: 'Introduction',

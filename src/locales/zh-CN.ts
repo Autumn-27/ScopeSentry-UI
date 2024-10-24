@@ -245,7 +245,9 @@ export default {
     rad: 'rad配置',
     system: '系统配置',
     login: '登录',
-    pluginsManager: '插件管理'
+    pluginsManager: '插件管理',
+    dashboard: '首页',
+    document: '文档'
   },
   permission: {
     hasPermission: '请设置操作权限值'
