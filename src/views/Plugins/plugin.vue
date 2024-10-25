@@ -2,13 +2,23 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElInput,
+  ElRow,
+  ElText,
+  ElMessageBox,
+  ElSwitch,
+  ElTag,
+  ElTooltip
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
-import { getPluginDataApi } from '@/api/plugins'
+import { deletePluginDataApi, getPluginDataApi } from '@/api/plugins'
 import detail from './components/detail.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
@@ -30,7 +40,17 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'module',
     label: t('plugin.module'),
-    columnKey: 'module'
+    formatter: (row, __: TableColumn, value: string) => {
+      const color = moduleColorMap[value] || '#FFFFFF' // 默认白色
+      return <ElTag style={{ backgroundColor: color, color: '#000' }}>{value}</ElTag>
+    }
+  },
+  {
+    field: 'isSystem',
+    label: t('plugin.isSystem'),
+    formatter: (row, __: TableColumn, value: boolean) => {
+      return <ElTag type={value ? 'success' : 'warning'}>{value ? 'true' : 'false'}</ElTag>
+    }
   },
   {
     field: 'version',
@@ -38,7 +58,14 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'parameter',
-    label: t('plugin.parameter')
+    label: t('plugin.parameter'),
+    formatter: (row, __: TableColumn, value: string) => {
+      return (
+        <ElTooltip content={row.help} placement="top" effect="light">
+          <span style="cursor: pointer;">{value}</span>
+        </ElTooltip>
+      )
+    }
   },
   {
     field: 'introduction',
@@ -54,7 +81,7 @@ const taskColums = reactive<TableColumn[]>([
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
             {t('common.edit')}
           </BaseButton>
-          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
+          <BaseButton type="danger" onClick={() => confirmDelete(row.hash)} disabled={row.isSystem}>
             {t('common.delete')}
           </BaseButton>
         </>
@@ -62,6 +89,22 @@ const taskColums = reactive<TableColumn[]>([
     }
   }
 ])
+
+const moduleColorMap = {
+  TargetHandler: '#2243dda6', // 浅红色
+  SubdomainScan: '#FF9B85', // 更深的浅橙色
+  SubdomainSecurity: '#FFFFBA', // 浅黄色
+  PortScanPreparation: '#BAFFB3', // 浅绿色
+  PortScan: '#BAE1FF', // 浅蓝色
+  AssetMapping: '#e3ffba', // 浅粉红色
+  URLScan: '#D1BAFF', // 浅紫色
+  WebCrawler: '#FFABAB', // 浅红
+  DirScan: '#3ccde6', // 选择浅桃色
+  VulnerabilityScan: '#FF677D', // 浅粉色
+  AssetHandle: '#B2E1FF', // 浅青色
+  PortFingerprint: '#ffb5e4', // 更亮的浅橙色
+  URLSecurity: '#FFE4BA' // 浅米色
+}
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
@@ -88,44 +131,20 @@ const closeDialog = () => {
 }
 
 const confirmDeleteSelect = async () => {
-  const deleteAssetS = ref<boolean | string | number>(false)
   ElMessageBox({
     title: 'Delete',
-    draggable: true,
-    // Should pass a function if VNode contains dynamic props
-    message: () =>
-      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
-        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
-        h(ElSwitch, {
-          modelValue: deleteAssetS.value,
-          'onUpdate:modelValue': (val: boolean | string | number) => {
-            deleteAssetS.value = val
-          }
-        })
-      ])
+    draggable: true
   }).then(async () => {
-    await delSelect(deleteAssetS.value)
+    await delSelect()
   })
 }
 
 const confirmDelete = async (data) => {
-  const deleteAsset = ref<boolean | string | number>(false)
   ElMessageBox({
     title: 'Delete',
-    draggable: true,
-    // Should pass a function if VNode contains dynamic props
-    message: () =>
-      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
-        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
-        h(ElSwitch, {
-          modelValue: deleteAsset.value,
-          'onUpdate:modelValue': (val: boolean | string | number) => {
-            deleteAsset.value = val
-          }
-        })
-      ])
+    draggable: true
   }).then(async () => {
-    await del(data, deleteAsset.value)
+    await del(data)
   })
   // const confirmed = window.confirm('Are you sure you want to delete the selected data?')
   // if (confirmed) {
@@ -133,35 +152,35 @@ const confirmDelete = async (data) => {
   // }
 }
 const delLoading = ref(false)
-const del = async (data, delA) => {
-  // delLoading.value = true
-  // try {
-  //   const res = await deleteTaskApi([data.id], delA)
-  //   console.log('Data deleted successfully:', res)
-  //   delLoading.value = false
-  //   getList()
-  // } catch (error) {
-  //   console.error('Error deleting data:', error)
-  //   delLoading.value = false
-  //   getList()
-  // }
+const del = async (data) => {
+  delLoading.value = true
+  try {
+    const res = await deletePluginDataApi([data])
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
 }
 const ids = ref<string[]>([])
-const delSelect = async (delA) => {
-  // const elTableExpose = await getElTableExpose()
-  // const selectedRows = elTableExpose?.getSelectionRows() || []
-  // ids.value = selectedRows.map((row) => row.id)
-  // delLoading.value = true
-  // try {
-  //   const res = await deleteTaskApi(ids.value, delA)
-  //   console.log('Data deleted successfully:', res)
-  //   delLoading.value = false
-  //   getList()
-  // } catch (error) {
-  //   console.error('Error deleting data:', error)
-  //   delLoading.value = false
-  //   getList()
-  // }
+const delSelect = async () => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.hash)
+  delLoading.value = true
+  try {
+    const res = await deletePluginDataApi(ids.value)
+    console.log('Data deleted successfully:', res)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error deleting data:', error)
+    delLoading.value = false
+    getList()
+  }
 }
 
 const addPlugin = async () => {

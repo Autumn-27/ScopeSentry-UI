@@ -469,7 +469,8 @@ export default {
     delete: 'Delete Plugin',
     module: 'Module',
     help: 'Parameter Help',
-    source: 'Source'
+    source: 'Source',
+    isSystem: 'isSystem'
   },
   workplace: {
     goodMorning: 'Good morning',

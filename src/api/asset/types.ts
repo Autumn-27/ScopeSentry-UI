@@ -1,5 +1,3 @@
-import { string } from 'vue-types'
-
 export type AssetData = {
   id: string
   domain: string

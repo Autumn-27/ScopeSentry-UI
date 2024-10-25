@@ -466,7 +466,8 @@ export default {
     delete: '删除插件',
     module: '模块',
     help: '参数说明',
-    source: '源码'
+    source: '源码',
+    isSystem: '内置'
   },
   workplace: {
     goodMorning: '早安',

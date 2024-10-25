@@ -16,7 +16,7 @@ import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getPluginDetailApi } from '@/api/plugins'
+import { getPluginDetailApi, savePluginDataApi } from '@/api/plugins'
 
 const { t } = useI18n()
 
@@ -70,7 +70,10 @@ const moduleOptions = ref([
   { label: 'URLScan', value: 'URLScan' },
   { label: 'WebCrawler', value: 'WebCrawler' },
   { label: 'DirScan', value: 'DirScan' },
-  { label: 'VulnerabilityScan', value: 'VulnerabilityScan' }
+  { label: 'VulnerabilityScan', value: 'VulnerabilityScan' },
+  { label: 'AssetHandle', value: 'AssetHandle' },
+  { label: 'PortFingerprint', value: 'PortFingerprint' },
+  { label: 'URLSecurity', value: 'URLSecurity' }
 ])
 
 // Codemirror 配置
@@ -86,6 +89,7 @@ onBeforeMount(async () => {
   }
 })
 
+const isSystem = ref(false)
 // 根据 id 查询配置数据
 const fetchData = async (id: string) => {
   try {
@@ -99,16 +103,13 @@ const fetchData = async (id: string) => {
       form.value.help = data.help
       form.value.introduction = data.introduction
       content.value = data.source
+      isSystem.value = data.isSystem
     } else {
       ElMessage.error(`数据加载失败：${res.message}`)
     }
   } catch (error) {
     console.error('查询数据时发生错误:', error)
   }
-}
-
-const save = async () => {
-  // 手动触发表单验证
 }
 
 const saveLoading = ref(false)
@@ -124,6 +125,45 @@ watch(
     }
   }
 )
+const save = async () => {
+  saveLoading.value = true // 开始加载状态
+  if (form.value.name == '') {
+    ElMessage.error('name 不能为空')
+    saveLoading.value = false // 结束加载状态
+    return
+  }
+  if (form.value.module == '') {
+    ElMessage.error('module 不能为空')
+    saveLoading.value = false // 结束加载状态
+    return
+  }
+  if (!isSystem.value) {
+    if (content.value == '') {
+      ElMessage.error('源码 不能为空')
+      saveLoading.value = false // 结束加载状态
+      return
+    }
+  }
+  try {
+    await savePluginDataApi(
+      props.id,
+      form.value.name,
+      form.value.version,
+      form.value.module,
+      form.value.parameter,
+      form.value.help,
+      form.value.introduction,
+      content.value
+    )
+    props.closeDialog()
+    props.getList()
+  } catch (error) {
+    console.error('保存数据时发生错误:', error)
+    ElMessage.error('保存失败，请稍后再试。')
+  } finally {
+    saveLoading.value = false // 结束加载状态
+  }
+}
 </script>
 
 <template>
@@ -132,14 +172,14 @@ watch(
       <!-- Name -->
       <ElCol :span="12">
         <ElFormItem :label="t('plugin.name')" prop="name">
-          <ElInput v-model="form.name" />
+          <ElInput v-model="form.name" :disabled="isSystem" />
         </ElFormItem>
       </ElCol>
 
       <!-- Module -->
       <ElCol :span="12">
         <ElFormItem :label="t('plugin.module')" prop="module">
-          <ElSelect v-model="form.module">
+          <ElSelect v-model="form.module" :disabled="isSystem">
             <el-option
               v-for="option in moduleOptions"
               :key="option.value"
@@ -166,7 +206,7 @@ watch(
       <!-- Version -->
       <ElCol :span="12">
         <ElFormItem :label="t('plugin.version')" prop="version">
-          <ElInput v-model="form.version" />
+          <ElInput v-model="form.version" :disabled="isSystem" />
         </ElFormItem>
       </ElCol>
       <!-- Introduction -->
@@ -186,8 +226,14 @@ watch(
             :indent-with-tab="true"
             :tab-size="2"
             :extensions="extensions"
+            :disabled="isSystem"
           />
         </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElRow>
+      <ElCol :span="12" style="text-align: right">
+        <ElButton type="primary" @click="save" :loading="saveLoading"> 保存 </ElButton>
       </ElCol>
     </ElRow>
   </ElForm>
