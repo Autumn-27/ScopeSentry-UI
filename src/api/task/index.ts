@@ -4,7 +4,8 @@ import type {
   taskRespData,
   TaskContentData,
   TaskProgessInfo,
-  ScheduledTaskData
+  ScheduledTaskData,
+  TemplateData
 } from './types'
 import type { commonRespData } from '../scommon/types'
 
@@ -207,6 +208,14 @@ interface TaskDataResponse {
   list: TaskData[]
   total: number
 }
-export const getTemplateDataApi = (search: string): Promise<IResponse<TaskDataResponse>> => {
-  return request.post({ url: '/api/task/template/data', data: { search } })
+export const getTemplateDataApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number
+): Promise<IResponse<TaskDataResponse>> => {
+  return request.post({ url: '/api/task/template/list', data: { search, pageIndex, pageSize } })
+}
+
+export const getTemplateDetailApi = (id: string): Promise<IResponse<TaskDataResponse>> => {
+  return request.post({ url: '/api/task/template/detail', data: { id } })
 }

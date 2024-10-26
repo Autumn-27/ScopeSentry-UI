@@ -328,6 +328,7 @@ export default {
     runNow: '立即运行',
     templateName: '模板名称',
     addTemplate: '新建模板',
+    editTemplate: '编辑模板',
     deleteTemplate: '删除模板'
   },
   scanTemplate: {

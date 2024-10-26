@@ -329,6 +329,7 @@ export default {
     runNow: 'Run Now',
     templateName: 'Template Name',
     addTemplate: 'Add Template',
+    editTemplate: 'Edit Template',
     deleteTemplate: 'Del Template'
   },
   scanTemplate: {

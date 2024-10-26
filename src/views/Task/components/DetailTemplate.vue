@@ -10,7 +10,9 @@ import {
   ElButton,
   ElForm,
   ElFormItem,
-  ElSelectV2
+  ElSelectV2,
+  ElRow,
+  ElCol
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
@@ -101,11 +103,16 @@ watch(
   },
   { immediate: true } // 确保组件挂载时立即触发
 )
-
+const saveLoading = ref(false)
 // 提交表单数据
 const onSubmit = () => {
+  saveLoading.value = true
   const result: Record<string, any> = {}
-
+  if (templateName.value == '') {
+    ElMessage.error('name 不能为空')
+    saveLoading.value = false
+    return
+  }
   // 收集每个模块启用的插件和对应的参数
   for (const module of modules) {
     const enabledPlugins = plugins[module].filter((plugin) => plugin.enabled)
@@ -120,11 +127,11 @@ const onSubmit = () => {
       }
     }
   }
-
+  console.log(vulList)
   // 打印数据或通过接口提交
   console.log(result)
   ElMessage.success('提交成功')
-
+  saveLoading.value = false
   // 提交后执行父组件的关闭和列表刷新逻辑
   props.closeDialog()
   props.getList()
@@ -204,10 +211,11 @@ const vulList = ref([])
         </div>
       </ElCard>
     </div>
-
-    <ElFormItem>
-      <ElButton type="primary" @click="onSubmit">提交</ElButton>
-    </ElFormItem>
+    <ElRow>
+      <ElCol :span="12" style="text-align: right">
+        <ElButton type="primary" @click="onSubmit" :loading="saveLoading"> 保存 </ElButton>
+      </ElCol>
+    </ElRow>
   </ElForm>
 </template>
 

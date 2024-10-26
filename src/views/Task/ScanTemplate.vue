@@ -6,7 +6,13 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
+import {
+  getTaskDataApi,
+  getTaskContentApi,
+  deleteTaskApi,
+  retestTaskApi,
+  getTemplateDataApi
+} from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'
@@ -32,14 +38,11 @@ const taskColums = reactive<TableColumn[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="success" onClick={() => getTaskContent(row)}>
-            {t('common.view')}
+          <BaseButton type="success" onClick={() => editTemplate(row.id)}>
+            {t('common.edit')}
           </BaseButton>
           <BaseButton type="danger" onClick={() => confirmDelete(row)}>
             {t('common.delete')}
-          </BaseButton>
-          <BaseButton type="primary" onClick={() => getProgressInfo(row.id)}>
-            {t('task.taskProgress')}
           </BaseButton>
         </>
       )
@@ -47,25 +50,16 @@ const taskColums = reactive<TableColumn[]>([
   }
 ])
 
-const progressDialogVisible = ref(false)
-let getProgressInfoID = ''
-const getProgressInfo = async (id) => {
-  getProgressInfoID = id
-  progressDialogVisible.value = true
-}
-const progresscloseDialog = () => {
-  progressDialogVisible.value = false
-}
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getTaskDataApi(search.value, currentPage.value, pageSize.value)
+    const res = await getTemplateDataApi(search.value, currentPage.value, pageSize.value)
     return {
       list: res.data.list,
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 pageSize.value = 20
@@ -75,60 +69,9 @@ function tableHeaderColor() {
 }
 const dialogVisible = ref(false)
 
-let DialogTitle = t('task.addTask')
+let DialogTitle = t('task.addTemplate')
 const closeDialog = () => {
   dialogVisible.value = false
-}
-let taskForm = reactive({
-  name: '',
-  target: '',
-  node: [] as string[],
-  subdomainScan: true,
-  duplicates: 'None',
-  subdomainConfig: [],
-  urlScan: true,
-  sensitiveInfoScan: true,
-  pageMonitoring: 'JS',
-  crawlerScan: true,
-  vulScan: false,
-  vulList: [],
-  portScan: false,
-  ports: '',
-  dirScan: true,
-  waybackurl: true,
-  scheduledTasks: true,
-  hour: 24,
-  allNode: false
-})
-
-let Create = ref(true)
-const getTaskContent = async (data) => {
-  const res = await getTaskContentApi(data.id)
-  if (res.code === 200) {
-    const result = res.data
-    taskForm.name = result.name
-    taskForm.target = result.target
-    taskForm.node = result.node
-    taskForm.subdomainScan = result.subdomainScan
-    taskForm.subdomainConfig = result.subdomainConfig
-    taskForm.urlScan = result.urlScan
-    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
-    taskForm.pageMonitoring = result.pageMonitoring
-    taskForm.crawlerScan = result.crawlerScan
-    taskForm.vulScan = result.vulScan
-    taskForm.vulList = result.vulList
-    taskForm.portScan = result.portScan
-    taskForm.ports = result.ports
-    taskForm.dirScan = result.dirScan
-    taskForm.waybackurl = result.waybackurl
-    taskForm.scheduledTasks = result.scheduledTasks
-    taskForm.hour = result.hour
-    taskForm.allNode = result.allNode
-    taskForm.duplicates = result.duplicates
-  }
-  dialogVisible.value = true
-  Create.value = false
-  DialogTitle = t('common.view')
 }
 const confirmDeleteSelect = async () => {
   const deleteAssetS = ref<boolean | string | number>(false)
@@ -216,6 +159,13 @@ const setMaxHeight = () => {
 const addTemplate = async () => {
   dialogVisible.value = true
 }
+
+const templateId = ref('')
+const editTemplate = async (data) => {
+  templateId.value = data
+  DialogTitle = t('task.editTemplate')
+  dialogVisible.value = true
+}
 </script>
 
 <template>
@@ -287,6 +237,6 @@ const addTemplate = async () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <DetailTemplate :closeDialog="closeDialog" :getList="getList" id="" />
+    <DetailTemplate :closeDialog="closeDialog" :getList="getList" :id="templateId" />
   </Dialog>
 </template>
