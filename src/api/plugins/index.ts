@@ -1,11 +1,12 @@
 import request from '@/axios'
-import type { pluginData } from './types'
+import type { LogRespData, pluginData } from './types'
 import { commonRespData } from '../scommon/types'
 
 interface pluginDataResponse {
   list: pluginData[]
   total: number
 }
+
 export const getPluginDataApi = (
   search: string,
   pageIndex: number,
@@ -36,4 +37,21 @@ export const savePluginDataApi = (
 
 export const deletePluginDataApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/plugin/delete', data: { ids } })
+}
+
+export const getPluginLogApi = (module: string, hash: string): Promise<IResponse<LogRespData>> => {
+  return request.post({ url: '/api/plugin/log', data: { module, hash } })
+}
+
+export const cleanPluginLogApi = (
+  module: string,
+  hash: string
+): Promise<IResponse<LogRespData>> => {
+  return request.post({ url: '/api/plugin/log/clean', data: { module, hash } })
+}
+
+export const getPluginDataByModuleApi = (
+  module: string
+): Promise<IResponse<pluginDataResponse>> => {
+  return request.post({ url: '/api/plugin/list/bymodule', data: { module } })
 }

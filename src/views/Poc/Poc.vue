@@ -43,28 +43,28 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'level',
     label: t('poc.level'),
     minWidth: 50,
-    formatter: (_: Recordable, __: TableColumn, levelValue: number) => {
+    formatter: (_: Recordable, __: TableColumn, levelValue: string) => {
       if (levelValue == null) {
         return <div></div>
       }
       let color = ''
       let flag = ''
-      if (levelValue === 6) {
+      if (levelValue === 'critical') {
         color = 'red'
         flag = t('poc.critical')
-      } else if (levelValue === 5) {
+      } else if (levelValue === 'high') {
         color = 'orange'
         flag = t('poc.high')
-      } else if (levelValue === 4) {
+      } else if (levelValue === 'medium') {
         color = 'yellow'
         flag = t('poc.medium')
-      } else if (levelValue === 3) {
+      } else if (levelValue === 'low') {
         color = 'blue'
         flag = t('poc.low')
-      } else if (levelValue === 2) {
+      } else if (levelValue === 'info') {
         color = 'green'
         flag = t('poc.info')
-      } else if (levelValue === 1) {
+      } else if (levelValue === 'unknown') {
         color = 'gray'
         flag = t('poc.unknown')
       }

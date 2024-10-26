@@ -43,27 +43,27 @@ const rules = reactive<FormRules<RuleForm>>({
 })
 const levelOptions = [
   {
-    value: 6,
+    value: 'critical',
     label: 'critical'
   },
   {
-    value: 5,
+    value: 'high',
     label: 'high'
   },
   {
-    value: 4,
+    value: 'medium',
     label: 'medium'
   },
   {
-    value: 3,
+    value: 'low',
     label: 'low'
   },
   {
-    value: 2,
+    value: 'info',
     label: 'info'
   },
   {
-    value: 1,
+    value: 'unkown',
     label: 'unkown'
   }
 ]

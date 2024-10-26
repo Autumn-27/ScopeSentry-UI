@@ -9,8 +9,7 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
-import AddTask from './components/AddTask.vue'
-
+import DetailTemplate from './components/DetailTemplate.vue'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const search = ref('')
@@ -31,21 +30,11 @@ const taskColums = reactive<TableColumn[]>([
     field: 'action',
     label: t('tableDemo.action'),
     formatter: (row, __: TableColumn, _: number) => {
-      console.log(row)
-      const retestButton = h(
-        BaseButton,
-        {
-          type: 'warning',
-          onClick: () => confirmRetest(row)
-        },
-        t('task.retest')
-      )
       return (
         <>
           <BaseButton type="success" onClick={() => getTaskContent(row)}>
             {t('common.view')}
           </BaseButton>
-          {retestButton}
           <BaseButton type="danger" onClick={() => confirmDelete(row)}>
             {t('common.delete')}
           </BaseButton>
@@ -224,6 +213,9 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.75
 }
+const addTemplate = async () => {
+  dialogVisible.value = true
+}
 </script>
 
 <template>
@@ -246,7 +238,7 @@ const setMaxHeight = () => {
     <ElRow>
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
-          <BaseButton type="primary" @click="addTask">{{ t('task.addTemplate') }}</BaseButton>
+          <BaseButton type="primary" @click="addTemplate">{{ t('task.addTemplate') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('task.deleteTemplate') }}
           </BaseButton>
@@ -295,13 +287,6 @@ const setMaxHeight = () => {
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <AddTask
-      :closeDialog="closeDialog"
-      :getList="getList"
-      :vTaskForm="taskForm"
-      :create="Create"
-      taskid=""
-      :schedule="false"
-    />
+    <DetailTemplate :closeDialog="closeDialog" :getList="getList" id="" />
   </Dialog>
 </template>

@@ -1,5 +1,6 @@
 export default {
   common: {
+    cleanLog: 'Clear Logs',
     log: 'Log',
     filesize: 'Size',
     quantity: 'Quantity',
@@ -329,6 +330,21 @@ export default {
     templateName: 'Template Name',
     addTemplate: 'Add Template',
     deleteTemplate: 'Del Template'
+  },
+  scanTemplate: {
+    TargetHandler: 'Target Processing',
+    SubdomainScan: 'Subdomain Scan',
+    SubdomainSecurity: 'Domain Security Detection',
+    PortScanPreparation: 'Port Scan Preprocessing',
+    PortScan: 'Port Scan',
+    AssetMapping: 'Asset Mapping',
+    URLScan: 'URL Scan',
+    WebCrawler: 'Crawler',
+    DirScan: 'Catalog Scan',
+    VulnerabilityScan: 'Vulnerability Scan',
+    AssetHandle: 'Asset Processing',
+    PortFingerprint: 'Port Fingerprint Recognition',
+    URLSecurity: 'URL Security Check'
   },
   asset: {
     assetName: 'Asset',

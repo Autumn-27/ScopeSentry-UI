@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import {
   ElButton,
   ElCol,
@@ -9,16 +9,21 @@ import {
   ElRow,
   ElText,
   ElMessageBox,
-  ElSwitch,
   ElTag,
-  ElTooltip
+  ElTooltip,
+  ElScrollbar
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
-import { deletePluginDataApi, getPluginDataApi } from '@/api/plugins'
+import {
+  cleanPluginLogApi,
+  deletePluginDataApi,
+  getPluginDataApi,
+  getPluginLogApi
+} from '@/api/plugins'
 import detail from './components/detail.vue'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
@@ -40,7 +45,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'module',
     label: t('plugin.module'),
-    formatter: (row, __: TableColumn, value: string) => {
+    formatter: (_, __: TableColumn, value: string) => {
       const color = moduleColorMap[value] || '#FFFFFF' // 默认白色
       return <ElTag style={{ backgroundColor: color, color: '#000' }}>{value}</ElTag>
     }
@@ -48,7 +53,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'isSystem',
     label: t('plugin.isSystem'),
-    formatter: (row, __: TableColumn, value: boolean) => {
+    formatter: (_, __: TableColumn, value: boolean) => {
       return <ElTag type={value ? 'success' : 'warning'}>{value ? 'true' : 'false'}</ElTag>
     }
   },
@@ -69,7 +74,6 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'introduction',
-    minWidth: 200,
     label: t('plugin.introduction')
   },
   {
@@ -78,6 +82,9 @@ const taskColums = reactive<TableColumn[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
+          <BaseButton type="warning" onClick={() => openLogDialogVisible(row)}>
+            {t('common.log')}
+          </BaseButton>
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
             {t('common.edit')}
           </BaseButton>
@@ -146,10 +153,6 @@ const confirmDelete = async (data) => {
   }).then(async () => {
     await del(data)
   })
-  // const confirmed = window.confirm('Are you sure you want to delete the selected data?')
-  // if (confirmed) {
-  //   await del(data)
-  // }
 }
 const delLoading = ref(false)
 const del = async (data) => {
@@ -194,6 +197,38 @@ const editPlugin = async (data) => {
   id.value = data
   DialogTitle = t('common.edit')
   dialogVisible.value = true
+}
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
+const logDialogVisible = ref(false)
+const closeLogDialogVisible = () => {
+  logDialogVisible.value = false
+}
+const logContent = ref('')
+const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+
+const logModule = ref('')
+const logHash = ref('')
+const openLogDialogVisible = async (data) => {
+  logModule.value = data.module
+  logHash.value = data.hash
+  const res = await getPluginLogApi(data.module, data.hash)
+  logContent.value = res.logs
+  logDialogVisible.value = true
+}
+
+const cleanLog = async () => {
+  await cleanPluginLogApi(logModule.value, logHash.value)
+  logContent.value = ''
 }
 </script>
 
@@ -264,5 +299,20 @@ const editPlugin = async (data) => {
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
     <detail :closeDialog="closeDialog" :getList="getList" :id="id" />
+  </Dialog>
+  <Dialog
+    v-model="logDialogVisible"
+    :title="t('node.log')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="maxHeight"
+  >
+    <ElScrollbar ref="scrollbarRef">
+      <pre v-if="logContent">{{ logContent }}</pre>
+    </ElScrollbar>
+    <template #footer>
+      <BaseButton @click="cleanLog" type="danger">{{ t('common.cleanLog') }}</BaseButton>
+      <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
+    </template>
   </Dialog>
 </template>

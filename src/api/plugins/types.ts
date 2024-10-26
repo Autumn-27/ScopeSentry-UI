@@ -10,3 +10,8 @@ export type pluginData = {
   isSystem: boolean
   source: string
 }
+
+export type LogRespData = {
+  code: string
+  logs: string
+}

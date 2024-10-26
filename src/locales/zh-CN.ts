@@ -1,5 +1,6 @@
 export default {
   common: {
+    cleanLog: '清除日志',
     log: '日志',
     filesize: '大小',
     quantity: '数量',
@@ -328,6 +329,21 @@ export default {
     templateName: '模板名称',
     addTemplate: '新建模板',
     deleteTemplate: '删除模板'
+  },
+  scanTemplate: {
+    TargetHandler: '目标处理',
+    SubdomainScan: '子域名扫描',
+    SubdomainSecurity: '域名安全检测',
+    PortScanPreparation: '端口扫描预处理',
+    PortScan: '端口扫描',
+    AssetMapping: '资产测绘',
+    URLScan: 'URL扫描',
+    WebCrawler: '爬虫',
+    DirScan: '目录扫描',
+    VulnerabilityScan: '漏洞扫描',
+    AssetHandle: '资产处理',
+    PortFingerprint: '端口指纹识别',
+    URLSecurity: 'URL安全检测'
   },
   asset: {
     assetName: '资产',
