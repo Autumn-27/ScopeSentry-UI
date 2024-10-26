@@ -10,10 +10,11 @@ import {
   ElButton,
   ElForm,
   ElFormItem,
-  ElCollapse
+  ElSelectV2
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
+import { getPocDataAllApi } from '@/api/poc'
 
 const { t } = useI18n()
 
@@ -144,6 +145,18 @@ const moduleColorMap = {
   URLSecurity: '#FFE4BA' // 浅米色
 }
 const templateName = ref('')
+const vulOptions = reactive<{ value: string; label: string }[]>([])
+const getPocList = async () => {
+  const res = await getPocDataAllApi()
+  if (res.data.list.length > 0) {
+    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
+    res.data.list.forEach((item) => {
+      vulOptions.push({ value: item.id, label: item.name })
+    })
+  }
+}
+getPocList()
+const vulList = ref([])
 </script>
 
 <template>
@@ -164,6 +177,24 @@ const templateName = ref('')
             <ElTooltip placement="top" effect="light" :content="plugin.introduction">
               <ElSwitch v-model="plugin.enabled" />
             </ElTooltip>
+          </ElFormItem>
+          <ElFormItem
+            :label="t('task.vulList')"
+            prop="type"
+            v-if="plugin.enabled && plugin.hash === 'ed93b8af6b72fe54a60efdb932cf6fbc'"
+          >
+            <ElSelectV2
+              v-model="vulList"
+              filterable
+              :options="vulOptions"
+              placeholder="Please select vul"
+              style="width: 80%"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              tag-type="info"
+              :max-collapse-tags="3"
+            />
           </ElFormItem>
           <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
             <ElTooltip placement="top" effect="light" :content="plugin.help">

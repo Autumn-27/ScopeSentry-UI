@@ -211,7 +211,7 @@ const maxHeight = ref(0)
 
 const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.75
+  maxHeight.value = screenHeight * 0.8
 }
 const addTemplate = async () => {
   dialogVisible.value = true
