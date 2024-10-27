@@ -64,7 +64,6 @@ const setHeaderTheme = (color: string) => {
 const menuTheme = ref(appStore.getTheme.leftMenuBgColor || '')
 
 const setMenuTheme = (color: string) => {
-  console.log(color)
   const primaryColor = useCssVar('--el-color-primary', document.documentElement)
   const isDarkColor = colorIsDark(color)
   const theme: Recordable = {
@@ -125,9 +124,9 @@ const copyConfig = async () => {
       // 多语言图标
       locale: ${appStore.getLocale},
       // 标签页
-      // tagsView: ${appStore.getTagsView},
-      // // 标签页图标
-      // getTagsViewIcon: ${appStore.getTagsViewIcon},
+      tagsView: ${appStore.getTagsView},
+      // 标签页图标
+      getTagsViewIcon: ${appStore.getTagsViewIcon},
       // logo
       logo: ${appStore.getLogo},
       // 菜单手风琴

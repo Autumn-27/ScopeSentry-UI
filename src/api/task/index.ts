@@ -5,7 +5,8 @@ import type {
   TaskContentData,
   TaskProgessInfo,
   ScheduledTaskData,
-  TemplateData
+  TemplateData,
+  TemplateDetail
 } from './types'
 import type { commonRespData } from '../scommon/types'
 
@@ -216,6 +217,6 @@ export const getTemplateDataApi = (
   return request.post({ url: '/api/task/template/list', data: { search, pageIndex, pageSize } })
 }
 
-export const getTemplateDetailApi = (id: string): Promise<IResponse<TaskDataResponse>> => {
+export const getTemplateDetailApi = (id: string): Promise<IResponse<TemplateDetail>> => {
   return request.post({ url: '/api/task/template/detail', data: { id } })
 }

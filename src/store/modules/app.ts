@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
-import { setCssVar, humpToUnderline } from '@/utils'
+import { setCssVar, humpToUnderline, getCssVar } from '@/utils'
 import { ElMessage, ComponentSize } from 'element-plus'
+import { colorIsDark, hexToRGB, lighten, mix } from '@/utils/color'
+import { unref } from 'vue'
+import { useCssVar } from '@vueuse/core'
 
 interface AppState {
   breadcrumb: boolean
@@ -33,7 +36,6 @@ interface AppState {
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
-    console.log(import.meta.env.VITE_APP_TITLE)
     return {
       sizeMap: ['default', 'large', 'small'],
       mobile: false, // 是否是移动端
@@ -240,6 +242,7 @@ export const useAppStore = defineStore('app', {
         document.documentElement.classList.add('light')
         document.documentElement.classList.remove('dark')
       }
+      this.setPrimaryLight()
     },
     setCurrentSize(currentSize: ComponentSize) {
       this.currentSize = currentSize
@@ -253,6 +256,66 @@ export const useAppStore = defineStore('app', {
     setCssVarTheme() {
       for (const key in this.theme) {
         setCssVar(`--${humpToUnderline(key)}`, this.theme[key])
+      }
+      this.setPrimaryLight()
+    },
+    setPrimaryLight() {
+      if (this.theme.elColorPrimary) {
+        const elColorPrimary = this.theme.elColorPrimary
+        const color = this.isDark ? '#000000' : '#ffffff'
+        const lightList = [3, 5, 7, 8, 9]
+        lightList.forEach((v) => {
+          setCssVar(`--el-color-primary-light-${v}`, mix(color, elColorPrimary, v / 10))
+        })
+        setCssVar(`--el-color-primary-dark-2`, mix(color, elColorPrimary, 0.2))
+      }
+    },
+    setMenuTheme(color: string) {
+      const primaryColor = useCssVar('--el-color-primary', document.documentElement)
+      const isDarkColor = colorIsDark(color)
+      const theme: Recordable = {
+        // 左侧菜单边框颜色
+        leftMenuBorderColor: isDarkColor ? 'inherit' : '#eee',
+        // 左侧菜单背景颜色
+        leftMenuBgColor: color,
+        // 左侧菜单浅色背景颜色
+        leftMenuBgLightColor: isDarkColor ? lighten(color!, 6) : color,
+        // 左侧菜单选中背景颜色
+        leftMenuBgActiveColor: isDarkColor
+          ? 'var(--el-color-primary)'
+          : hexToRGB(unref(primaryColor), 0.1),
+        // 左侧菜单收起选中背景颜色
+        leftMenuCollapseBgActiveColor: isDarkColor
+          ? 'var(--el-color-primary)'
+          : hexToRGB(unref(primaryColor), 0.1),
+        // 左侧菜单字体颜色
+        leftMenuTextColor: isDarkColor ? '#bfcbd9' : '#333',
+        // 左侧菜单选中字体颜色
+        leftMenuTextActiveColor: isDarkColor ? '#fff' : 'var(--el-color-primary)',
+        // logo字体颜色
+        logoTitleTextColor: isDarkColor ? '#fff' : 'inherit',
+        // logo边框颜色
+        logoBorderColor: isDarkColor ? color : '#eee'
+      }
+      this.setTheme(theme)
+      this.setCssVarTheme()
+    },
+    setHeaderTheme(color: string) {
+      const isDarkColor = colorIsDark(color)
+      const textColor = isDarkColor ? '#fff' : 'inherit'
+      const textHoverColor = isDarkColor ? lighten(color!, 6) : '#f6f6f6'
+      const topToolBorderColor = isDarkColor ? color : '#eee'
+      setCssVar('--top-header-bg-color', color)
+      setCssVar('--top-header-text-color', textColor)
+      setCssVar('--top-header-hover-color', textHoverColor)
+      this.setTheme({
+        topHeaderBgColor: color,
+        topHeaderTextColor: textColor,
+        topHeaderHoverColor: textHoverColor,
+        topToolBorderColor
+      })
+      if (this.getLayout === 'top') {
+        this.setMenuTheme(color)
       }
     },
     setFooter(footer: boolean) {

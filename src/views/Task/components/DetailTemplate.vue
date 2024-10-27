@@ -17,6 +17,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
+import { getTemplateDetailApi } from '@/api/task'
 
 const { t } = useI18n()
 
@@ -80,15 +81,20 @@ const initPlugins = async () => {
 
 // 根据 ID 加载模板数据
 const loadTemplate = async (id: string) => {
-  // const template = await GetTemplate(id) // 调用实际接口获取已有数据
-  // for (const module of modules) {
-  //   const modulePlugins = await GetPlugin(module) // 获取模块对应的插件
-  //   plugins[module] = modulePlugins.map((plugin) => ({
-  //     ...plugin,
-  //     enabled: template[module]?.includes(plugin.hash) || false // 判断插件是否启用
-  //   }))
-  //   parameters[module] = template.Parameters[module] || {} // 填充参数数据
-  // }
+  const template = await getTemplateDetailApi(id) // 调用实际接口获取已有数据
+  templateName.value = template.data.name
+  for (const module of modules) {
+    parameters[module] = {}
+
+    const moduleData = template.data?.[module] || []
+    const modulePlugins = await getPluginDataByModuleApi(module) // 获取模块对应的插件
+
+    plugins[module] = modulePlugins.data.list.map((plugin) => ({
+      ...plugin,
+      enabled: moduleData.includes(plugin.hash) || false // 判断插件是否启用
+    }))
+    parameters[module] = template.data.Parameters[module] || {}
+  }
 }
 
 // 监听 id 的变化来判断是创建还是编辑模式

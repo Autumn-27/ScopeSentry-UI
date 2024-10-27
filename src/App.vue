@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
-import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useStorage } from '@/hooks/web/useStorage'
+import { getCssVar } from './utils'
 
 const { getPrefixCls } = useDesign()
 
@@ -24,7 +24,8 @@ const setDefaultTheme = () => {
     appStore.setIsDark(getStorage('isDark'))
     return
   }
-  const isDarkTheme = isDark()
+  // const isDarkTheme = isDark()
+  const isDarkTheme = false
   appStore.setIsDark(isDarkTheme)
 }
 

@@ -6,13 +6,7 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import {
-  getTaskDataApi,
-  getTaskContentApi,
-  deleteTaskApi,
-  retestTaskApi,
-  getTemplateDataApi
-} from '@/api/task'
+import { deleteTaskApi, getTemplateDataApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'
@@ -235,6 +229,7 @@ const editTemplate = async (data) => {
     v-model="dialogVisible"
     :title="DialogTitle"
     center
+    fullscreen
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
     <DetailTemplate :closeDialog="closeDialog" :getList="getList" :id="templateId" />
