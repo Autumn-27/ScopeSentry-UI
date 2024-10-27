@@ -317,8 +317,7 @@ export default {
     save: '保存',
     duplicatesSubdomain: '子域名去重',
     data: '数据',
-    selectNodeMsg:
-      '只有通过点击All选择节点当有新节点注册时才会自动将任务添加到新节点，否则任务只会在当前选择节点中运行！',
+    selectNodeMsg: '当有新节点注册时会自动将任务添加到新节点',
     duplicatesMsg: '历史已经查询到了子域名将会跳过',
     waybackUrlMsg: '从Wayback Machine获取URL',
     addPageMonitTask: '新建页面监控',
@@ -329,7 +328,8 @@ export default {
     templateName: '模板名称',
     addTemplate: '新建模板',
     editTemplate: '编辑模板',
-    deleteTemplate: '删除模板'
+    deleteTemplate: '删除模板',
+    autoNode: '自动加入'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

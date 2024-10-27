@@ -187,11 +187,13 @@ const isCheckboxDisabledNode = ref(false)
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
+    taskForm.value.allNode = true
     taskForm.value.node = []
     nodeOptions.forEach((option) => {
       return taskForm.value.node.push(option.value)
     })
   } else {
+    taskForm.value.allNode = false
     taskForm.value.node = []
   }
 }
@@ -216,47 +218,33 @@ const handleCheckAll = (val: CheckboxValueType) => {
         rows="10"
       />
     </ElFormItem>
-    <ElRow>
-      <ElCol :span="12">
-        <ElFormItem :label="t('task.nodeSelect')" prop="node">
-          <ElSelectV2
-            v-model="taskForm.node"
-            filterable
-            :options="nodeOptions"
-            placeholder="Please select node"
-            style="width: 80%"
-            multiple
-            tag-type="success"
-            collapse-tags
-            collapse-tags-tooltip
-            :max-collapse-tags="7"
-          >
-            <template #header>
-              <ElCheckbox
-                :disabled="isCheckboxDisabledNode"
-                :indeterminate="indeterminate"
-                @change="handleCheckAll"
-              >
-                All
-              </ElCheckbox>
-            </template>
-          </ElSelectV2>
-        </ElFormItem>
-      </ElCol>
-      <ElCol :span="12">
-        <ElFormItem :label="t('task.autoNode')">
-          <ElTooltip effect="dark" :content="t('task.selectNodeMsg')" placement="top">
-            <ElSwitch
+    <ElTooltip :content="t('task.selectNodeMsg')" placement="top">
+      <ElFormItem :label="t('task.nodeSelect')" prop="node">
+        <ElSelectV2
+          v-model="taskForm.node"
+          filterable
+          :options="nodeOptions"
+          placeholder="Please select node"
+          style="width: 80%"
+          multiple
+          tag-type="success"
+          collapse-tags
+          collapse-tags-tooltip
+          :max-collapse-tags="7"
+        >
+          <template #header>
+            <ElCheckbox
               v-model="taskForm.allNode"
-              inline-prompt
-              :active-text="t('common.switchAction')"
-              :inactive-text="t('common.switchInactive')"
-            />
-          </ElTooltip>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
-
+              :disabled="isCheckboxDisabledNode"
+              :indeterminate="indeterminate"
+              @change="handleCheckAll"
+            >
+              All
+            </ElCheckbox>
+          </template>
+        </ElSelectV2>
+      </ElFormItem>
+    </ElTooltip>
     <ElRow>
       <ElCol :span="12">
         <ElFormItem :label="t('project.scheduledTasks')">
@@ -292,11 +280,166 @@ const handleCheckAll = (val: CheckboxValueType) => {
             <ElTooltip effect="dark" :content="t('task.duplicatesMsg')" placement="top">
               <ElRadio :label="t('task.duplicatesSubdomain')" name="duplicates" value="subdomain" />
             </ElTooltip>
+            <ElTooltip effect="dark" :content="t('task.duplicatesPortMsg')" placement="top">
+              <ElRadio :label="t('task.duplicatesPort')" name="duplicates" value="port" />
+            </ElTooltip>
           </ElRadioGroup>
         </ElFormItem>
       </ElCol>
     </ElRow>
-
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('subdomain.subdomainName')
+    }}</ElDivider>
+    <ElRow>
+      <ElCol :span="6">
+        <ElFormItem :label="t('task.subdomainScan')">
+          <ElSwitch
+            v-model="taskForm.subdomainScan"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12">
+        <ElFormItem :label="t('task.config')" prop="type" v-if="taskForm.subdomainScan">
+          <ElCheckboxGroup v-model="taskForm.subdomainConfig">
+            <ElCheckbox label="Subfinder" name="subdomainConfig" />
+            <ElCheckbox label="Ksubdomain" name="subdomainConfig" />
+          </ElCheckboxGroup>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('task.portScan')
+    }}</ElDivider>
+    <ElRow>
+      <ElCol :span="6">
+        <ElFormItem :label="t('task.portScan')">
+          <ElSwitch
+            v-model="taskForm.portScan"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12">
+        <ElFormItem :label="t('task.portSelect')" prop="portScan" v-if="taskForm.portScan">
+          <ElSelectV2
+            v-model="taskForm.ports"
+            filterable
+            :options="portOptions"
+            placeholder="Please select port"
+            style="width: 80%"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('dirScan.dirScanName')
+    }}</ElDivider>
+    <ElFormItem :label="t('dirScan.dirScanName')">
+      <ElSwitch
+        v-model="taskForm.dirScan"
+        inline-prompt
+        :active-text="t('common.switchAction')"
+        :inactive-text="t('common.switchInactive')"
+      />
+    </ElFormItem>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('crawler.crawlerName')
+    }}</ElDivider>
+    <ElRow>
+      <ElCol :span="6">
+        <ElTooltip effect="dark" :content="t('task.msgUrl')" placement="top">
+          <ElFormItem :label="t('task.url')">
+            <ElSwitch
+              v-model="taskForm.urlScan"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElFormItem>
+        </ElTooltip>
+      </ElCol>
+      <ElCol :span="6">
+        <ElFormItem :label="t('task.sensitiveInfoScan')" prop="type" v-if="taskForm.urlScan">
+          <ElSwitch
+            v-model="taskForm.sensitiveInfoScan"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="6">
+        <ElTooltip effect="dark" :content="t('task.waybackUrlMsg')" placement="top">
+          <ElFormItem label="waybackurl" prop="type" v-if="taskForm.urlScan">
+            <ElSwitch
+              v-model="taskForm.waybackurl"
+              inline-prompt
+              :active-text="t('common.switchAction')"
+              :inactive-text="t('common.switchInactive')"
+            />
+          </ElFormItem>
+        </ElTooltip>
+      </ElCol>
+      <ElCol :span="12" :offset="6">
+        <ElFormItem :label="t('task.pageMonitoring')" prop="type" v-if="taskForm.urlScan">
+          <ElRadioGroup v-model="taskForm.pageMonitoring">
+            <ElRadio label="None" name="pageMonitoring" />
+            <ElTooltip effect="dark" :content="t('task.msgPageMonitoringAll')" placement="top">
+              <ElRadio label="All" name="pageMonitoring" :checked="true" />
+            </ElTooltip>
+            <ElTooltip effect="dark" :content="t('task.msgPageMonitoringJs')" placement="top">
+              <ElRadio label="JS" name="pageMonitoring" />
+            </ElTooltip>
+          </ElRadioGroup>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElFormItem :label="t('crawler.crawlerName')" prop="type">
+      <ElTooltip effect="dark" :content="t('task.msgCrawler')" placement="top">
+        <ElSwitch
+          v-model="taskForm.crawlerScan"
+          inline-prompt
+          :active-text="t('common.switchAction')"
+          :inactive-text="t('common.switchInactive')"
+        />
+      </ElTooltip>
+    </ElFormItem>
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('task.vulScan')
+    }}</ElDivider>
+    <ElRow>
+      <ElCol :span="6">
+        <ElFormItem :label="t('task.vulScan')">
+          <ElSwitch
+            v-model="taskForm.vulScan"
+            inline-prompt
+            :active-text="t('common.switchAction')"
+            :inactive-text="t('common.switchInactive')"
+          />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="18">
+        <ElFormItem :label="t('task.vulList')" prop="type" v-if="taskForm.vulScan">
+          <ElSelectV2
+            v-model="taskForm.vulList"
+            filterable
+            :options="vulOptions"
+            placeholder="Please select vul"
+            style="width: 80%"
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            tag-type="info"
+            :max-collapse-tags="3"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
     <ElDivider />
     <ElRow>
       <ElCol :span="2" :offset="10">

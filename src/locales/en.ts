@@ -320,7 +320,7 @@ export default {
     portScan: 'Port Scan',
     portSelect: 'Select Port',
     selectNodeMsg:
-      'Only when a new node is registered by clicking All to select the node, the task will be automatically added to the new node, otherwise the task will only run in the currently selected node!',
+      'When a new node is registered, tasks will be automatically added to the new node',
     duplicatesMsg: 'Subdomain names that have been queried in history will be skipped.',
     waybackUrlMsg: 'Get URL from Wayback Machine.',
     addPageMonitTask: 'New Page Monitoring',
@@ -330,7 +330,8 @@ export default {
     templateName: 'Template Name',
     addTemplate: 'Add Template',
     editTemplate: 'Edit Template',
-    deleteTemplate: 'Del Template'
+    deleteTemplate: 'Del Template',
+    autoNode: 'Auto Join'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',
