@@ -17,7 +17,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
-import { getTemplateDetailApi } from '@/api/task'
+import { getTemplateDetailApi, saveTemplateDetailApi } from '@/api/task'
 import { el } from 'element-plus/es/locale'
 
 const { t } = useI18n()
@@ -80,10 +80,13 @@ const initPlugins = async () => {
   }
 }
 
+const vulList = ref<string[]>([])
 // 根据 ID 加载模板数据
 const loadTemplate = async (id: string) => {
   const template = await getTemplateDetailApi(id) // 调用实际接口获取已有数据
   templateName.value = template.data.name
+  vulList.value = template.data.vullist
+  console.log(template.data.vullist)
   for (const module of modules) {
     parameters[module] = {}
 
@@ -111,8 +114,9 @@ watch(
   { immediate: true } // 确保组件挂载时立即触发
 )
 const saveLoading = ref(false)
+
 // 提交表单数据
-const onSubmit = () => {
+const onSubmit = async () => {
   saveLoading.value = true
   const result: Record<string, any> = {}
   if (templateName.value == '') {
@@ -128,27 +132,15 @@ const onSubmit = () => {
     result.Parameters[module] = {}
 
     // 收集参数
-    for (const plugin of enabledPlugins) {
+    for (const plugin of plugins[module]) {
       if (parameters[module][plugin.hash]) {
         result.Parameters[module][plugin.hash] = parameters[module][plugin.hash]
-        if (plugin.hash == 'ed93b8af6b72fe54a60efdb932cf6fbc') {
-          const exists = vulList.value.includes('All Poc')
-          let resultString = ''
-          if (exists) {
-            resultString = '*'
-          } else {
-            vulList.value.forEach((vul) => {
-              resultString += vul + '.yaml,'
-            })
-            resultString = resultString.slice(0, -1)
-          }
-          result.Parameters[module][plugin.hash] =
-            result.Parameters[module][plugin.hash] + '-t ' + resultString
-        }
       }
     }
   }
-  console.log(vulList)
+  result['name'] = templateName.value
+  result['vullist'] = vulList.value
+  await saveTemplateDetailApi(result, props.id)
   // 打印数据或通过接口提交
   console.log(result)
   ElMessage.success('提交成功')
@@ -183,8 +175,8 @@ const getPocList = async () => {
     })
   }
 }
+
 getPocList()
-const vulList = ref<string[]>([])
 </script>
 
 <template>

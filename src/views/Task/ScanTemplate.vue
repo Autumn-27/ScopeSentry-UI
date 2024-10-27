@@ -6,7 +6,7 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { deleteTaskApi, getTemplateDataApi } from '@/api/task'
+import { deleteTaskApi, deleteTemplateDetailApi, getTemplateDataApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'
@@ -68,51 +68,27 @@ const closeDialog = () => {
   dialogVisible.value = false
 }
 const confirmDeleteSelect = async () => {
-  const deleteAssetS = ref<boolean | string | number>(false)
   ElMessageBox({
     title: 'Delete',
-    draggable: true,
-    // Should pass a function if VNode contains dynamic props
-    message: () =>
-      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
-        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
-        h(ElSwitch, {
-          modelValue: deleteAssetS.value,
-          'onUpdate:modelValue': (val: boolean | string | number) => {
-            deleteAssetS.value = val
-          }
-        })
-      ])
+    draggable: true
   }).then(async () => {
-    await delSelect(deleteAssetS.value)
+    await delSelect()
   })
 }
 
 const confirmDelete = async (data) => {
-  const deleteAsset = ref<boolean | string | number>(false)
   ElMessageBox({
     title: 'Delete',
-    draggable: true,
-    // Should pass a function if VNode contains dynamic props
-    message: () =>
-      h('div', { style: { display: 'flex', alignItems: 'center' } }, [
-        h('p', { style: { margin: '0 10px 0 0' } }, t('task.delAsset')),
-        h(ElSwitch, {
-          modelValue: deleteAsset.value,
-          'onUpdate:modelValue': (val: boolean | string | number) => {
-            deleteAsset.value = val
-          }
-        })
-      ])
+    draggable: true
   }).then(async () => {
-    await del(data, deleteAsset.value)
+    await del(data)
   })
 }
 const delLoading = ref(false)
-const del = async (data, delA) => {
+const del = async (data) => {
   delLoading.value = true
   try {
-    const res = await deleteTaskApi([data.id], delA)
+    const res = await deleteTemplateDetailApi([data.id])
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -123,13 +99,13 @@ const del = async (data, delA) => {
   }
 }
 const ids = ref<string[]>([])
-const delSelect = async (delA) => {
+const delSelect = async () => {
   const elTableExpose = await getElTableExpose()
   const selectedRows = elTableExpose?.getSelectionRows() || []
   ids.value = selectedRows.map((row) => row.id)
   delLoading.value = true
   try {
-    const res = await deleteTaskApi(ids.value, delA)
+    const res = await deleteTemplateDetailApi(ids.value)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -151,6 +127,8 @@ const setMaxHeight = () => {
   maxHeight.value = screenHeight * 0.8
 }
 const addTemplate = async () => {
+  templateId.value = ''
+  DialogTitle = t('task.addTemplate')
   dialogVisible.value = true
 }
 

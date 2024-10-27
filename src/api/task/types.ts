@@ -100,4 +100,5 @@ export type TemplateDetail = {
   URLSecurity: string[]
   DirScan: string[]
   VulnerabilityScan: string[]
+  vullist: string[]
 }

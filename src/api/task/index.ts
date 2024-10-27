@@ -220,3 +220,14 @@ export const getTemplateDataApi = (
 export const getTemplateDetailApi = (id: string): Promise<IResponse<TemplateDetail>> => {
   return request.post({ url: '/api/task/template/detail', data: { id } })
 }
+
+export const saveTemplateDetailApi = (
+  result: Record<string, any>,
+  id: string
+): Promise<IResponse<TemplateDetail>> => {
+  return request.post({ url: '/api/task/template/save', data: { result, id } })
+}
+
+export const deleteTemplateDetailApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/task/template/delete', data: { ids } })
+}
