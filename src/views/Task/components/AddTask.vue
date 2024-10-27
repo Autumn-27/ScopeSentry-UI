@@ -296,7 +296,23 @@ const handleCheckAll = (val: CheckboxValueType) => {
         </ElFormItem>
       </ElCol>
     </ElRow>
-
+    <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+      t('router.scanTemplate')
+    }}</ElDivider>
+    <ElFormItem :label="t('router.scanTemplate')" prop="node">
+      <ElSelectV2
+        v-model="taskForm.node"
+        filterable
+        :options="nodeOptions"
+        placeholder="Please select node"
+        style="width: 0%"
+        multiple
+        tag-type="success"
+        collapse-tags
+        collapse-tags-tooltip
+        :max-collapse-tags="7"
+      />
+    </ElFormItem>
     <ElDivider />
     <ElRow>
       <ElCol :span="2" :offset="10">
