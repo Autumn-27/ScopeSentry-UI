@@ -1,5 +1,5 @@
 export type TaskData = {
-  ID: string
+  id: string
   name: string
   taskNum: string
   progress: string
@@ -12,26 +12,16 @@ export type taskRespData = {
   message: string
 }
 
-export type TaskContentData = {
+export type TaskDetail = {
   name: string
   target: string
-  node: []
-  subdomainScan: boolean
-  subdomainConfig: []
-  urlScan: boolean
-  sensitiveInfoScan: boolean
-  pageMonitoring: string
-  crawlerScan: boolean
-  vulScan: boolean
-  vulList: []
-  portScan: boolean
-  ports: string
-  dirScan: boolean
-  waybackurl: boolean
+  ignore: string
+  node: string[]
+  allNode: boolean
   scheduledTasks: boolean
   hour: number
-  allNode: boolean
   duplicates: string
+  template: string
 }
 
 export type TaskProgessInfo = {

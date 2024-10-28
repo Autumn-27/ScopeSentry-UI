@@ -287,6 +287,7 @@ export default {
     typeTask: 'Task Type',
     endTime: 'End Time',
     addTask: 'Add Task',
+    ignore: 'Ignore target',
     addURL: 'Add URL',
     delURL: 'Delete URL',
     retest: 'Retest',
@@ -299,7 +300,10 @@ export default {
     taskTarget: 'Target',
     subdomainTakeover: 'Subdomain Takeover',
     assetMapping: 'Asset Mapping',
-    msgTarget: 'Please enter the domain name or IP, one per line.',
+    msgTarget:
+      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com',
+    ignoreMsg:
+      'Ignore the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\nThe domain name format needs to include a wildcard, otherwise it will be judged as identical.',
     subdomainScan: 'Subdomain Scan',
     nodeMsg: 'Please select a scanning node',
     nodeSelect: 'Node Selection',

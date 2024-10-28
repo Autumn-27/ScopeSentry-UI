@@ -2,7 +2,7 @@ import request from '@/axios'
 import type {
   TaskData,
   taskRespData,
-  TaskContentData,
+  TaskDetail,
   TaskProgessInfo,
   ScheduledTaskData,
   TemplateData,
@@ -117,8 +117,8 @@ export const updateTaskApi = (
   })
 }
 
-export const getTaskContentApi = (id: string): Promise<IResponse<TaskContentData>> => {
-  return request.post({ url: '/api/task/content', data: { id } })
+export const getTaskContentApi = (id: string): Promise<IResponse<TaskDetail>> => {
+  return request.post({ url: '/api/task/detail', data: { id } })
 }
 
 export const deleteTaskApi = (ids: string[], delA: boolean): Promise<IResponse<commonRespData>> => {

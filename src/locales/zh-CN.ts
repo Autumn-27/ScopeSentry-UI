@@ -284,6 +284,7 @@ export default {
     taskProgress: '任务进度',
     taskCycle: '任务周期',
     createTime: '创建时间',
+    ignore: '忽略目标',
     endTime: '结束时间',
     addTask: '新建任务',
     addURL: '新建URL',
@@ -298,7 +299,9 @@ export default {
     taskTarget: '目标',
     subdomainTakeover: '子域名接管',
     assetMapping: '资产测绘',
-    msgTarget: '请输入域名或IP，一行一个。',
+    msgTarget: '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com',
+    ignoreMsg:
+      '忽略目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\n域名格式需要加通配符，否则进行全等判断',
     subdomainScan: '子域名扫描',
     nodeSelect: '节点选择',
     nodeMsg: '请选择扫描节点',

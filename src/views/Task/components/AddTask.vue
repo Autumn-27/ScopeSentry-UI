@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   ElCheckbox,
-  ElCheckboxGroup,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -14,8 +13,10 @@ import {
   ElRadioGroup,
   ElRadio,
   ElSelectV2,
+  ElOption,
   ElButton,
   FormInstance,
+  ElSelect,
   ElMessage,
   ElInputNumber,
   CheckboxValueType,
@@ -24,52 +25,30 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
-import { getPocDataAllApi } from '@/api/poc'
-import { addTaskApi, updateTaskApi } from '@/api/task'
-import { getPortDictDataApi } from '@/api/DictionaryManagement'
+import { getTemplateDataApi } from '@/api/task'
+import { Dialog } from '@/components/Dialog'
+import DetailTemplate from './DetailTemplate.vue'
 const { t } = useI18n()
 
 const props = defineProps<{
   closeDialog: () => void
   getList: () => void
-  vTaskForm: {
-    name: string
-    target: string
-    node: string[]
-    subdomainScan: boolean
-    duplicates: string
-    subdomainConfig: string[]
-    urlScan: boolean
-    sensitiveInfoScan: boolean
-    pageMonitoring: string
-    crawlerScan: boolean
-    vulScan: boolean
-    vulList: string[]
-    portScan: boolean
-    ports: string
-    dirScan: boolean
-    waybackurl: boolean
-    scheduledTasks: boolean
-    hour: number
-    allNode: boolean
-  }
   create: boolean
   schedule: boolean
   taskid: string
 }>()
 
-const { vTaskForm } = toRefs(props)
-const taskForm = ref({ ...vTaskForm.value })
-
 interface RuleForm {
   name: string
   target: string
   node: []
+  template: string
 }
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, message: t('task.msgTaskName'), trigger: 'blur' }],
   target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }],
-  node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }]
+  node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }],
+  template: [{ required: true, message: 'Please select template', trigger: 'blur' }]
 })
 
 const saveLoading = ref(false)
@@ -77,71 +56,8 @@ const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
-  await formEl.validate(async (valid, fields) => {
-    console.log(taskForm.value.allNode)
-    if (!taskForm.value.allNode) {
-      taskForm.value.allNode = false
-      console.log(taskForm.value.allNode)
-    }
+  await formEl.validate(async (valid, _) => {
     if (valid) {
-      if (props.taskid === '') {
-        let res = await addTaskApi(
-          taskForm.value.name,
-          taskForm.value.target,
-          taskForm.value.node,
-          taskForm.value.allNode,
-          taskForm.value.subdomainScan,
-          taskForm.value.subdomainConfig,
-          taskForm.value.urlScan,
-          taskForm.value.duplicates,
-          taskForm.value.sensitiveInfoScan,
-          taskForm.value.pageMonitoring,
-          taskForm.value.crawlerScan,
-          taskForm.value.vulScan,
-          taskForm.value.vulList,
-          taskForm.value.portScan,
-          taskForm.value.ports,
-          taskForm.value.dirScan,
-          taskForm.value.waybackurl,
-          taskForm.value.scheduledTasks,
-          taskForm.value.hour
-        )
-        if (res.code === 200) {
-          props.getList()
-          props.closeDialog()
-        }
-      } else {
-        let res = await updateTaskApi(
-          props.taskid,
-          taskForm.value.name,
-          taskForm.value.target,
-          taskForm.value.node,
-          taskForm.value.allNode,
-          taskForm.value.subdomainScan,
-          taskForm.value.subdomainConfig,
-          taskForm.value.urlScan,
-          taskForm.value.duplicates,
-          taskForm.value.sensitiveInfoScan,
-          taskForm.value.pageMonitoring,
-          taskForm.value.crawlerScan,
-          taskForm.value.vulScan,
-          taskForm.value.vulList,
-          taskForm.value.portScan,
-          taskForm.value.ports,
-          taskForm.value.dirScan,
-          taskForm.value.waybackurl,
-          taskForm.value.scheduledTasks,
-          taskForm.value.hour
-        )
-        if (res.code === 200) {
-          props.getList()
-          props.closeDialog()
-        }
-      }
-      saveLoading.value = false
-    } else {
-      console.log('error submit!', fields)
-      saveLoading.value = false
     }
   })
 }
@@ -158,47 +74,87 @@ const getNodeList = async () => {
     ElMessage.warning(t('node.onlineNodeMsg'))
   }
 }
-const portOptions = reactive<{ value: string; label: string }[]>([])
-const getPortList = async () => {
-  const res = await getPortDictDataApi('', 1, 10000)
+
+const templateOptions = reactive<{ value: string; label: string }[]>([])
+
+const getTemplateList = async () => {
+  templateOptions.length = 0
+  const res = await getTemplateDataApi('', 1, 1000)
   if (res.data.list.length > 0) {
     res.data.list.forEach((item) => {
-      portOptions.push({ value: item.id, label: item.name })
+      templateOptions.push({ value: item.id, label: item.name })
     })
   }
 }
-const vulOptions = reactive<{ value: string; label: string }[]>([])
-const getPocList = async () => {
-  const res = await getPocDataAllApi()
-  if (res.data.list.length > 0) {
-    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
-    res.data.list.forEach((item) => {
-      vulOptions.push({ value: item.id, label: item.name })
-    })
-  }
-}
+
 onMounted(() => {
   getNodeList()
-  getPocList()
-  getPortList()
+  getTemplateList()
 })
 const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
+const taskData = reactive({
+  name: '',
+  target: '',
+  ignore: '',
+  node: [] as string[],
+  allNode: true,
+  scheduledTasks: false,
+  hour: 24,
+  duplicates: 'None',
+  template: ''
+})
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
-    taskForm.value.node = []
+    taskData.node = []
     nodeOptions.forEach((option) => {
-      return taskForm.value.node.push(option.value)
+      return taskData.node.push(option.value)
     })
   } else {
-    taskForm.value.node = []
+    taskData.node = []
   }
 }
+const templateId = ref('')
+const dialogVisible = ref(false)
+
+let DialogTitle = t('task.addTemplate')
+const editTemplate = async (data) => {
+  templateId.value = data
+  if (data != '') {
+    DialogTitle = t('task.editTemplate')
+  }
+  dialogVisible.value = true
+}
+const closeTemplateDialog = () => {
+  dialogVisible.value = false
+}
+
+const loadTaskData = (id) => {}
+watch(
+  () => props.taskid, // 监听 props.taskid 的变化
+  async (newId) => {
+    if (newId) {
+      // 如果传入了 ID，则加载已有数据
+      await loadTaskData(newId)
+    } else {
+      taskData.name = ''
+      taskData.target = ''
+      taskData.ignore = ''
+      taskData.node = []
+      taskData.allNode = true
+      taskData.scheduledTasks = false
+      taskData.hour = 24
+      taskData.duplicates = 'None'
+      taskData.template = ''
+    }
+  },
+  { immediate: true } // 确保组件挂载时立即触发
+)
 </script>
 <template>
   <ElForm
-    :model="taskForm"
+    :model="taskData"
     label-width="auto"
     :rules="rules"
     status-icon
@@ -206,12 +162,20 @@ const handleCheckAll = (val: CheckboxValueType) => {
     :disabled="create ? false : true"
   >
     <ElFormItem :label="t('task.taskName')" prop="name">
-      <ElInput v-model="taskForm.name" :placeholder="t('task.msgTaskName')" />
+      <ElInput v-model="taskData.name" :placeholder="t('task.msgTaskName')" />
     </ElFormItem>
     <ElFormItem :label="t('task.taskTarget')" prop="target">
       <ElInput
-        v-model="taskForm.target"
+        v-model="taskData.target"
         :placeholder="t('task.msgTarget')"
+        type="textarea"
+        rows="10"
+      />
+    </ElFormItem>
+    <ElFormItem :label="t('task.ignore')" prop="ignore">
+      <ElInput
+        v-model="taskData.ignore"
+        :placeholder="t('task.ignoreMsg')"
         type="textarea"
         rows="10"
       />
@@ -220,7 +184,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
       <ElCol :span="12">
         <ElFormItem :label="t('task.nodeSelect')" prop="node">
           <ElSelectV2
-            v-model="taskForm.node"
+            v-model="taskData.node"
             filterable
             :options="nodeOptions"
             placeholder="Please select node"
@@ -247,7 +211,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         <ElFormItem :label="t('task.autoNode')">
           <ElTooltip effect="dark" :content="t('task.selectNodeMsg')" placement="top">
             <ElSwitch
-              v-model="taskForm.allNode"
+              v-model="taskData.allNode"
               inline-prompt
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"
@@ -262,7 +226,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
         <ElFormItem :label="t('project.scheduledTasks')">
           <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
             <ElSwitch
-              v-model="taskForm.scheduledTasks"
+              v-model="taskData.scheduledTasks"
               inline-prompt
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"
@@ -270,10 +234,10 @@ const handleCheckAll = (val: CheckboxValueType) => {
           </ElTooltip>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" v-if="taskForm.scheduledTasks">
+      <ElCol :span="12" v-if="taskData.scheduledTasks">
         <ElFormItem :label="t('project.cycle')" prop="type">
           <ElInputNumber
-            v-model="taskForm.hour"
+            v-model="taskData.hour"
             :min="1"
             controls-position="right"
             size="small"
@@ -287,7 +251,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
     <ElRow>
       <ElCol :span="24">
         <ElFormItem :label="t('task.duplicates')" prop="type">
-          <ElRadioGroup v-model="taskForm.duplicates">
+          <ElRadioGroup v-model="taskData.duplicates">
             <ElRadio label="None" name="duplicates" :checked="true" value="None" />
             <ElTooltip effect="dark" :content="t('task.duplicatesMsg')" placement="top">
               <ElRadio :label="t('task.duplicatesSubdomain')" name="duplicates" value="subdomain" />
@@ -299,29 +263,66 @@ const handleCheckAll = (val: CheckboxValueType) => {
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('router.scanTemplate')
     }}</ElDivider>
-    <ElFormItem :label="t('router.scanTemplate')" prop="node">
-      <ElSelectV2
-        v-model="taskForm.node"
-        filterable
-        :options="nodeOptions"
-        placeholder="Please select node"
-        style="width: 0%"
-        multiple
-        tag-type="success"
-        collapse-tags
-        collapse-tags-tooltip
-        :max-collapse-tags="7"
-      />
+    <ElFormItem :label="t('router.scanTemplate')" prop="template">
+      <!-- <ElSelectV2 v-model="taskData.template" placeholder="Please select node" style="width: 50%" /> -->
+      <ElSelect v-model="taskData.template" placeholder="Please select template" style="width: 30%">
+        <ElOption
+          v-for="item in templateOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+          <ElRow>
+            <ElCol :span="16">
+              <span style="float: left">{{ item.label }}</span>
+            </ElCol>
+            <ElCol :span="8">
+              <ElButton
+                type="primary"
+                size="small"
+                style="margin-left: 15px"
+                @click.stop="editTemplate(item.value)"
+              >
+                {{ t('common.edit') }}
+              </ElButton>
+            </ElCol>
+          </ElRow>
+        </ElOption>
+        <template #footer>
+          <ElButton
+            type="success"
+            size="small"
+            plain
+            style="margin-left: 15px"
+            @click.stop="editTemplate('')"
+          >
+            {{ t('common.new') }}
+          </ElButton>
+        </template>
+      </ElSelect>
     </ElFormItem>
     <ElDivider />
     <ElRow>
       <ElCol :span="2" :offset="10">
         <ElFormItem>
-          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
-            t('task.save')
-          }}</ElButton>
+          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">
+            {{ t('task.save') }}
+          </ElButton>
         </ElFormItem>
       </ElCol>
     </ElRow>
   </ElForm>
+  <Dialog
+    v-model="dialogVisible"
+    :title="DialogTitle"
+    center
+    fullscreen
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <DetailTemplate
+      :closeDialog="closeTemplateDialog"
+      :getList="getTemplateList"
+      :id="templateId"
+    />
+  </Dialog>
 </template>

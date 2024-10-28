@@ -6,7 +6,7 @@ import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { deleteTaskApi, deleteTemplateDetailApi, getTemplateDataApi } from '@/api/task'
+import { deleteTemplateDetailApi, getTemplateDataApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'

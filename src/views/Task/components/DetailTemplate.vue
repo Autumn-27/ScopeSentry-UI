@@ -18,7 +18,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
 import { getTemplateDetailApi, saveTemplateDetailApi } from '@/api/task'
-import { el } from 'element-plus/es/locale'
 
 const { t } = useI18n()
 
