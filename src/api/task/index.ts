@@ -117,7 +117,7 @@ export const updateTaskApi = (
   })
 }
 
-export const getTaskContentApi = (id: string): Promise<IResponse<TaskDetail>> => {
+export const getTaskDetailApi = (id: string): Promise<IResponse<TaskDetail>> => {
   return request.post({ url: '/api/task/detail', data: { id } })
 }
 

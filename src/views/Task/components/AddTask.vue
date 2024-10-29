@@ -25,7 +25,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
-import { getTemplateDataApi } from '@/api/task'
+import { getTaskDetailApi, getTemplateDataApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import DetailTemplate from './DetailTemplate.vue'
 const { t } = useI18n()
@@ -130,7 +130,19 @@ const closeTemplateDialog = () => {
   dialogVisible.value = false
 }
 
-const loadTaskData = (id) => {}
+const loadTaskData = async (id) => {
+  const res = await getTaskDetailApi(id)
+  taskData.name = res.data.name
+  taskData.target = res.data.target
+  taskData.ignore = res.data.ignore
+  taskData.node = res.data.node
+  taskData.allNode = res.data.allNode
+  taskData.scheduledTasks = res.data.scheduledTasks
+  taskData.hour = res.data.hour
+  taskData.duplicates = res.data.duplicates
+  taskData.template = res.data.template
+}
+
 watch(
   () => props.taskid, // 监听 props.taskid 的变化
   async (newId) => {
