@@ -25,7 +25,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
-import { getTaskDetailApi, getTemplateDataApi } from '@/api/task'
+import { addTaskApi, getScheduleDetailApi, getTaskDetailApi, getTemplateDataApi, updateScheduleApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import DetailTemplate from './DetailTemplate.vue'
 const { t } = useI18n()
@@ -58,6 +58,34 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, _) => {
     if (valid) {
+      if (props.taskid) {
+        // 这里任务类型是不允许修改的，所以将修改内容提交到计划任务中
+        await updateScheduleApi(
+          props.taskid,
+          taskData.name,
+          taskData.target,
+          taskData.ignore,
+          taskData.node,
+          taskData.allNode,
+          taskData.duplicates,
+          taskData.scheduledTasks,
+          taskData.hour,
+          taskData.template
+        )
+      } else {
+        // id为空则为创建新任务
+        await addTaskApi(
+          taskData.name,
+          taskData.target,
+          taskData.ignore,
+          taskData.node,
+          taskData.allNode,
+          taskData.duplicates,
+          taskData.scheduledTasks,
+          taskData.hour,
+          taskData.template
+        )
+      }
     }
   })
 }
@@ -143,12 +171,31 @@ const loadTaskData = async (id) => {
   taskData.template = res.data.template
 }
 
+const loadScheduleData = async (id) => {
+  const res = await getScheduleDetailApi(id)
+  taskData.name = res.data.name
+  taskData.target = res.data.target
+  taskData.ignore = res.data.ignore
+  taskData.node = res.data.node
+  taskData.allNode = res.data.allNode
+  taskData.scheduledTasks = res.data.scheduledTasks
+  taskData.hour = res.data.hour
+  taskData.duplicates = res.data.duplicates
+  taskData.template = res.data.template
+}
+
 watch(
   () => props.taskid, // 监听 props.taskid 的变化
   async (newId) => {
     if (newId) {
       // 如果传入了 ID，则加载已有数据
-      await loadTaskData(newId)
+      if (props.schedule) {
+        // 如果是计划任务则从计划任务中加载数据
+        await loadScheduleData(newId)
+      } else {
+        // 从任务中加载数据
+        await loadTaskData(newId)
+      }
     } else {
       taskData.name = ''
       taskData.target = ''

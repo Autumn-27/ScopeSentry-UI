@@ -25,70 +25,40 @@ export const getTaskDataApi = (
 export const addTaskApi = (
   name: string,
   target: string,
+  ignore: string,
   node: string[],
   allNode: boolean,
-  subdomainScan: boolean,
-  subdomainConfig: string[],
-  urlScan: boolean,
   duplicates: string,
-  sensitiveInfoScan: boolean,
-  pageMonitoring: string,
-  crawlerScan: boolean,
-  vulScan: boolean,
-  vulList: string[],
-  portScan: boolean,
-  ports: string,
-  dirScan: boolean,
-  waybackurl: boolean,
   scheduledTasks: boolean,
-  hour: number
+  hour: number,
+  template: string
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
     data: {
       name,
       target,
+      ignore,
       node,
       allNode,
-      subdomainScan,
-      subdomainConfig,
-      urlScan,
       duplicates,
-      sensitiveInfoScan,
-      pageMonitoring,
-      crawlerScan,
-      vulScan,
-      vulList,
-      portScan,
-      ports,
-      dirScan,
-      waybackurl,
       scheduledTasks,
-      hour
+      hour,
+      template
     }
   })
 }
-export const updateTaskApi = (
+export const updateScheduleApi = (
   id: string,
   name: string,
   target: string,
+  ignore: string,
   node: string[],
   allNode: boolean,
-  subdomainScan: boolean,
-  subdomainConfig: string[],
-  urlScan: boolean,
   duplicates: string,
-  sensitiveInfoScan: boolean,
-  pageMonitoring: string,
-  crawlerScan: boolean,
-  vulScan: boolean,
-  vulList: string[],
-  portScan: boolean,
-  ports: string,
-  dirScan: boolean,
-  waybackurl: boolean,
   scheduledTasks: boolean,
-  hour: number
+  hour: number,
+  template: string
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/update',
@@ -96,29 +66,23 @@ export const updateTaskApi = (
       id,
       name,
       target,
+      ignore,
       node,
       allNode,
-      subdomainScan,
-      subdomainConfig,
-      urlScan,
       duplicates,
-      sensitiveInfoScan,
-      pageMonitoring,
-      crawlerScan,
-      vulScan,
-      vulList,
-      portScan,
-      ports,
-      dirScan,
-      waybackurl,
       scheduledTasks,
-      hour
+      hour,
+      template
     }
   })
 }
 
 export const getTaskDetailApi = (id: string): Promise<IResponse<TaskDetail>> => {
   return request.post({ url: '/api/task/detail', data: { id } })
+}
+
+export const getScheduleDetailApi = (id: string): Promise<IResponse<TaskDetail>> => {
+  return request.post({ url: '/api/task/scheduled/detail', data: { id } })
 }
 
 export const deleteTaskApi = (ids: string[], delA: boolean): Promise<IResponse<commonRespData>> => {
