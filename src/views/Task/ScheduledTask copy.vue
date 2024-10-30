@@ -31,7 +31,6 @@ import {
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
-import AddProject from '../Project/components/AddProject.vue'
 import { Icon } from '@iconify/vue'
 import PageMonit from './components/PageMonit.vue'
 import { getNodeDataOnlineApi } from '@/api/node'
@@ -123,6 +122,12 @@ const taskColums = reactive<TableColumn[]>([
     label: t('tableDemo.action'),
     minWidth: 40,
     formatter: (row, __: TableColumn, _: number) => {
+      let type = ''
+      if (row.type == 'Scan') {
+        type = 'scan'
+      } else {
+        type = 'project'
+      }
       return (
         <>
           {row.id === 'page_monitoring' ? (
@@ -148,10 +153,6 @@ const taskColums = reactive<TableColumn[]>([
   }
 ])
 
-// const taskRunNow = async (id) => {
-//   await taskRunApi(id)
-// }
-
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
@@ -174,13 +175,17 @@ let DialogTitle = t('task.addTask')
 const closeDialog = () => {
   dialogVisible.value = false
 }
-let ProjectId = ''
-let TaskId = ref('')
+
+let TaskId = ''
 let Create = ref(true)
 const getTaskContent = async (data) => {
-  TaskId.value = data.id
+  console.log(data)
+  if (data.type == 'Scan') {
+    TaskId = data.id
+  } else {
+    projectDialogVisible.value = true
+  }
   DialogTitle = t('common.edit')
-  dialogVisible.value = true
 }
 
 const confirmDeleteSelect = async () => {
@@ -238,9 +243,6 @@ const setMaxHeight = () => {
   maxHeight.value = screenHeight * 0.75
 }
 const projectDialogVisible = ref(false)
-const closeProjectDialog = () => {
-  projectDialogVisible.value = false
-}
 const pageMontDialogVisible = ref(false)
 const ConfigPageMonitSaveLoading = ref(false)
 const pageMontForm = reactive({
@@ -369,19 +371,6 @@ getNodeList()
         :create="Create"
         :taskid="TaskId"
         :schedule="true"
-      />
-    </Dialog>
-    <Dialog
-      v-model="projectDialogVisible"
-      :title="t('common.edit')"
-      center
-      style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    >
-      <AddProject
-        :closeDialog="closeProjectDialog"
-        :projectid="ProjectId"
-        :getProjectData="getList"
-        :schedule="false"
       />
     </Dialog>
     <Dialog

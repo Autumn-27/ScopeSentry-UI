@@ -16,7 +16,7 @@ import {
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, getTaskContentApi, deleteTaskApi, retestTaskApi } from '@/api/task'
+import { getTaskDataApi, deleteTaskApi, retestTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
@@ -133,7 +133,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 pageSize.value = 20
@@ -143,27 +143,9 @@ function tableHeaderColor() {
 }
 const dialogVisible = ref(false)
 const addTask = async () => {
+  taskid.value = ''
   DialogTitle = t('task.addTask')
   Create.value = true
-  taskForm.name = ''
-  taskForm.target = ''
-  taskForm.node = []
-  taskForm.subdomainScan = true
-  taskForm.duplicates = 'None'
-  taskForm.subdomainConfig = []
-  taskForm.urlScan = true
-  taskForm.sensitiveInfoScan = true
-  taskForm.pageMonitoring = 'JS'
-  taskForm.crawlerScan = true
-  taskForm.vulScan = false
-  taskForm.vulList = []
-  taskForm.portScan = false
-  taskForm.ports = ''
-  taskForm.dirScan = true
-  taskForm.waybackurl = true
-  taskForm.scheduledTasks = true
-  taskForm.hour = 24
-  taskForm.allNode = false
   dialogVisible.value = true
 }
 
@@ -171,53 +153,11 @@ let DialogTitle = t('task.addTask')
 const closeDialog = () => {
   dialogVisible.value = false
 }
-let taskForm = reactive({
-  name: '',
-  target: '',
-  node: [] as string[],
-  subdomainScan: true,
-  duplicates: 'None',
-  subdomainConfig: [],
-  urlScan: true,
-  sensitiveInfoScan: true,
-  pageMonitoring: 'JS',
-  crawlerScan: true,
-  vulScan: false,
-  vulList: [],
-  portScan: false,
-  ports: '',
-  dirScan: true,
-  waybackurl: true,
-  scheduledTasks: true,
-  hour: 24,
-  allNode: false
-})
 
 let Create = ref(true)
+const taskid = ref('')
 const getTaskContent = async (data) => {
-  const res = await getTaskContentApi(data.id)
-  if (res.code === 200) {
-    const result = res.data
-    taskForm.name = result.name
-    taskForm.target = result.target
-    taskForm.node = result.node
-    taskForm.subdomainScan = result.subdomainScan
-    taskForm.subdomainConfig = result.subdomainConfig
-    taskForm.urlScan = result.urlScan
-    taskForm.sensitiveInfoScan = result.sensitiveInfoScan
-    taskForm.pageMonitoring = result.pageMonitoring
-    taskForm.crawlerScan = result.crawlerScan
-    taskForm.vulScan = result.vulScan
-    taskForm.vulList = result.vulList
-    taskForm.portScan = result.portScan
-    taskForm.ports = result.ports
-    taskForm.dirScan = result.dirScan
-    taskForm.waybackurl = result.waybackurl
-    taskForm.scheduledTasks = result.scheduledTasks
-    taskForm.hour = result.hour
-    taskForm.allNode = result.allNode
-    taskForm.duplicates = result.duplicates
-  }
+  taskid.value = data.id
   dialogVisible.value = true
   Create.value = false
   DialogTitle = t('common.view')
@@ -395,9 +335,8 @@ const setMaxHeight = () => {
     <AddTask
       :closeDialog="closeDialog"
       :getList="getList"
-      :vTaskForm="taskForm"
       :create="Create"
-      taskid=""
+      :taskid="taskid"
       :schedule="false"
     />
   </Dialog>

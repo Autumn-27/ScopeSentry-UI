@@ -8,7 +8,7 @@ export type TaskData = {
 }
 
 export type taskRespData = {
-  code: string
+  code: number
   message: string
 }
 

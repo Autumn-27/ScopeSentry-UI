@@ -25,7 +25,13 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
-import { addTaskApi, getScheduleDetailApi, getTaskDetailApi, getTemplateDataApi, updateScheduleApi } from '@/api/task'
+import {
+  addTaskApi,
+  getScheduleDetailApi,
+  getTaskDetailApi,
+  getTemplateDataApi,
+  updateScheduleApi
+} from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import DetailTemplate from './DetailTemplate.vue'
 const { t } = useI18n()
@@ -60,7 +66,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       if (props.taskid) {
         // 这里任务类型是不允许修改的，所以将修改内容提交到计划任务中
-        await updateScheduleApi(
+        const res = await updateScheduleApi(
           props.taskid,
           taskData.name,
           taskData.target,
@@ -72,9 +78,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.hour,
           taskData.template
         )
+        if (res.data.code == 200) {
+          props.closeDialog()
+          props.getList()
+        }
       } else {
         // id为空则为创建新任务
-        await addTaskApi(
+        const res = await addTaskApi(
           taskData.name,
           taskData.target,
           taskData.ignore,
@@ -85,8 +95,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.hour,
           taskData.template
         )
+        if (res.code == 200) {
+          props.closeDialog()
+          props.getList()
+        }
       }
     }
+    saveLoading.value = false
   })
 }
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
