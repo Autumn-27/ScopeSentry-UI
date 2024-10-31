@@ -78,7 +78,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.hour,
           taskData.template
         )
-        if (res.data.code == 200) {
+        if (res.code === 200) {
           props.closeDialog()
           props.getList()
         }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   ElCheckbox,
-  ElCheckboxGroup,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -9,7 +8,6 @@ import {
   ElRow,
   ElCol,
   ElSwitch,
-  FormRules,
   ElTooltip,
   ElRadioGroup,
   ElRadio,
@@ -18,38 +16,31 @@ import {
   FormInstance,
   ElInputNumber,
   ElText,
+  ElSelect,
+  ElOption,
   ElMessage,
   CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi, updateProjectDataApi } from '@/api/project'
-import { getPocDataAllApi } from '@/api/poc'
-import { getPortDictDataApi } from '@/api/DictionaryManagement'
 import { getNodeDataOnlineApi } from '@/api/node'
+import { Dialog } from '@/components/Dialog'
+import { getTemplateDataApi } from '@/api/task'
+import DetailTemplate from '../../Task/components/DetailTemplate.vue'
 const { t } = useI18n()
 let projectForm = reactive({
   name: '',
   tag: '',
   logo: '',
   target: '',
-  scheduledTasks: true,
-  subdomainScan: true,
-  subdomainConfig: [],
-  urlScan: true,
-  sensitiveInfoScan: true,
-  pageMonitoring: 'JS',
-  crawlerScan: true,
-  vulScan: false,
-  vulList: [],
+  ignore: '',
+  scheduledTasks: false,
   hour: 24,
-  waybackurl: true,
-  portScan: true,
-  ports: '',
-  dirScan: false,
   node: [] as string[],
   allNode: false,
-  duplicates: ''
+  duplicates: 'None',
+  template: ''
 })
 const props = defineProps<{
   closeDialog: () => void
@@ -57,22 +48,14 @@ const props = defineProps<{
   getProjectData: (pageIndex: number, pageSize: number) => void
   schedule: boolean
 }>()
-interface RuleForm {
-  name: string
-  tag: string
-  target: string
-}
-// const rules = reactive<FormRules<RuleForm>>({
-//   name: [{ required: true, message: t('project.msgProject'), trigger: 'blur' }],
-//   tag: [{ required: true, message: t('project.msgProjectTag'), trigger: 'blur' }],
-//   target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }]
-// })
+
 const rules = computed(() => {
   const baseRules = {
     name: [{ required: true, message: t('project.msgProject'), trigger: 'blur' }],
     tag: [{ required: true, message: t('project.msgProjectTag'), trigger: 'blur' }],
     target: [{ required: true, message: t('project.msgProjectScope'), trigger: 'blur' }],
-    node: [{ required: false, message: t('task.nodeMsg'), trigger: 'blur' }]
+    node: [{ required: false, message: t('task.nodeMsg'), trigger: 'blur' }],
+    template: [{ required: true, message: 'Please select template', trigger: 'blur' }]
   }
 
   if (projectForm.scheduledTasks) {
@@ -82,17 +65,6 @@ const rules = computed(() => {
   return baseRules
 })
 
-const vulOptions = reactive<{ value: string; label: string }[]>([])
-const getPocList = async () => {
-  const res = await getPocDataAllApi()
-  console.log(res.data.list)
-  if (res.data.list.length > 0) {
-    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
-    res.data.list.forEach((item) => {
-      vulOptions.push({ value: item.id, label: item.name })
-    })
-  }
-}
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const runNow = ref(false)
@@ -109,22 +81,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.target,
           projectForm.logo,
           projectForm.scheduledTasks,
-          projectForm.subdomainScan,
-          projectForm.subdomainConfig,
-          projectForm.urlScan,
-          projectForm.sensitiveInfoScan,
-          projectForm.pageMonitoring,
-          projectForm.crawlerScan,
-          projectForm.vulScan,
-          projectForm.vulList,
           projectForm.hour,
-          projectForm.portScan,
-          projectForm.ports,
-          projectForm.dirScan,
           projectForm.allNode,
           projectForm.node,
-          projectForm.waybackurl,
-          projectForm.duplicates
+          projectForm.duplicates,
+          projectForm.ignore,
+          projectForm.template
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -139,22 +101,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           projectForm.target,
           projectForm.logo,
           projectForm.scheduledTasks,
-          projectForm.subdomainScan,
-          projectForm.subdomainConfig,
-          projectForm.urlScan,
-          projectForm.sensitiveInfoScan,
-          projectForm.pageMonitoring,
-          projectForm.crawlerScan,
-          projectForm.vulScan,
-          projectForm.vulList,
           projectForm.hour,
-          projectForm.portScan,
-          projectForm.ports,
-          projectForm.dirScan,
           projectForm.allNode,
           projectForm.node,
-          projectForm.waybackurl,
-          projectForm.duplicates
+          projectForm.duplicates,
+          projectForm.ignore,
+          projectForm.template
         )
         if (res.code === 200) {
           props.closeDialog()
@@ -168,7 +120,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
   props.getProjectData(1, 50)
 }
-getPocList()
 const dataLoading = ref(false)
 const getProjectInfo = async () => {
   if (props.projectid != '') {
@@ -179,36 +130,16 @@ const getProjectInfo = async () => {
     projectForm.target = res.data.target
     projectForm.logo = res.data.logo
     projectForm.scheduledTasks = res.data.scheduledTasks
-    projectForm.subdomainScan = res.data.subdomainScan
-    projectForm.subdomainConfig = res.data.subdomainConfig
-    projectForm.urlScan = res.data.urlScan
-    projectForm.sensitiveInfoScan = res.data.sensitiveInfoScan
-    projectForm.pageMonitoring = res.data.pageMonitoring
-    projectForm.crawlerScan = res.data.crawlerScan
-    projectForm.vulScan = res.data.vulScan
-    projectForm.vulList = res.data.vulList
     projectForm.hour = res.data.hour
-    projectForm.portScan = res.data.portScan
-    projectForm.ports = res.data.ports
-    projectForm.dirScan = res.data.dirScan
     projectForm.allNode = res.data.allNode
     projectForm.node = res.data.node
     projectForm.duplicates = res.data.duplicates
+    projectForm.ignore = res.data.ignore
+    projectForm.template = res.data.template
     dataLoading.value = false
-    // props.closedataLoading()
   }
 }
-getProjectInfo()
-const portOptions = reactive<{ value: string; label: string }[]>([])
-const getPortList = async () => {
-  const res = await getPortDictDataApi('', 1, 10000)
-  if (res.data.list.length > 0) {
-    res.data.list.forEach((item) => {
-      portOptions.push({ value: item.id, label: item.name })
-    })
-  }
-}
-getPortList()
+
 const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
@@ -226,19 +157,45 @@ const getNodeList = async () => {
   }
   console.log(nodeOptions)
 }
-getNodeList()
+
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
   if (val) {
-    projectForm.allNode = true
     projectForm.node = []
     nodeOptions.forEach((option) => {
       return projectForm.node.push(option.value)
     })
   } else {
-    projectForm.allNode = false
     projectForm.node = []
   }
+}
+const templateOptions = reactive<{ value: string; label: string }[]>([])
+const getTemplateList = async () => {
+  templateOptions.length = 0
+  const res = await getTemplateDataApi('', 1, 1000)
+  if (res.data.list.length > 0) {
+    res.data.list.forEach((item) => {
+      templateOptions.push({ value: item.id, label: item.name })
+    })
+  }
+}
+onMounted(() => {
+  getProjectInfo()
+  getNodeList()
+  getTemplateList()
+})
+const templateId = ref('')
+let DialogTitle = ''
+const dialogVisible = ref(false)
+const editTemplate = async (data) => {
+  templateId.value = data
+  if (data != '') {
+    DialogTitle = t('task.editTemplate')
+  }
+  dialogVisible.value = true
+}
+const closeTemplateDialog = () => {
+  dialogVisible.value = false
 }
 </script>
 <template>
@@ -259,9 +216,17 @@ const handleCheckAll = (val: CheckboxValueType) => {
     <ElFormItem :label="t('project.projectScope')" prop="target">
       <ElInput
         v-model="projectForm.target"
-        :placeholder="t('project.msgProjectScope')"
+        :placeholder="t('task.msgTarget')"
         type="textarea"
         :autosize="{ minRows: 6, maxRows: 15 }"
+      />
+    </ElFormItem>
+    <ElFormItem :label="t('task.ignore')" prop="ignore">
+      <ElInput
+        v-model="projectForm.ignore"
+        :placeholder="t('task.ignoreMsg')"
+        type="textarea"
+        rows="10"
       />
     </ElFormItem>
     <ElFormItem label="Logo" prop="logo">
@@ -305,38 +270,48 @@ const handleCheckAll = (val: CheckboxValueType) => {
         </ElFormItem>
       </ElCol>
     </ElRow>
-    <ElTooltip
-      :content="t('task.selectNodeMsg')"
-      placement="top"
-      v-if="projectForm.scheduledTasks || runNow"
-    >
-      <ElFormItem :label="t('task.nodeSelect')" prop="node">
-        <ElSelectV2
-          v-model="projectForm.node"
-          filterable
-          :options="nodeOptions"
-          placeholder="Please select node"
-          style="width: 80%"
-          multiple
-          tag-type="success"
-          collapse-tags
-          collapse-tags-tooltip
-          :max-collapse-tags="7"
-        >
-          <template #header>
-            <ElCheckbox
-              v-model="projectForm.allNode"
-              :disabled="isCheckboxDisabledNode"
-              :indeterminate="indeterminate"
-              @change="handleCheckAll"
-            >
-              All
-            </ElCheckbox>
-          </template>
-        </ElSelectV2>
-      </ElFormItem>
-    </ElTooltip>
+
     <div v-if="projectForm.scheduledTasks || runNow">
+      <ElRow>
+        <ElCol :span="12">
+          <ElFormItem :label="t('task.nodeSelect')" prop="node">
+            <ElSelectV2
+              v-model="projectForm.node"
+              filterable
+              :options="nodeOptions"
+              placeholder="Please select node"
+              style="width: 80%"
+              multiple
+              tag-type="success"
+              collapse-tags
+              collapse-tags-tooltip
+              :max-collapse-tags="7"
+            >
+              <template #header>
+                <ElCheckbox
+                  :disabled="isCheckboxDisabledNode"
+                  :indeterminate="indeterminate"
+                  @change="handleCheckAll"
+                >
+                  All
+                </ElCheckbox>
+              </template>
+            </ElSelectV2>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
+          <ElFormItem :label="t('task.autoNode')">
+            <ElTooltip effect="dark" :content="t('task.selectNodeMsg')" placement="top">
+              <ElSwitch
+                v-model="projectForm.allNode"
+                inline-prompt
+                :active-text="t('common.switchAction')"
+                :inactive-text="t('common.switchInactive')"
+              />
+            </ElTooltip>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
       <ElDivider content-position="center" style="width: 60%; left: 20%">{{
         t('task.duplicates')
       }}</ElDivider>
@@ -356,6 +331,51 @@ const handleCheckAll = (val: CheckboxValueType) => {
           </ElFormItem>
         </ElCol>
       </ElRow>
+      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
+        t('router.scanTemplate')
+      }}</ElDivider>
+      <ElFormItem :label="t('router.scanTemplate')" prop="template">
+        <!-- <ElSelectV2 v-model="taskData.template" placeholder="Please select node" style="width: 50%" /> -->
+        <ElSelect
+          v-model="projectForm.template"
+          placeholder="Please select template"
+          style="width: 30%"
+        >
+          <ElOption
+            v-for="item in templateOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+            <ElRow>
+              <ElCol :span="16">
+                <span style="float: left">{{ item.label }}</span>
+              </ElCol>
+              <ElCol :span="8">
+                <ElButton
+                  type="primary"
+                  size="small"
+                  style="margin-left: 15px"
+                  @click.stop="editTemplate(item.value)"
+                >
+                  {{ t('common.edit') }}
+                </ElButton>
+              </ElCol>
+            </ElRow>
+          </ElOption>
+          <template #footer>
+            <ElButton
+              type="success"
+              size="small"
+              plain
+              style="margin-left: 15px"
+              @click.stop="editTemplate('')"
+            >
+              {{ t('common.new') }}
+            </ElButton>
+          </template>
+        </ElSelect>
+      </ElFormItem>
     </div>
     <ElDivider />
     <ElRow>
@@ -368,4 +388,17 @@ const handleCheckAll = (val: CheckboxValueType) => {
       </ElCol>
     </ElRow>
   </ElForm>
+  <Dialog
+    v-model="dialogVisible"
+    :title="DialogTitle"
+    center
+    fullscreen
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <DetailTemplate
+      :closeDialog="closeTemplateDialog"
+      :getList="getTemplateList"
+      :id="templateId"
+    />
+  </Dialog>
 </template>

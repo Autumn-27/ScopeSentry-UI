@@ -26,22 +26,12 @@ export const addProjectDataApi = (
   target: string,
   logo: string,
   scheduledTasks: boolean,
-  subdomainScan: boolean,
-  subdomainConfig: any[],
-  urlScan: boolean,
-  sensitiveInfoScan: boolean,
-  pageMonitoring: string,
-  crawlerScan: boolean,
-  vulScan: boolean,
-  vulList: any[],
   hour: number,
-  portScan: boolean,
-  ports: string,
-  dirScan: boolean,
   allNode: boolean,
   node: string[],
-  waybackurl: boolean,
-  duplicates: string
+  duplicates: string,
+  ignore: string,
+  template: string
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/add',
@@ -52,22 +42,12 @@ export const addProjectDataApi = (
       target,
       logo,
       scheduledTasks,
-      subdomainScan,
-      subdomainConfig,
-      urlScan,
-      sensitiveInfoScan,
-      pageMonitoring,
-      crawlerScan,
-      vulScan,
-      vulList,
       hour,
-      portScan,
-      ports,
-      dirScan,
       allNode,
       node,
-      waybackurl,
-      duplicates
+      duplicates,
+      ignore,
+      template
     }
   })
 }
@@ -79,22 +59,12 @@ export const updateProjectDataApi = (
   target: string,
   logo: string,
   scheduledTasks: boolean,
-  subdomainScan: boolean,
-  subdomainConfig: any[],
-  urlScan: boolean,
-  sensitiveInfoScan: boolean,
-  pageMonitoring: string,
-  crawlerScan: boolean,
-  vulScan: boolean,
-  vulList: any[],
   hour: number,
-  portScan: boolean,
-  ports: string,
-  dirScan: boolean,
   allNode: boolean,
   node: string[],
-  waybackurl: boolean,
-  duplicates: string
+  duplicates: string,
+  ignore: string,
+  template: string
 ): Promise<IResponse<projectRespData>> => {
   return request.post({
     url: '/api/project/update',
@@ -106,22 +76,12 @@ export const updateProjectDataApi = (
       target,
       logo,
       scheduledTasks,
-      subdomainScan,
-      subdomainConfig,
-      urlScan,
-      sensitiveInfoScan,
-      pageMonitoring,
-      crawlerScan,
-      vulScan,
-      vulList,
       hour,
-      portScan,
-      ports,
-      dirScan,
       allNode,
       node,
-      waybackurl,
-      duplicates
+      duplicates,
+      ignore,
+      template
     }
   })
 }
