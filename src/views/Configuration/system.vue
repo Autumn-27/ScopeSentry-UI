@@ -11,19 +11,18 @@ import {
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onBeforeMount, onMounted } from 'vue'
 import notification from './components/notification.vue'
 import Deduplication from './components/Deduplication.vue'
 import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
+const extensions = [javascript(), oneDark]
 const { t } = useI18n()
 const form = reactive({
   timezone: '',
-  MaxTaskNum: '',
-  DirscanThread: '',
-  PortscanThread: '',
-  CrawlerThread: '',
-  UrlThread: '',
-  UrlMaxNum: ''
+  ModulesConfig: ''
 })
 onBeforeMount(async () => {
   try {
@@ -31,12 +30,7 @@ onBeforeMount(async () => {
 
     if (res.code == 200) {
       form.timezone = res.data.timezone
-      form.MaxTaskNum = res.data.MaxTaskNum
-      form.DirscanThread = res.data.DirscanThread
-      form.PortscanThread = res.data.PortscanThread
-      form.CrawlerThread = res.data.CrawlerThread
-      form.UrlThread = res.data.UrlThread
-      form.UrlMaxNum = res.data.UrlMaxNum
+      form.ModulesConfig = res.data.ModulesConfig
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -52,15 +46,7 @@ const confirmAdd = async () => {
 }
 const save = async () => {
   saveLoading.value = true
-  const res = await saveSystemConfigurationApi(
-    form.timezone,
-    form.MaxTaskNum,
-    form.DirscanThread,
-    form.PortscanThread,
-    form.CrawlerThread,
-    form.UrlThread,
-    form.UrlMaxNum
-  )
+  const res = await saveSystemConfigurationApi(form.timezone, form.ModulesConfig)
   if (res.code == 200) {
     saveLoading.value = false
   } else {
@@ -79,27 +65,19 @@ const saveLoading = ref(false)
         </ElCol>
       </ElRow>
     </template>
-    <ElForm :model="form" label-width="auto" style="max-width: 460px">
+    <ElForm :model="form" label-width="auto" style="max-width: 600px">
       <ElFormItem :label="t('configuration.timezone')">
         <ElInput v-model="form.timezone" />
       </ElFormItem>
-      <ElFormItem :label="t('configuration.maxTaskNum')">
-        <ElInput v-model="form.MaxTaskNum" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.dirScanThread')">
-        <ElInput v-model="form.DirscanThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.portScanThread')">
-        <ElInput v-model="form.PortscanThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.crawlerThread')">
-        <ElInput v-model="form.CrawlerThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.urlThread')">
-        <ElInput v-model="form.UrlThread" />
-      </ElFormItem>
-      <ElFormItem :label="t('configuration.maxUrlNum')">
-        <ElInput v-model="form.UrlMaxNum" />
+      <ElFormItem label="Module Config">
+        <Codemirror
+          v-model="form.ModulesConfig"
+          :extensions="extensions"
+          :autofocus="true"
+          :indent-with-tab="true"
+          :tab-size="2"
+          :style="{ height: '550px', width: '100%' }"
+        />
       </ElFormItem>
     </ElForm>
 

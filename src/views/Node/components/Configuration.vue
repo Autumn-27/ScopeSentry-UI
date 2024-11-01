@@ -23,11 +23,7 @@ const props = defineProps<{
     name: string
     maxTaskNum: string
     state: string
-    dirscanThread: string
-    portscanThread: string
-    crawlerThread: string
-    urlThread: string
-    urlMaxNum: string
+    ModulesConfig: string
   }
 }>()
 const { nodeConfForm } = toRefs(props)
@@ -60,12 +56,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         oldName,
         localForm.value.name,
         localForm.value.maxTaskNum,
-        localForm.value.dirscanThread,
-        localForm.value.portscanThread,
-        localForm.value.crawlerThread,
-        switchValue.value,
-        localForm.value.urlThread,
-        localForm.value.urlMaxNum
+        switchValue.value
       )
       if (res.code === 200) {
         props.getList()
@@ -84,23 +75,15 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('node.nodeName')" prop="name">
       <ElInput v-model="localForm.name" />
     </ElFormItem>
-    <ElFormItem :label="t('configuration.maxTaskNum')" prop="MaxTaskNum">
-      <ElInput v-model="localForm.maxTaskNum" />
-    </ElFormItem>
-    <ElFormItem :label="t('configuration.portScanThread')" prop="portscanThread">
-      <ElInput v-model="localForm.portscanThread" />
-    </ElFormItem>
-    <ElFormItem :label="t('configuration.dirScanThread')" prop="dirscanThread">
-      <ElInput v-model="localForm.dirscanThread" />
-    </ElFormItem>
-    <ElFormItem :label="t('configuration.crawlerThread')" prop="crawlerThread">
-      <ElInput v-model="localForm.crawlerThread" />
-    </ElFormItem>
-    <ElFormItem :label="t('configuration.urlThread')" prop="MaxTaskNum">
-      <ElInput v-model="localForm.urlThread" />
-    </ElFormItem>
-    <ElFormItem :label="t('configuration.maxUrlNum')" prop="MaxTaskNum">
-      <ElInput v-model="localForm.urlMaxNum" />
+    <ElFormItem label="Module Config">
+      <Codemirror
+        v-model="localForm.ModulesConfig"
+        :extensions="extensions"
+        :autofocus="true"
+        :indent-with-tab="true"
+        :tab-size="2"
+        :style="{ height: '550px', width: '100%' }"
+      />
     </ElFormItem>
     <ElFormItem :label="t('common.state')">
       <ElSwitch
