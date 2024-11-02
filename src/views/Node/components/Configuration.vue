@@ -15,6 +15,10 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { updateNodeConfigDataApi } from '@/api/node'
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
+const extensions = [javascript(), oneDark]
 const { t } = useI18n()
 const props = defineProps<{
   closeDialog: () => void
@@ -55,7 +59,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       res = await updateNodeConfigDataApi(
         oldName,
         localForm.value.name,
-        localForm.value.maxTaskNum,
+        localForm.value.ModulesConfig,
         switchValue.value
       )
       if (res.code === 200) {
