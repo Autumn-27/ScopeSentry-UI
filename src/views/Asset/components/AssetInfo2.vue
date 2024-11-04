@@ -534,7 +534,7 @@ const handleClose = (tag: string) => {
             <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
               <ElCol :span="12">
                 <div
-                  @click="changeTags('protocol', serviceItem.value)"
+                  @click="changeTags('service', serviceItem.value)"
                   style="display: inline-block; cursor: pointer"
                 >
                   <ElTag effect="light" round size="small">

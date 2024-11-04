@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElIcon, ElTableV2, ElTag, ElTooltip } from 'element-plus'
-import type { Column } from 'element-plus'
-import { TableV2FixedDir, TableV2SortOrder } from 'element-plus'
-import { ref } from 'vue'
+import { reactive, h, effect } from 'vue'
+import { Table, TableColumn } from '@/components/Table'
+import { getTaskProgressApi } from '@/api/task'
+import { useTable } from '@/hooks/web/useTable'
+import { ElTag, ElTooltip, ElTooltipProps, ElCard, ElPagination } from 'element-plus'
+import { Icon } from '@/components/Icon'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -12,99 +14,411 @@ const props = defineProps<{
   getProgressInfotype: string
   getProgressInforunnerid: string
 }>()
-
-let id = 0
-const dataGenerator = () => ({
-  id: `random-id-${++id}`,
-  name: 'Tom',
-  date: '2020-10-1'
-})
-
-const columns: Column<any>[] = [
+const progressColums = reactive<TableColumn[]>([
   {
-    key: 'target',
-    title: t('scanTemplate.TargetHandler'),
-    dataKey: 'target',
-    width: 150
+    field: 'target',
+    label: t('task.taskTarget'),
+    minWidth: 40
   },
   {
-    key: 'TargetHandler',
-    title: t('scanTemplate.TargetHandler'),
-    dataKey: 'TargetHandler',
-    width: 100,
-    fixed: TableV2FixedDir.LEFT
+    field: 'TargetHandler',
+    label: t('scanTemplate.TargetHandler'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'SubdomainScan',
-    title: t('scanTemplate.SubdomainScan'),
-    dataKey: 'name',
-    width: 100,
-    align: 'center'
+    field: 'SubdomainScan',
+    label: t('scanTemplate.SubdomainScan'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'SubdomainSecurity',
-    title: t('scanTemplate.SubdomainSecurity'),
-    width: 100
+    field: 'SubdomainSecurity',
+    label: t('scanTemplate.SubdomainSecurity'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'PortScanPreparation',
-    title: t('scanTemplate.PortScanPreparation'),
-    width: 100
+    field: 'PortScanPreparation',
+    label: t('scanTemplate.PortScanPreparation'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'PortScan',
-    title: t('scanTemplate.PortScan'),
-    width: 100
+    field: 'PortScan',
+    label: t('scanTemplate.PortScan'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'PortFingerprint',
-    title: t('scanTemplate.PortFingerprint'),
-    width: 100
+    field: 'PortFingerprint',
+    label: t('scanTemplate.PortFingerprint'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'AssetMapping',
-    title: t('scanTemplate.AssetMapping'),
-    width: 100
+    field: 'AssetMapping',
+    label: t('scanTemplate.AssetMapping'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'AssetHandle',
-    title: t('scanTemplate.AssetHandle'),
-    width: 100
+    field: 'AssetHandle',
+    label: t('scanTemplate.AssetHandle'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'URLScan',
-    title: t('scanTemplate.URLScan'),
-    width: 100
+    field: 'URLScan',
+    label: t('scanTemplate.URLScan'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'WebCrawler',
-    title: t('scanTemplate.WebCrawler'),
-    width: 100
+    field: 'WebCrawler',
+    label: t('scanTemplate.WebCrawler'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'URLSecurity',
-    title: t('scanTemplate.URLSecurity'),
-    width: 100
+    field: 'URLSecurity',
+    label: t('scanTemplate.URLSecurity'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'DirScan',
-    title: t('scanTemplate.DirScan'),
-    width: 100
+    field: 'DirScan',
+    label: t('scanTemplate.DirScan'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'VulnerabilityScan',
-    title: t('scanTemplate.VulnerabilityScan'),
-    width: 100
+    field: 'VulnerabilityScan',
+    label: t('scanTemplate.VulnerabilityScan'),
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   },
   {
-    key: 'All',
-    title: 'All',
-    width: 100
+    field: 'All',
+    label: 'All',
+    minWidth: 30,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
+      if (cellValue.length == 3) {
+        return h(Icon, { icon: 'ph:prohibit' })
+      }
+      if (cellValue[0] == '') {
+        return '-'
+      }
+      let cont = ''
+      cont += `<div>Start:${cellValue[0]}</div>`
+      cont += `<div>End:${cellValue[1]}</div>`
+      if (cellValue[0] != '' && cellValue[1] != '') {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'success' }, () => 'Done')
+        )
+      } else {
+        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
+          h(ElTag, { type: 'primary' }, () => 'Running')
+        )
+      }
+    }
   }
-]
-columns[0].fixed = true
-const data = ref(Array.from({ length: 200 }).map(dataGenerator))
+])
+const { tableRegister, tableState, tableMethods } = useTable({
+  fetchDataApi: async () => {
+    const res = await getTaskProgressApi(props.getProgressInfoID, currentPage.value, pageSize.value)
+    return {
+      total: res.data.total,
+      list: res.data.list
+    }
+  },
+  immediate: false
+})
+const { dataList, total, currentPage, pageSize } = tableState
+const { getList } = tableMethods
+getList()
 </script>
 <template>
-  <ElTableV2 :columns="columns" :data="data" :width="1300" :height="700" fixed />
+  <Table
+    v-model:pageSize="pageSize"
+    v-model:currentPage="currentPage"
+    @register="tableRegister"
+    :columns="progressColums"
+    :data="dataList"
+    rowKey="_id"
+    :resizable="true"
+    max-height="600"
+    :tooltip-options="{
+      offset: 1,
+      showArrow: false,
+      effect: 'dark',
+      enterable: true,
+      showAfter: 0,
+      popperOptions: {},
+      popperClass: 'test',
+      placement: 'top',
+      hideAfter: 0,
+      disabled: false
+    }"
+    :style="{
+      fontFamily:
+        '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+    }"
+  />
+  <ElCard>
+    <ElPagination
+      v-model:pageSize="pageSize"
+      v-model:currentPage="currentPage"
+      :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    />
+  </ElCard>
 </template>
