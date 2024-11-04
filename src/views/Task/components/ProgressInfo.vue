@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, h, effect } from 'vue'
-import { Table, TableColumn } from '@/components/Table'
-import { getTaskProgressApi } from '@/api/task'
-import { useTable } from '@/hooks/web/useTable'
-import { ElTag, ElTooltip, ElTooltipProps } from 'element-plus'
-import { Icon } from '@/components/Icon'
+import { ElButton, ElIcon, ElTableV2, ElTag, ElTooltip } from 'element-plus'
+import type { Column } from 'element-plus'
+import { TableV2FixedDir, TableV2SortOrder } from 'element-plus'
+import { ref } from 'vue'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -14,290 +12,99 @@ const props = defineProps<{
   getProgressInfotype: string
   getProgressInforunnerid: string
 }>()
-const progressColums = reactive<TableColumn[]>([
-  {
-    field: 'target',
-    label: t('task.taskTarget'),
-    minWidth: 40
-  },
-  {
-    field: 'subdomain',
-    label: t('subdomain.subdomainName'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'subdomainTakeover',
-    label: t('task.subdomainTakeover'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'portScan',
-    label: t('task.portScan'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'assetMapping',
-    label: t('task.assetMapping'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'urlScan',
-    label: t('task.url'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'sensitive',
-    label: t('sensitiveInformation.sensitiveInformationName'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'crawler',
-    label: t('crawler.crawlerName'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'dirScan',
-    label: t('dirScan.dirScanName'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'vulnerability',
-    label: t('task.vulScan'),
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  },
-  {
-    field: 'all',
-    label: 'All',
-    minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
-    }
-  }
-])
-const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
-    const res = await getTaskProgressApi(
-      props.getProgressInfoID,
-      props.getProgressInfotype,
-      props.getProgressInforunnerid
-    )
-    return {
-      total: res.data.total,
-      list: res.data.list
-    }
-  },
-  immediate: true
+
+let id = 0
+const dataGenerator = () => ({
+  id: `random-id-${++id}`,
+  name: 'Tom',
+  date: '2020-10-1'
 })
-const { dataList } = tableState
-const { getList } = tableMethods
-getList()
+
+const columns: Column<any>[] = [
+  {
+    key: 'target',
+    title: t('scanTemplate.TargetHandler'),
+    dataKey: 'target',
+    width: 150
+  },
+  {
+    key: 'TargetHandler',
+    title: t('scanTemplate.TargetHandler'),
+    dataKey: 'TargetHandler',
+    width: 100,
+    fixed: TableV2FixedDir.LEFT
+  },
+  {
+    key: 'SubdomainScan',
+    title: t('scanTemplate.SubdomainScan'),
+    dataKey: 'name',
+    width: 100,
+    align: 'center'
+  },
+  {
+    key: 'SubdomainSecurity',
+    title: t('scanTemplate.SubdomainSecurity'),
+    width: 100
+  },
+  {
+    key: 'PortScanPreparation',
+    title: t('scanTemplate.PortScanPreparation'),
+    width: 100
+  },
+  {
+    key: 'PortScan',
+    title: t('scanTemplate.PortScan'),
+    width: 100
+  },
+  {
+    key: 'PortFingerprint',
+    title: t('scanTemplate.PortFingerprint'),
+    width: 100
+  },
+  {
+    key: 'AssetMapping',
+    title: t('scanTemplate.AssetMapping'),
+    width: 100
+  },
+  {
+    key: 'AssetHandle',
+    title: t('scanTemplate.AssetHandle'),
+    width: 100
+  },
+  {
+    key: 'URLScan',
+    title: t('scanTemplate.URLScan'),
+    width: 100
+  },
+  {
+    key: 'WebCrawler',
+    title: t('scanTemplate.WebCrawler'),
+    width: 100
+  },
+  {
+    key: 'URLSecurity',
+    title: t('scanTemplate.URLSecurity'),
+    width: 100
+  },
+  {
+    key: 'DirScan',
+    title: t('scanTemplate.DirScan'),
+    width: 100
+  },
+  {
+    key: 'VulnerabilityScan',
+    title: t('scanTemplate.VulnerabilityScan'),
+    width: 100
+  },
+  {
+    key: 'All',
+    title: 'All',
+    width: 100
+  }
+]
+columns[0].fixed = true
+const data = ref(Array.from({ length: 200 }).map(dataGenerator))
 </script>
 <template>
-  <Table
-    @register="tableRegister"
-    :columns="progressColums"
-    :data="dataList"
-    max-height="500"
-    :style="{
-      fontFamily:
-        '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-    }"
-  />
+  <ElTableV2 :columns="columns" :data="data" :width="1300" :height="700" fixed />
 </template>
