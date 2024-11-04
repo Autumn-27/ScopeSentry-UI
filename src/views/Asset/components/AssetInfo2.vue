@@ -511,61 +511,67 @@ const handleClose = (tag: string) => {
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.port') }}</ElText>
             </template>
-            <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
-              <ElCol :span="12">
-                <div
-                  @click="changeTags('port', portItem.value)"
-                  style="display: inline-block; cursor: pointer"
-                >
-                  <ElTag effect="light" round size="small">
-                    {{ portItem.value }}
-                  </ElTag>
-                </div>
-              </ElCol>
-              <ElCol :span="12" style="text-align: end">
-                <ElText size="small">{{ portItem.number }}</ElText>
-              </ElCol>
-            </ElRow>
+            <ElScrollbar height="20rem">
+              <ElRow v-for="portItem in AssetstatisticsData.Port" :key="portItem.value">
+                <ElCol :span="12">
+                  <div
+                    @click="changeTags('port', portItem.value)"
+                    style="display: inline-block; cursor: pointer"
+                  >
+                    <ElTag effect="light" round size="small">
+                      {{ portItem.value }}
+                    </ElTag>
+                  </div>
+                </ElCol>
+                <ElCol :span="12" style="text-align: end">
+                  <ElText size="small">{{ portItem.number }}</ElText>
+                </ElCol>
+              </ElRow>
+            </ElScrollbar>
           </ElCollapseItem>
           <ElCollapseItem name="3">
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.service') }}</ElText>
             </template>
-            <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
-              <ElCol :span="12">
-                <div
-                  @click="changeTags('service', serviceItem.value)"
-                  style="display: inline-block; cursor: pointer"
-                >
-                  <ElTag effect="light" round size="small">
-                    {{ serviceItem.value }}
-                  </ElTag>
-                </div>
-              </ElCol>
-              <ElCol :span="12" style="text-align: end">
-                <ElText size="small">{{ serviceItem.number }}</ElText>
-              </ElCol>
-            </ElRow>
+            <ElScrollbar height="13rem">
+              <ElRow v-for="serviceItem in AssetstatisticsData.Service" :key="serviceItem.value">
+                <ElCol :span="12">
+                  <div
+                    @click="changeTags('service', serviceItem.value)"
+                    style="display: inline-block; cursor: pointer"
+                  >
+                    <ElTag effect="light" round size="small">
+                      {{ serviceItem.value }}
+                    </ElTag>
+                  </div>
+                </ElCol>
+                <ElCol :span="12" style="text-align: end">
+                  <ElText size="small">{{ serviceItem.number }}</ElText>
+                </ElCol>
+              </ElRow>
+            </ElScrollbar>
           </ElCollapseItem>
           <ElCollapseItem name="4">
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.products') }}</ElText>
             </template>
-            <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
-              <ElCol :span="12">
-                <div
-                  @click="changeTags('app', productItem.value)"
-                  style="display: inline-block; cursor: pointer"
-                >
-                  <ElTag effect="light" round size="small">
-                    {{ productItem.value }}
-                  </ElTag>
-                </div>
-              </ElCol>
-              <ElCol :span="12" style="text-align: end">
-                <ElText size="small">{{ productItem.number }}</ElText>
-              </ElCol>
-            </ElRow>
+            <ElScrollbar height="20rem">
+              <ElRow v-for="productItem in AssetstatisticsData.Product" :key="productItem.value">
+                <ElCol :span="12">
+                  <div
+                    @click="changeTags('app', productItem.value)"
+                    style="display: inline-block; cursor: pointer"
+                  >
+                    <ElTag effect="light" round size="small">
+                      {{ productItem.value }}
+                    </ElTag>
+                  </div>
+                </ElCol>
+                <ElCol :span="12" style="text-align: end">
+                  <ElText size="small">{{ productItem.number }}</ElText>
+                </ElCol>
+              </ElRow>
+            </ElScrollbar>
           </ElCollapseItem>
           <ElCollapseItem name="5">
             <template #title>
