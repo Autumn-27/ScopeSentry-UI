@@ -381,7 +381,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
   },
   immediate: false
 })
-const { dataList, total, currentPage, pageSize } = tableState
+const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList } = tableMethods
 getList()
 </script>
@@ -393,6 +393,7 @@ getList()
     :columns="progressColums"
     :data="dataList"
     rowKey="_id"
+    :loading="loading"
     :resizable="true"
     max-height="600"
     :tooltip-options="{
