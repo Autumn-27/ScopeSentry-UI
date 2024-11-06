@@ -410,7 +410,10 @@ export default {
   PageMonitoring: {
     pageMonitoringName: 'Page Monitoring',
     oldResponseBody: 'Old ResponseBody',
-    currentResponseBody: 'Current ResponseBody'
+    currentResponseBody: 'Current ResponseBody',
+    statusCode: 'Response Code',
+    hash: 'Body Hash',
+    similarity: 'Similarity'
   },
   project: {
     project: 'Project',

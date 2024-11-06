@@ -407,7 +407,10 @@ export default {
   PageMonitoring: {
     pageMonitoringName: '页面监控',
     oldResponseBody: '原始响应体',
-    currentResponseBody: '当前响应体'
+    currentResponseBody: '当前响应体',
+    statusCode: '响应码',
+    hash: '响应hash',
+    similarity: '相似度'
   },
   project: {
     project: '项目',

@@ -96,45 +96,35 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'response1',
-    label: t('PageMonitoring.oldResponseBody'),
+    field: 'statusCode',
+    label: t('PageMonitoring.statusCode'),
     minWidth: 100,
-    formatter: (row, __: TableColumn, _: number) => {
+    formatter: (row, __: TableColumn, value: number[]) => {
+      if (value.length == 2) {
+        return `${value[0]} => ${value[1]}`
+      } else {
+        return value[0]
+      }
+    }
+  },
+  {
+    field: 'hash',
+    label: t('PageMonitoring.hash'),
+    minWidth: 100,
+    formatter: (row, __: TableColumn, value: string[]) => {
       return (
         <>
-          <BaseButton type="info" size="small" onClick={() => getResponse(row.id, '1')}>
-            {t('common.view')}
-          </BaseButton>
+          {value[0]} <br /> {value[1]}
         </>
       )
     }
   },
   {
-    field: 'respone2',
-    label: t('PageMonitoring.currentResponseBody'),
-    minWidth: 100,
-    formatter: (row, __: TableColumn, _: number) => {
-      return (
-        <>
-          <BaseButton type="info" size="small" onClick={() => getResponse(row.id, '2')}>
-            {t('common.view')}
-          </BaseButton>
-        </>
-      )
-    }
-  },
-  {
-    field: 'diff',
-    label: 'diff',
+    field: 'similarity',
+    label: t('PageMonitoring.similarity'),
     minWidth: 200,
-    formatter: (_, __: TableColumn, bannerValue: string) => {
-      const lines = bannerValue.split('\n')
-      const elements = lines.map((line, index) => <div key={index}>{line}</div>)
-      return (
-        <ElScrollbar minSize={10} maxHeight={200}>
-          <div class="scrollbar-demo-item">{elements}</div>
-        </ElScrollbar>
-      )
+    formatter: (_, __: TableColumn, value: number) => {
+      return `${value}%`
     }
   },
   {
@@ -150,7 +140,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       return (
         <>
           <BaseButton type="success" onClick={() => getHistoryDiff(row.id)}>
-            {t('asset.historyDiff')}
+            Diff
           </BaseButton>
         </>
       )
@@ -160,10 +150,6 @@ const crudSchemas = reactive<CrudSchema[]>([
 const DialogVisible = ref(false)
 const body = ref('')
 const hash = ref('')
-const getResponse = async (id: string, flag: string) => {
-  const res = await getPageMonitoringResponseApi(id, flag)
-  action(res.data.content, res.data.hash)
-}
 
 const action = (newBody: any, newHash: string) => {
   DialogVisible.value = true
@@ -198,7 +184,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
