@@ -3,26 +3,15 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import {
-  ElCard,
-  ElPagination,
-  ElCol,
-  ElRow,
-  ElText,
-  ElDivider,
-  ElLink,
-  ElScrollbar
-} from 'element-plus'
+import { ElCard, ElPagination, ElCol, ElRow, ElLink } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import {
-  getPageMonitoringApi,
-  getPageMonitoringHistoryApi,
-  getPageMonitoringResponseApi
-} from '@/api/asset'
+import { getPageMonitoringApi, getPageMonitoringDiffApi } from '@/api/asset'
 import { BaseButton } from '@/components/Button'
 import Csearch from '../search/Csearch.vue'
+import MonacoDiffEditor from '../detail/MonacoDiffEditor.vue'
+import beautify from 'js-beautify'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -99,7 +88,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'statusCode',
     label: t('PageMonitoring.statusCode'),
     minWidth: 100,
-    formatter: (row, __: TableColumn, value: number[]) => {
+    formatter: (_, __: TableColumn, value: number[]) => {
       if (value.length == 2) {
         return `${value[0]} => ${value[1]}`
       } else {
@@ -111,7 +100,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'hash',
     label: t('PageMonitoring.hash'),
     minWidth: 100,
-    formatter: (row, __: TableColumn, value: string[]) => {
+    formatter: (_, __: TableColumn, value: string[]) => {
       return (
         <>
           {value[0]} <br /> {value[1]}
@@ -139,7 +128,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="success" onClick={() => getHistoryDiff(row.id)}>
+          <BaseButton type="success" onClick={() => getHistoryDiff(row.md5)}>
             Diff
           </BaseButton>
         </>
@@ -147,26 +136,23 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   }
 ])
-const DialogVisible = ref(false)
-const body = ref('')
-const hash = ref('')
-
-const action = (newBody: any, newHash: string) => {
-  DialogVisible.value = true
-  body.value = newBody
-  hash.value = newHash
-}
-
 const getHistoryDiff = async (id: string) => {
-  const res = await getPageMonitoringHistoryApi(id)
+  const res = await getPageMonitoringDiffApi(id)
   historyDiffAction(res.data.diff)
 }
 
 const HistoryDiffDialogVisible = ref(false)
 const historyDiff = ref<string[]>([])
 const historyDiffAction = (data: string[]) => {
-  console.log(data)
   historyDiff.value = data
+  if (historyDiff.value.length == 0) {
+    historyDiff.value = ['', '']
+  }
+  if (historyDiff.value.length == 1) {
+    historyDiff.value.push('')
+  }
+  historyDiff.value[0] = beautify.js(historyDiff.value[0], { indent_size: 2 })
+  historyDiff.value[1] = beautify.js(historyDiff.value[1], { indent_size: 2 })
   HistoryDiffDialogVisible.value = true
 }
 const { allSchemas } = useCrudSchemas(crudSchemas)
@@ -271,20 +257,6 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     </ElCol>
   </ElRow>
   <Dialog
-    v-model="DialogVisible"
-    title="ResponseBody"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    width="70%"
-    :max-height="maxHeight"
-  >
-    <ElScrollbar :max-height="maxHeight">
-      <div :style="{ color: 'red' }">Hash: {{ hash }}</div>
-      <ElDivider />
-      <div :style="{ whiteSpace: 'pre-line' }">{{ body }}</div>
-    </ElScrollbar>
-  </Dialog>
-  <Dialog
     v-model="HistoryDiffDialogVisible"
     title="Historical changes"
     center
@@ -292,12 +264,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     width="70%"
     :max-height="maxHeight"
   >
-    <div>
-      <div v-for="(diff, index) in historyDiff" :key="index" :style="{ whiteSpace: 'pre-line' }">
-        <ElText>{{ diff }}</ElText>
-        <ElDivider style="background: #e99696" />
-      </div>
-    </div>
+    <MonacoDiffEditor :original="historyDiff[0]" :modified="historyDiff[1]" />
   </Dialog>
 </template>
 

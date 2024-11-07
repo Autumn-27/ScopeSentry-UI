@@ -192,9 +192,9 @@ export const getPageMonitoringResponseApi = (
   })
 }
 
-export const getPageMonitoringHistoryApi = (id: string): Promise<IResponse<PageMHistory>> => {
+export const getPageMonitoringDiffApi = (id: string): Promise<IResponse<PageMHistory>> => {
   return request.post({
-    url: '/api/page/monitoring/history/diff',
+    url: '/api/page/monitoring/diff',
     data: { id }
   })
 }

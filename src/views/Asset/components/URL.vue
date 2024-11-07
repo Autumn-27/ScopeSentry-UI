@@ -162,7 +162,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
