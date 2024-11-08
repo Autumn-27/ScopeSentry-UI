@@ -2,6 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 import {
   ElButton,
   ElCol,
@@ -11,7 +12,11 @@ import {
   ElProgress,
   ElTag,
   ElMessageBox,
-  ElSwitch
+  ElSwitch,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElIcon
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -68,6 +73,33 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
+    field: 'status',
+    label: t('common.state'),
+    minWidth: 200,
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      // 1为运行中，2为暂停，3为运行完成
+      let tagType, tagText
+      switch (cellValue) {
+        case 1:
+          tagType = 'info'
+          tagText = t('task.running') // 运行中
+          break
+        case 2:
+          tagType = 'warning'
+          tagText = t('task.stop') // 暂停
+          break
+        case 3:
+          tagType = 'success'
+          tagText = t('task.finish') // 运行完成
+          break
+        default:
+          tagType = 'default'
+          tagText = '' // 未知状态
+      }
+      return h(ElTag, { type: tagType }, () => tagText)
+    }
+  },
+  {
     field: 'creatTime',
     minWidth: 200,
     label: t('task.createTime')
@@ -88,27 +120,87 @@ const taskColums = reactive<TableColumn[]>([
     label: t('tableDemo.action'),
     minWidth: '420',
     formatter: (row, __: TableColumn, _: number) => {
-      console.log(row)
-      const retestButton = h(
-        BaseButton,
+      const handleCommand = (command) => {
+        switch (command) {
+          case 'retest':
+            confirmRetest(row)
+            break
+          case 'delete':
+            confirmDelete(row)
+            break
+          case 'stop':
+            stopTask(row.id)
+          case 'start':
+            startTask(row.id)
+        }
+      }
+      const retestAndDeleteDropdown = h(
+        ElDropdown,
         {
-          type: 'warning',
-          onClick: () => confirmRetest(row)
+          onCommand: handleCommand
         },
-        t('task.retest')
+        {
+          default: () =>
+            h(
+              ElButton,
+              {
+                style: { outline: 'none', boxShadow: 'none' }
+              },
+              () => [
+                t('common.operation'), // 下拉菜单触发按钮文字
+                h(
+                  ElIcon,
+                  {},
+                  () => h(ArrowDown) // 向下箭头图标
+                )
+              ]
+            ),
+          dropdown: () =>
+            h(ElDropdownMenu, null, () => {
+              // 根据 row.status 渲染不同的菜单项
+              if (row.status === 1) {
+                // 运行中
+                return [
+                  h(ElDropdownItem, { command: 'stop' }, () => t('task.stop')), // 如果是运行中，显示“停止”按钮
+                  h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
+                  h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
+                ]
+              } else if (row.status === 2) {
+                // 暂停
+                return [
+                  h(ElDropdownItem, { command: 'start' }, () => t('task.start')), // 如果是暂停，显示“开始”按钮
+                  h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
+                  h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
+                ]
+              } else {
+                return [
+                  h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
+                  h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
+                ]
+              }
+            })
+        }
       )
       return (
         <>
-          <BaseButton type="success" onClick={() => getTaskContent(row)}>
+          {retestAndDeleteDropdown}
+          <BaseButton
+            type="primary"
+            onClick={() => getTaskContent(row)}
+            style={{ marginLeft: '10px' }}
+          >
+            {t('task.result')}
+          </BaseButton>
+          <BaseButton
+            type="success"
+            onClick={() => getTaskContent(row)}
+            style={{ marginLeft: '10px' }}
+          >
             {t('common.view')}
           </BaseButton>
-          {retestButton}
-          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
-            {t('common.delete')}
-          </BaseButton>
-          <BaseButton type="primary" onClick={() => getProgressInfo(row.id)}>
+          <ElButton type="warning" onClick={() => getProgressInfo(row.id)}>
             {t('task.taskProgress')}
-          </BaseButton>
+          </ElButton>
         </>
       )
     }
@@ -121,6 +213,11 @@ const getProgressInfo = async (id) => {
   getProgressInfoID = id
   progressDialogVisible.value = true
 }
+
+const stopTask = async (id) => {}
+
+const startTask = async (id) => {}
+
 const progresscloseDialog = () => {
   progressDialogVisible.value = false
 }

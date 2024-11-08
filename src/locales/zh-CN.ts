@@ -332,7 +332,12 @@ export default {
     addTemplate: '新建模板',
     editTemplate: '编辑模板',
     deleteTemplate: '删除模板',
-    autoNode: '自动加入'
+    autoNode: '自动加入',
+    running: '运行中',
+    stop: '暂停',
+    start: '开始',
+    finish: '完成',
+    result: '结果'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

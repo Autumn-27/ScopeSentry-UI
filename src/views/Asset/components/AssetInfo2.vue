@@ -652,10 +652,6 @@ const handleClose = (tag: string) => {
 }
 </style>
 <style lang="less" scoped>
-.el-button {
-  margin-top: 10px;
-}
-
 :deep(.el-popper.is-dark) {
   max-width: 50% !important;
   line-height: 24px;

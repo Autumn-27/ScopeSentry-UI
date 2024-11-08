@@ -335,7 +335,12 @@ export default {
     addTemplate: 'Add Template',
     editTemplate: 'Edit Template',
     deleteTemplate: 'Del Template',
-    autoNode: 'Auto Join'
+    autoNode: 'Auto Join',
+    running: 'Running',
+    stop: 'Stop',
+    start: 'Start',
+    finish: 'Finish',
+    result: 'Result'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',
