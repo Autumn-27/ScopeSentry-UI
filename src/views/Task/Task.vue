@@ -21,7 +21,7 @@ import {
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, deleteTaskApi, retestTaskApi } from '@/api/task'
+import { getTaskDataApi, deleteTaskApi, retestTaskApi, stopTaskApi, starTaskApi } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
@@ -130,8 +130,10 @@ const taskColums = reactive<TableColumn[]>([
             break
           case 'stop':
             stopTask(row.id)
+            break
           case 'start':
             startTask(row.id)
+            break
         }
       }
       const retestAndDeleteDropdown = h(
@@ -214,9 +216,15 @@ const getProgressInfo = async (id) => {
   progressDialogVisible.value = true
 }
 
-const stopTask = async (id) => {}
+const stopTask = async (id) => {
+  console.log('begin stop')
+  await stopTaskApi(id)
+}
 
-const startTask = async (id) => {}
+const startTask = async (id) => {
+  console.log('begin start')
+  await starTaskApi(id)
+}
 
 const progresscloseDialog = () => {
   progressDialogVisible.value = false
