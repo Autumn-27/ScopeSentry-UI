@@ -276,14 +276,14 @@ function handleCloseTag(tag: string) {
       </ElCol>
     </ElRow> -->
     <ElRow class="row-bg" :gutter="20">
-      <ElCol :span="8">
-        {{ t('form.input') }}
+      <ElCol :span="6">
         <ElAutocomplete
           v-model="searchParams"
           :fetch-suggestions="querySearch"
+          :placeholder="t('form.input')"
           popperClass="my-autocomplete"
           @select="handleSelect"
-          style="width: 90%"
+          style="width: 100%"
         >
           <template #append>
             <ElButton
@@ -312,13 +312,12 @@ function handleCloseTag(tag: string) {
           {{ t('asset.export') }}
         </ElButton>
       </ElCol>
-      <ElCol :span="5">
-        {{ t('project.project') }}:
+      <ElCol :span="4">
         <ElTreeSelect
           :loading="projectLoading"
-          style="width: 80%"
           v-model="projectValue"
           :data="$props.projectList"
+          :placeholder="t('project.project')"
           multiple
           filterable
           show-checkbox
