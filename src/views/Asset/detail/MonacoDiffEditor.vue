@@ -11,7 +11,7 @@ onMounted(() => {
   if (editorContainer.value) {
     diffEditor = monaco.editor.createDiffEditor(editorContainer.value, {
       theme: 'vs-dark',
-      originalEditable: false,
+      originalEditable: true,
       automaticLayout: true
     })
 

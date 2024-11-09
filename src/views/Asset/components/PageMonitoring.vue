@@ -258,10 +258,10 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   </ElRow>
   <Dialog
     v-model="HistoryDiffDialogVisible"
-    title="Historical changes"
+    title="Body Diff  (Last -> Current)"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    width="70%"
+    width="80%"
     :max-height="maxHeight"
   >
     <MonacoDiffEditor :original="historyDiff[0]" :modified="historyDiff[1]" />
