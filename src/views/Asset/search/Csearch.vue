@@ -24,8 +24,9 @@ import { Dialog } from '@/components/Dialog'
 import { useIcon } from '@/hooks/web/useIcon'
 import exportData from '../export/exportData.vue'
 import { delDataApi } from '@/api/asset'
+import { useRoute } from 'vue-router'
 const { t } = useI18n()
-
+const { query } = useRoute()
 const props = defineProps<{
   getList: () => void
   handleSearch: (string) => void
@@ -233,6 +234,11 @@ const tagClickFilterSearch = () => {
   console.log('Updated dictionary:', dictionary)
   props.handleFilterSearch(searchParams.value, dictionary)
 }
+let task = query.task as string
+if (task !== undefined && task !== '') {
+  localDynamicTags.value.push(`task=${task}`)
+}
+tagClickFilterSearch()
 watch(
   () => props.dynamicTags,
   (newTags) => {

@@ -26,7 +26,8 @@ import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
 import ProgressInfo from './components/ProgressInfo.vue'
-
+import { useRouter } from 'vue-router'
+const { push } = useRouter()
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const search = ref('')
@@ -188,7 +189,7 @@ const taskColums = reactive<TableColumn[]>([
           {retestAndDeleteDropdown}
           <BaseButton
             type="primary"
-            onClick={() => getTaskContent(row)}
+            onClick={() => getTaskResult(row.name)}
             style={{ marginLeft: '10px' }}
           >
             {t('task.result')}
@@ -214,6 +215,10 @@ let getProgressInfoID = ''
 const getProgressInfo = async (id) => {
   getProgressInfoID = id
   progressDialogVisible.value = true
+}
+
+const getTaskResult = async (id) => {
+  push(`/asset-information/index?task=${id}`)
 }
 
 const stopTask = async (id) => {

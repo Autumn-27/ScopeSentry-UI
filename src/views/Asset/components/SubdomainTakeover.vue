@@ -119,7 +119,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total
     }
   },
-  immediate: true
+  immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 pageSize.value = 20
