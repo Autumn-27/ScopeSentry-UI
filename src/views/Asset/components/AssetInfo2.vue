@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { Ref, computed, reactive, ref } from 'vue'
+import { Ref, computed, h, nextTick, reactive, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import {
@@ -16,11 +16,14 @@ import {
   ElPagination,
   ElLink,
   ElText,
-  ElButton
+  ElButton,
+  InputInstance,
+  ElInput
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import {
+  addTagApi,
   getAssetApi,
   getAssetStatisticsPortApi,
   getAssetStatisticsTypeApi,
@@ -145,6 +148,13 @@ const getAssetstatistics = async () => {
   let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter)
   AssetstatisticsData.value.Icon = iconRes.data.Icon
 }
+type RowState = {
+  inputVisible: boolean
+  inputValue: string
+  inputRef: Ref<InputInstance | null>
+}
+
+const rowStateMap = reactive<Record<string, RowState>>({})
 
 let crudSchemas = reactive<CrudSchema[]>([
   {
@@ -311,20 +321,65 @@ let crudSchemas = reactive<CrudSchema[]>([
     field: 'tags',
     label: 'TAG',
     fit: 'true',
-    formatter: (_: Recordable, __: TableColumn, tags: string[]) => {
-      if (tags.length > 0) {
-        return (
-          <ElRow>
-            {tags.map((tag) => (
-              <ElCol span={24} key={tag}>
-                <ElTag>{tag}</ElTag>
-              </ElCol>
-            ))}
-          </ElRow>
-        )
-      } else {
-        return ''
+    formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
+      // 初始化状态
+      if (!rowStateMap[row.id]) {
+        rowStateMap[row.id] = {
+          inputVisible: false,
+          inputValue: '',
+          inputRef: ref() as Ref<InputInstance>
+        }
       }
+      const rowState = rowStateMap[row.id]
+      rowState.inputRef = ref(null) as Ref<InputInstance | null>
+      const handleInputConfirm = async () => {
+        if (rowState.inputValue) {
+          tags.push(rowState.inputValue) // 将输入值添加到 tags 中
+          // await addTagApi(row.id, index, rowState.inputValue)
+        }
+        rowState.inputVisible = false // 隐藏输入框
+        rowState.inputValue = '' // 清空输入框的值
+      }
+      const showInput = () => {
+        rowState.inputVisible = true
+        nextTick(() => {
+          console.log('inputRef:', rowState.inputRef.value)
+          if (rowState.inputRef.value && rowState.inputRef.value.input) {
+            rowState.inputRef.value.input.focus()
+          }
+        })
+      }
+      return h(ElRow, {}, () => [
+        // 渲染标签
+        ...tags.map((tag) => h(ElCol, { span: 24, key: tag }, () => [h(ElTag, {}, () => tag)])),
+
+        // 输入框或按钮
+        h(
+          ElCol,
+          { span: 24 },
+          rowState.inputVisible
+            ? () =>
+                h(ElInput, {
+                  ref: rowState.inputRef,
+                  modelValue: rowState.inputValue, // 双向绑定输入框值
+                  'onUpdate:modelValue': (value: string) => (rowState.inputValue = value),
+                  class: 'w-20',
+                  size: 'small',
+                  onKeyup: (event: KeyboardEvent) => {
+                    if (event.key === 'Enter') {
+                      handleInputConfirm() // 只在回车键被按下时触发
+                    }
+                  },
+                  onBlur: handleInputConfirm // 失去焦点时调用 handleInputConfirm
+                })
+            : () =>
+                h(
+                  ElButton,
+                  { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
+                  () => '+ New Tag'
+                )
+        )
+      ])
     },
     minWidth: '130'
   },
@@ -353,7 +408,12 @@ let crudSchemas = reactive<CrudSchema[]>([
           <ElRow style={{ flexWrap: 'wrap' }}>
             {ProductsValue.map((product) => (
               <ElCol span={24} key={product}>
-                <ElTag type={'success'}>{product}</ElTag>
+                <div
+                  onClick={() => changeTags('app', product)}
+                  style={'display: inline-block; cursor: pointer'}
+                >
+                  <ElTag type={'success'}>{product}</ElTag>
+                </div>
               </ElCol>
             ))}
           </ElRow>

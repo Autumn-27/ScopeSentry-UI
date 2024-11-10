@@ -286,13 +286,7 @@ const callFunctionsConcurrently = async () => {
     console.error('Error occurred while executing getList and getSensNames:', error)
   }
 }
-const addSensNameSearch = async (name: string) => {
-  console.log(name)
-  if (searchParams.value == '') {
-    searchParams.value = 'sname="' + name + '"'
-  }
-  console.log(searchParams.value)
-}
+
 const dynamicTags = ref<string[]>([])
 const changeTags = (type, value) => {
   const key = `${type}=${value}`
@@ -337,7 +331,7 @@ const handleClose = (tag: string) => {
           :columns="allSchemas.tableColumns"
           :data="dataList"
           stripe
-          rowKey="_id"
+          rowKey="id"
           :border="true"
           :max-height="maxHeight"
           :loading="loading"

@@ -335,13 +335,11 @@ const refreshPage = () => {
           style="width: 100%"
         >
           <template #append>
-            <ElButton
-              @click="getHelp"
-              text
-              class="icon-button"
-              :icon="help"
-              style="display: contents"
-            />
+            <ElButton @click="getHelp" text class="icon-button" style="display: contents">
+              <template #default>
+                <ElIcon :icon="help" />
+              </template>
+            </ElButton>
           </template>
           <template #default="{ item }">
             <span style="float: left">{{ item.keyword || item.operator }}</span>
@@ -436,7 +434,7 @@ const refreshPage = () => {
         </ElButton>
       </ElCol>
     </ElRow>
-    <ElRow style="margin-top: 10px; left: 30px">
+    <ElRow style="margin-top: 10px">
       <ElCol :span="24">
         <div class="flex gap-2">
           <ElTag

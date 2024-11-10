@@ -218,3 +218,11 @@ export const getSubdomaintakerApi = (
 export const delDataApi = (ids: string[], index: string): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/data/delete', data: { ids, index } })
 }
+
+export const addTagApi = (
+  ids: string,
+  tp: string,
+  tag: string
+): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/data/add/tag', data: { ids, tp, tag } })
+}
