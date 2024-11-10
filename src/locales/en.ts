@@ -377,7 +377,8 @@ export default {
     responseBody: 'Response Body',
     historyDiff: 'Historical changes',
     export: 'Export',
-    screenshot: 'Screenshot'
+    screenshot: 'Screenshot',
+    Chart: 'Chart'
   },
   subdomain: {
     subdomainName: 'Subdomain',

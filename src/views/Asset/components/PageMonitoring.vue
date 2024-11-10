@@ -136,6 +136,46 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   }
 ])
+
+let index = 'PageMonitoring'
+crudSchemas.forEach((schema) => {
+  schema.hidden = schema.hidden ?? false // 如果没有 hidden 属性，添加并设置为 false
+})
+let statisticsHidden = ref(false)
+// 从localStorage读取配置并更新列的显示状态
+const loadColumnConfig = () => {
+  const savedConfig = JSON.parse(localStorage.getItem(`columnConfig_${index}`) || '{}')
+  console.log(savedConfig)
+  crudSchemas.forEach((col) => {
+    if (savedConfig[col.field] !== undefined && col.field != 'select') {
+      col.hidden = savedConfig[col.field] // 恢复列的显示状态
+    }
+  })
+  statisticsHidden.value = savedConfig['statisticsHidden']
+}
+
+// 保存配置到localStorage
+const saveColumnConfig = () => {
+  const config = crudSchemas.reduce((acc, col) => {
+    acc[col.field] = col.hidden // 保存每列的显示状态
+    return acc
+  }, {})
+  config['statisticsHidden'] = statisticsHidden.value
+  localStorage.setItem(`columnConfig_${index}`, JSON.stringify(config)) // 按index保存配置
+}
+
+// 处理列显示状态变化
+const handleColumnVisibilityChange = ({ field, hidden }) => {
+  console.log(field, hidden)
+  const columnIndex = crudSchemas.findIndex((col) => col.field === field)
+  if (columnIndex !== -1) {
+    // 使用对象的展开运算符来创建一个新的对象，并更新隐藏属性
+    crudSchemas[columnIndex].hidden = hidden
+  }
+  saveColumnConfig()
+}
+loadColumnConfig()
+
 const getHistoryDiff = async (id: string) => {
   const res = await getPageMonitoringDiffApi(id)
   historyDiffAction(res.data.diff)
@@ -209,6 +249,8 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"
+    :crudSchemas="crudSchemas"
+    @update-column-visibility="handleColumnVisibilityChange"
   />
   <ElRow>
     <ElCol>

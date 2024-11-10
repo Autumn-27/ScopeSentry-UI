@@ -374,7 +374,8 @@ export default {
     responseBody: '响应体',
     historyDiff: '历史变更',
     export: '导出',
-    screenshot: '截图'
+    screenshot: '截图',
+    Chart: '统计'
   },
   subdomain: {
     subdomainName: '子域名',

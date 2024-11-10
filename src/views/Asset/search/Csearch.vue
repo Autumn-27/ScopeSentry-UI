@@ -27,12 +27,10 @@ import { Icon } from '@/components/Icon'
 import exportData from '../export/exportData.vue'
 import { delDataApi } from '@/api/asset'
 import { useRoute } from 'vue-router'
+import { defineProps, defineEmits } from 'vue'
+import { CrudSchema } from '@/hooks/web/useCrudSchemas'
 const { t } = useI18n()
 const { query } = useRoute()
-type FieldLabelPair = {
-  field: string
-  label: string
-}
 const props = defineProps<{
   getList: () => void
   handleSearch: (string) => void
@@ -48,8 +46,9 @@ const props = defineProps<{
   dynamicTags?: string[]
   handleClose?: (string) => void
   openAggregation?: () => void
-  fieldLabelPairs: FieldLabelPair[]
-  tableSetting: Record<string, any>
+  crudSchemas: Array<CrudSchema>
+  statisticsHidden?: boolean
+  changeStatisticsHidden?: (boolean) => void
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -98,36 +97,36 @@ const logicHelp = [
 const searchHelpData = AssignmentHelp.concat(logicHelp)
 const dialogVisible = ref(false)
 
-// 在子组件内定义 tableSetting，使用 reactive 来确保它是响应式的
-const tableSetting = reactive(props.tableSetting)
+// 保存列显示配置到localStorage
+const saveColumnConfig = () => {
+  const config = props.crudSchemas.reduce((acc, column) => {
+    if (column.field != 'select') {
+      acc[column.field] = column.hidden
+    }
+    return acc
+  }, {})
+  localStorage.setItem(`columnConfig_${props.index}`, JSON.stringify(config))
+}
 
-// 在组件挂载时，获取 tableSetting 并进行初始化
-onMounted(() => {
-  const storedTableSetting = localStorage.getItem('tableSetting')
-  if (storedTableSetting) {
-    // 如果 localStorage 中有数据，解析它并存入 tableSetting
-    Object.assign(tableSetting, JSON.parse(storedTableSetting))
-  } else {
-    // 如果 localStorage 中没有数据，初始化为空对象
-    Object.assign(tableSetting, {})
-  }
+// 从localStorage加载配置
+const loadColumnConfig = () => {
+  const savedConfig = JSON.parse(localStorage.getItem(`columnConfig_${props.index}`) || '{}')
+  props.crudSchemas.forEach((col) => {
+    if (savedConfig[col.field] !== undefined) {
+      col.hidden = savedConfig[col.field]
+    }
+  })
+}
 
-  const { index, fieldLabelPairs } = props
-
-  // 检查 tableSetting 中是否有 index
-  if (!(index in tableSetting)) {
-    // 如果没有 index，就初始化一个空对象
-    tableSetting[index] = {}
-
-    // 遍历 fieldLabelPairs，逐个设置 field 为 true
-    fieldLabelPairs.forEach((item) => {
-      tableSetting[index][item.field] = true
-    })
-
-    // 在修改 tableSetting 后，将更新后的 tableSetting 存储回 localStorage
-    localStorage.setItem('tableSetting', JSON.stringify(tableSetting))
-  }
-})
+// 初始化加载配置
+loadColumnConfig()
+watch(
+  () => props.crudSchemas,
+  () => {
+    saveColumnConfig()
+  },
+  { deep: true }
+)
 const getHelp = () => {
   dialogVisible.value = true
 }
@@ -297,6 +296,17 @@ function handleCloseTag(tag: string) {
     console.warn('handleClose function is not defined')
   }
 }
+const emit = defineEmits<{
+  (event: 'update-column-visibility', payload: { field: string; hidden: boolean }): void
+}>()
+// 处理开关变化，通知父组件
+const handleSwitchChange = (field) => {
+  emit('update-column-visibility', { field: field.field, hidden: field.hidden })
+}
+const localStatisticsHidden = ref(props.statisticsHidden)
+const refreshPage = () => {
+  location.reload()
+}
 </script>
 
 <template>
@@ -386,11 +396,30 @@ function handleCloseTag(tag: string) {
           </div>
           <template #dropdown>
             <ElDropdownMenu>
-              <ElDropdownItem v-for="(field, index) in fieldLabelPairs" :key="index">
-                <div class="dropdown-item">
+              <ElDropdownItem v-for="(field, i) in crudSchemas" :key="i">
+                <div class="dropdown-item" v-if="field.field != 'selection'">
                   <span class="label-text">{{ field.label }}</span>
-                  <ElSwitch size="small" v-model="tableSetting[index][field.field]" />
+                  <ElSwitch
+                    size="small"
+                    v-model="field.hidden"
+                    :active-value="false"
+                    :inactive-value="true"
+                    @change="handleSwitchChange(field)"
+                  />
                 </div>
+              </ElDropdownItem>
+              <ElDropdownItem v-if="$props.index == 'asset'">
+                <span class="label-text">{{ t('asset.Chart') }}</span>
+                <ElSwitch
+                  size="small"
+                  v-model="localStatisticsHidden"
+                  :active-value="false"
+                  :inactive-value="true"
+                  @change="changeStatisticsHidden(localStatisticsHidden)"
+                />
+              </ElDropdownItem>
+              <ElDropdownItem divided>
+                <ElButton style="width: 100%" type="primary" @click="refreshPage">Save</ElButton>
               </ElDropdownItem>
             </ElDropdownMenu>
           </template>

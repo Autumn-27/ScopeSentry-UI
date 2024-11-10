@@ -32,7 +32,7 @@ getProjectList()
 <template>
   <ElTabs type="border-card">
     <ElTabPane :label="t('asset.assetName')"><AssetInfo2 :projectList="projectList" /></ElTabPane>
-    <!-- <ElTabPane :label="t('subdomain.subdomainName')">
+    <ElTabPane :label="t('subdomain.subdomainName')">
       <Subdomain :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('task.subdomainTakeover')">
@@ -49,6 +49,6 @@ getProjectList()
     </ElTabPane>
     <ElTabPane :label="t('PageMonitoring.pageMonitoringName')">
       <PageMonitoring :projectList="projectList" />
-    </ElTabPane> -->
+    </ElTabPane>
   </ElTabs>
 </template>
