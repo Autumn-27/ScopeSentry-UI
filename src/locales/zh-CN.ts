@@ -373,7 +373,8 @@ export default {
     responseHeader: '响应头',
     responseBody: '响应体',
     historyDiff: '历史变更',
-    export: '导出'
+    export: '导出',
+    screenshot: '截图'
   },
   subdomain: {
     subdomainName: '子域名',

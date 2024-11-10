@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { Ref, reactive, ref } from 'vue'
+import { Ref, computed, reactive, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import {
@@ -31,6 +31,7 @@ import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
 import { useRouter } from 'vue-router'
 import Csearch from '../search/Csearch.vue'
+import { createImageViewer } from '@/components/ImageViewer'
 const { push } = useRouter()
 const { t } = useI18n()
 interface Project {
@@ -223,6 +224,56 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
+    field: 'status',
+    label: t('asset.status'),
+    minWidth: '85',
+    columnKey: 'statuscode',
+    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
+      if (statusValue == null) {
+        return <div>-</div>
+      }
+      let color = ''
+      if (statusValue < 300) {
+        color = '#2eb98a'
+      } else if (statusValue < 400) {
+        color = '#ff5252'
+      } else {
+        color = '#ff5252'
+      }
+      return (
+        <ElRow gutter={10}>
+          <ElCol span={2}>
+            <Icon
+              icon="clarity:circle-solid"
+              color={color}
+              size={6}
+              style={'transform: translateY(-35%)'}
+            />
+          </ElCol>
+          <ElCol span={18}>
+            <ElText>{statusValue}</ElText>
+          </ElCol>
+        </ElRow>
+      )
+    },
+    filters: [
+      { text: '200', value: 200 },
+      { text: '201', value: 201 },
+      { text: '204', value: 204 },
+      { text: '301', value: 301 },
+      { text: '302', value: 302 },
+      { text: '304', value: 304 },
+      { text: '400', value: 400 },
+      { text: '401', value: 401 },
+      { text: '403', value: 403 },
+      { text: '404', value: 404 },
+      { text: '500', value: 500 },
+      { text: '502', value: 502 },
+      { text: '503', value: 503 },
+      { text: '504', value: 504 }
+    ]
+  },
+  {
     field: 'title',
     label: t('asset.title'),
     minWidth: '150',
@@ -278,59 +329,10 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '130'
   },
   {
-    field: 'status',
-    label: t('asset.status'),
-    minWidth: '85',
-    columnKey: 'statuscode',
-    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
-      if (statusValue == null) {
-        return <div>-</div>
-      }
-      let color = ''
-      if (statusValue < 300) {
-        color = '#2eb98a'
-      } else if (statusValue < 400) {
-        color = '#ff5252'
-      } else {
-        color = '#ff5252'
-      }
-      return (
-        <ElRow gutter={10}>
-          <ElCol span={2}>
-            <Icon
-              icon="clarity:circle-solid"
-              color={color}
-              size={6}
-              style={'transform: translateY(-35%)'}
-            />
-          </ElCol>
-          <ElCol span={18}>
-            <ElText>{statusValue}</ElText>
-          </ElCol>
-        </ElRow>
-      )
-    },
-    filters: [
-      { text: '200', value: 200 },
-      { text: '201', value: 201 },
-      { text: '204', value: 204 },
-      { text: '301', value: 301 },
-      { text: '302', value: 302 },
-      { text: '304', value: 304 },
-      { text: '400', value: 400 },
-      { text: '401', value: 401 },
-      { text: '403', value: 403 },
-      { text: '404', value: 404 },
-      { text: '500', value: 500 },
-      { text: '502', value: 502 },
-      { text: '503', value: 503 },
-      { text: '504', value: 504 }
-    ]
-  },
-  {
     field: 'banner',
     label: t('asset.banner'),
     fit: 'true',
+    hidden: false,
     formatter: (_: Recordable, __: TableColumn, bannerValue: string) => {
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
@@ -399,6 +401,23 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
+    field: 'screenshot',
+    label: t('asset.screenshot'),
+    minWidth: '170',
+    formatter: (row) => {
+      if (row.screenshot != '') {
+        return (
+          <img
+            src={`${row.screenshot}`}
+            alt="screenshot"
+            style={{ width: '100%', height: 'auto' }}
+            onClick={() => handleImageClick(row.screenshot)}
+          />
+        )
+      }
+    }
+  },
+  {
     field: 'time',
     label: t('asset.time'),
     minWidth: '170'
@@ -427,6 +446,25 @@ const filterChange = async (newFilters: any) => {
 const action = (id: string) => {
   push(`/asset-information/asset-detail?id=${id}`)
 }
+
+const handleImageClick = (screenshot: string) => {
+  createImageViewer({
+    urlList: [screenshot]
+  })
+}
+const fieldLabelPairs = crudSchemas.map((item) => ({ field: item.field, label: item.label }))
+const tableSetting = reactive({})
+const index = 'asset'
+computed(() => {
+  return crudSchemas.map((item) => {
+    // 根据 index 和 field 从 tableSetting 获取对应的 hidden 值
+    item.hidden =
+      tableSetting[index] && tableSetting[index][item.field] !== undefined
+        ? tableSetting[index][item.field]
+        : false
+    return item
+  })
+})
 
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
@@ -487,6 +525,8 @@ const handleClose = (tag: string) => {
     :handleFilterSearch="handleFilterSearch"
     :dynamicTags="dynamicTags"
     :handleClose="handleClose"
+    :fieldLabelPairs="fieldLabelPairs"
+    :tableSetting="tableSetting"
   />
   <ElRow :gutter="3">
     <ElCol :span="3">

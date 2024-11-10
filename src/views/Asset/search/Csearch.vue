@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { nextTick, reactive, ref, watch } from 'vue'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
 import {
   ElCol,
   ElRow,
@@ -18,15 +18,21 @@ import {
   ElMessageBox,
   ElMessage,
   ElTreeSelect,
-  ElTag
+  ElTag,
+  ElSwitch
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { useIcon } from '@/hooks/web/useIcon'
+import { Icon } from '@/components/Icon'
 import exportData from '../export/exportData.vue'
 import { delDataApi } from '@/api/asset'
 import { useRoute } from 'vue-router'
 const { t } = useI18n()
 const { query } = useRoute()
+type FieldLabelPair = {
+  field: string
+  label: string
+}
 const props = defineProps<{
   getList: () => void
   handleSearch: (string) => void
@@ -42,6 +48,8 @@ const props = defineProps<{
   dynamicTags?: string[]
   handleClose?: (string) => void
   openAggregation?: () => void
+  fieldLabelPairs: FieldLabelPair[]
+  tableSetting: Record<string, any>
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -89,6 +97,37 @@ const logicHelp = [
 ]
 const searchHelpData = AssignmentHelp.concat(logicHelp)
 const dialogVisible = ref(false)
+
+// 在子组件内定义 tableSetting，使用 reactive 来确保它是响应式的
+const tableSetting = reactive(props.tableSetting)
+
+// 在组件挂载时，获取 tableSetting 并进行初始化
+onMounted(() => {
+  const storedTableSetting = localStorage.getItem('tableSetting')
+  if (storedTableSetting) {
+    // 如果 localStorage 中有数据，解析它并存入 tableSetting
+    Object.assign(tableSetting, JSON.parse(storedTableSetting))
+  } else {
+    // 如果 localStorage 中没有数据，初始化为空对象
+    Object.assign(tableSetting, {})
+  }
+
+  const { index, fieldLabelPairs } = props
+
+  // 检查 tableSetting 中是否有 index
+  if (!(index in tableSetting)) {
+    // 如果没有 index，就初始化一个空对象
+    tableSetting[index] = {}
+
+    // 遍历 fieldLabelPairs，逐个设置 field 为 true
+    fieldLabelPairs.forEach((item) => {
+      tableSetting[index][item.field] = true
+    })
+
+    // 在修改 tableSetting 后，将更新后的 tableSetting 存储回 localStorage
+    localStorage.setItem('tableSetting', JSON.stringify(tableSetting))
+  }
+})
 const getHelp = () => {
   dialogVisible.value = true
 }
@@ -340,6 +379,23 @@ function handleCloseTag(tag: string) {
           </template>
         </ElDropdown>
       </ElCol>
+      <ElCol :span="1" style="display: flex; align-items: center">
+        <ElDropdown>
+          <div class="custom-dropdown">
+            <Icon icon="ant-design:setting-outlined" class="cursor-pointer" />
+          </div>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem v-for="(field, index) in fieldLabelPairs" :key="index">
+                <div class="dropdown-item">
+                  <span class="label-text">{{ field.label }}</span>
+                  <ElSwitch size="small" v-model="tableSetting[index][field.field]" />
+                </div>
+              </ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </ElCol>
       <ElCol :span="2" :xs="2" :sm="2" :md="2">
         <ElButton
           type="success"
@@ -436,5 +492,16 @@ function handleCloseTag(tag: string) {
 }
 .my-autocomplete li .highlighted .addr {
   color: #ddd;
+}
+.custom-dropdown:focus-visible {
+  outline: unset;
+}
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.label-text {
+  margin-right: 10px; /* 设置标签与开关之间的间距 */
 }
 </style>
