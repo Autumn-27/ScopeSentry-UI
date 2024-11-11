@@ -1,5 +1,10 @@
 export default {
   common: {
+    unprocessed: 'Unprocessed',
+    processing: 'Processing',
+    ignored: 'Ignored',
+    suspected: 'Suspected',
+    confirmed: 'Confirmed',
     cleanLog: 'Clear Logs',
     log: 'Log',
     filesize: 'Size',

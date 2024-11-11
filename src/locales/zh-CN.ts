@@ -1,5 +1,10 @@
 export default {
   common: {
+    unprocessed: '未处理',
+    processing: '处理中',
+    ignored: '忽略',
+    suspected: '疑似',
+    confirmed: '确认',
     cleanLog: '清除日志',
     log: '日志',
     filesize: '大小',

@@ -9,7 +9,6 @@ import {
   ElButton,
   ElCol,
   ElRow,
-  ElCard,
   ElMessage
 } from 'element-plus'
 import { Codemirror } from 'vue-codemirror'
@@ -180,7 +179,7 @@ const save = async () => {
       <ElCol :span="12">
         <ElFormItem :label="t('plugin.module')" prop="module">
           <ElSelect v-model="form.module" :disabled="isSystem">
-            <el-option
+            <ElOption
               v-for="option in moduleOptions"
               :key="option.value"
               :label="option.label"

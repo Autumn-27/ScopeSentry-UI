@@ -14,7 +14,9 @@ import {
   ElButton,
   ElInput,
   ElTag,
-  InputInstance
+  InputInstance,
+  ElSelect,
+  ElOption
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
@@ -24,6 +26,7 @@ import { Icon } from '@iconify/vue'
 import Csearch from '../search/Csearch.vue'
 import { BaseButton } from '@/components/Button'
 import { addTagApi, deleteTagApi } from '@/api/asset'
+import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -96,7 +99,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'vulnerability',
     label: 'Vulnerability',
-    minWidth: 100
+    minWidth: 120
   },
   {
     field: 'level',
@@ -151,7 +154,49 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'matched',
     label: 'Matched',
-    minWidth: 200
+    minWidth: 150
+  },
+  {
+    field: 'status',
+    label: t('common.state'),
+    minWidth: 100,
+    columnKey: 'status',
+    formatter: (_: Recordable, __: TableColumn, status: number) => {
+      if (status == null) {
+        status = 1
+      }
+
+      // 使用符合指定格式的 options 数组
+      const options = [
+        { value: 1, label: t('common.unprocessed') },
+        { value: 2, label: t('common.processing') },
+        { value: 3, label: t('common.ignored') },
+        { value: 4, label: t('common.suspected') },
+        { value: 5, label: t('common.confirmed') }
+      ]
+
+      // 返回一个下拉选择器
+      return (
+        <ElSelect
+          modelValue={status} // 使用 modelValue 代替 value
+          onUpdate:modelValue={(newValue) => {
+            // 处理选择的新值逻辑，比如更新表格数据
+            // 假设有一个方法 updateStatus 用来更新表格状态
+          }}
+        >
+          {options.map((item) => (
+            <ElOption key={item.value} label={item.label} value={item.value} />
+          ))}
+        </ElSelect>
+      )
+    },
+    filters: [
+      { text: t('common.unprocessed'), value: 1 },
+      { text: t('common.processing'), value: 2 },
+      { text: t('common.ignored'), value: 3 },
+      { text: t('common.suspected'), value: 4 },
+      { text: t('common.confirmed'), value: 5 }
+    ]
   },
   {
     field: 'tags',
