@@ -24,6 +24,7 @@ import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import {
   addTagApi,
+  deleteTagApi,
   getAssetApi,
   getAssetStatisticsPortApi,
   getAssetStatisticsTypeApi,
@@ -35,6 +36,7 @@ import { BaseButton } from '@/components/Button'
 import { useRouter } from 'vue-router'
 import Csearch from '../search/Csearch.vue'
 import { createImageViewer } from '@/components/ImageViewer'
+import { RowState } from '@/api/asset/types'
 const { push } = useRouter()
 const { t } = useI18n()
 interface Project {
@@ -147,11 +149,6 @@ const getAssetstatistics = async () => {
   staticLoading.value = false
   let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter)
   AssetstatisticsData.value.Icon = iconRes.data.Icon
-}
-type RowState = {
-  inputVisible: boolean
-  inputValue: string
-  inputRef: Ref<InputInstance | null>
 }
 
 const rowStateMap = reactive<Record<string, RowState>>({})
@@ -327,31 +324,54 @@ let crudSchemas = reactive<CrudSchema[]>([
         rowStateMap[row.id] = {
           inputVisible: false,
           inputValue: '',
-          inputRef: ref() as Ref<InputInstance>
+          inputRef: ref(null) as Ref<InputInstance | null>
         }
       }
       const rowState = rowStateMap[row.id]
-      rowState.inputRef = ref(null) as Ref<InputInstance | null>
       const handleInputConfirm = async () => {
         if (rowState.inputValue) {
           tags.push(rowState.inputValue) // 将输入值添加到 tags 中
-          // await addTagApi(row.id, index, rowState.inputValue)
+          addTagApi(row.id, index, rowState.inputValue)
         }
         rowState.inputVisible = false // 隐藏输入框
         rowState.inputValue = '' // 清空输入框的值
       }
+      const deleteTag = async (tag: string) => {
+        const indexT = tags.indexOf(tag)
+        if (indexT > -1) {
+          tags.splice(indexT, 1) // 从数组中移除指定的元素
+        }
+        deleteTagApi(row.id, index, tag)
+      }
       const showInput = () => {
         rowState.inputVisible = true
         nextTick(() => {
-          console.log('inputRef:', rowState.inputRef.value)
-          if (rowState.inputRef.value && rowState.inputRef.value.input) {
-            rowState.inputRef.value.input.focus()
-          }
+          // console.log('inputRef:', rowState.inputRef)
+          // if (rowState.inputRef.value?.input) {
+          //   rowState.inputRef.value.input.focus()
+          // }
         })
       }
+      // 标签点击处理函数
+      const handleTagClick = (event: MouseEvent, tag: string) => {
+        if ((event.target as HTMLElement).classList.contains('el-tag__close')) {
+          // 点击关闭按钮时不处理
+          return
+        }
+        // 这里可以添加处理点击事件的逻辑
+        console.log('Tag clicked:', tag)
+        changeTags('tags', tag)
+      }
+
       return h(ElRow, {}, () => [
         // 渲染标签
-        ...tags.map((tag) => h(ElCol, { span: 24, key: tag }, () => [h(ElTag, {}, () => tag)])),
+        ...tags.map((tag) =>
+          h(ElCol, { span: 24, key: tag }, () => [
+            h('div', { onClick: (event: MouseEvent) => handleTagClick(event, tag) }, [
+              h(ElTag, { closable: true, onClose: () => deleteTag(tag) }, () => tag)
+            ])
+          ])
+        ),
 
         // 输入框或按钮
         h(

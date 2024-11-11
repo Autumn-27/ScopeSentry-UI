@@ -220,9 +220,17 @@ export const delDataApi = (ids: string[], index: string): Promise<IResponse<comm
 }
 
 export const addTagApi = (
-  ids: string,
+  id: string,
   tp: string,
   tag: string
 ): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/data/add/tag', data: { ids, tp, tag } })
+  return request.post({ url: '/api/data/add/tag', data: { id, tp, tag } })
+}
+
+export const deleteTagApi = (
+  id: string,
+  tp: string,
+  tag: string
+): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/data/delete/tag', data: { id, tp, tag } })
 }

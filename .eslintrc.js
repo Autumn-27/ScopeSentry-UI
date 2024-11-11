@@ -25,7 +25,7 @@ module.exports = defineConfig({
   ],
   rules: {
     'vue/no-setup-props-destructure': 'off',
-    "vue/no-unused-vars": "off",
+    'vue/no-unused-vars': 'off',
     'vue/script-setup-uses-vars': 'error',
     'vue/no-reserved-component-names': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',

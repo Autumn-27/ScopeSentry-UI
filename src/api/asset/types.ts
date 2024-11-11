@@ -1,3 +1,6 @@
+import { InputInstance } from "element-plus"
+import { Ref } from "vue"
+
 export type AssetData = {
   id: string
   domain: string
@@ -117,4 +120,10 @@ export type PageMResponse = {
 
 export type PageMHistory = {
   diff: string[]
+}
+
+export type RowState = {
+  inputVisible: boolean
+  inputValue: string
+  inputRef: Ref<InputInstance | null>
 }

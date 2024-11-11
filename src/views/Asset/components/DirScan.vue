@@ -1,13 +1,24 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { onMounted, reactive, ref } from 'vue'
+import { h, nextTick, onMounted, reactive, Ref, ref } from 'vue'
 import { Icon } from '@/components/Icon'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElCol, ElRow, ElText } from 'element-plus'
+import {
+  ElCard,
+  ElPagination,
+  ElCol,
+  ElRow,
+  ElText,
+  ElButton,
+  ElInput,
+  ElTag,
+  InputInstance
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getDirScanApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getDirScanApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
+import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -49,7 +60,7 @@ const handleSearch = (data: any) => {
   searchParams.value = data
   getList()
 }
-
+const rowStateMap = reactive<Record<string, RowState>>({})
 const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'selection',
@@ -127,6 +138,98 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'msg',
     label: 'Redirect',
     minWidth: 200
+  },
+  {
+    field: 'tags',
+    label: 'TAG',
+    fit: 'true',
+    formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
+      if (tags == null) {
+        tags = []
+      }
+      // 初始化状态
+      if (!rowStateMap[row.id]) {
+        rowStateMap[row.id] = {
+          inputVisible: false,
+          inputValue: '',
+          inputRef: ref(null) as Ref<InputInstance | null>
+        }
+      }
+      const rowState = rowStateMap[row.id]
+      const handleInputConfirm = async () => {
+        if (rowState.inputValue) {
+          tags.push(rowState.inputValue) // 将输入值添加到 tags 中
+          addTagApi(row.id, index, rowState.inputValue)
+        }
+        rowState.inputVisible = false // 隐藏输入框
+        rowState.inputValue = '' // 清空输入框的值
+      }
+      const deleteTag = async (tag: string) => {
+        const indexT = tags.indexOf(tag)
+        if (indexT > -1) {
+          tags.splice(indexT, 1) // 从数组中移除指定的元素
+        }
+        deleteTagApi(row.id, index, tag)
+      }
+      const showInput = () => {
+        rowState.inputVisible = true
+        nextTick(() => {
+          // console.log('inputRef:', rowState.inputRef)
+          // if (rowState.inputRef.value?.input) {
+          //   rowState.inputRef.value.input.focus()
+          // }
+        })
+      }
+      // 标签点击处理函数
+      const handleTagClick = (event: MouseEvent, tag: string) => {
+        if ((event.target as HTMLElement).classList.contains('el-tag__close')) {
+          // 点击关闭按钮时不处理
+          return
+        }
+        // 这里可以添加处理点击事件的逻辑
+        console.log('Tag clicked:', tag)
+        changeTags('tags', tag)
+      }
+
+      return h(ElRow, {}, () => [
+        // 渲染标签
+        ...tags.map((tag) =>
+          h(ElCol, { span: 24, key: tag }, () => [
+            h('div', { onClick: (event: MouseEvent) => handleTagClick(event, tag) }, [
+              h(ElTag, { closable: true, onClose: () => deleteTag(tag) }, () => tag)
+            ])
+          ])
+        ),
+
+        // 输入框或按钮
+        h(
+          ElCol,
+          { span: 24 },
+          rowState.inputVisible
+            ? () =>
+                h(ElInput, {
+                  ref: rowState.inputRef,
+                  modelValue: rowState.inputValue, // 双向绑定输入框值
+                  'onUpdate:modelValue': (value: string) => (rowState.inputValue = value),
+                  class: 'w-20',
+                  size: 'small',
+                  onKeyup: (event: KeyboardEvent) => {
+                    if (event.key === 'Enter') {
+                      handleInputConfirm() // 只在回车键被按下时触发
+                    }
+                  },
+                  onBlur: handleInputConfirm // 失去焦点时调用 handleInputConfirm
+                })
+            : () =>
+                h(
+                  ElButton,
+                  { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
+                  () => '+ New Tag'
+                )
+        )
+      ])
+    },
+    minWidth: '130'
   }
 ])
 
@@ -221,6 +324,25 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   searchParams.value = data
   getList()
 }
+
+const dynamicTags = ref<string[]>([])
+const changeTags = (type, value) => {
+  const key = `${type}=${value}`
+  console.log(key)
+  dynamicTags.value = [...dynamicTags.value, key]
+}
+const handleClose = (tag: string) => {
+  if (dynamicTags.value) {
+    const [key, value] = tag.split('=')
+    if (key in filter && Array.isArray(filter[key])) {
+      filter[key] = filter[key].filter((item: string) => item !== value)
+      if (filter[key].length === 0) {
+        delete filter[key]
+      }
+    }
+    dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
+  }
+}
 </script>
 
 <template>
@@ -229,6 +351,8 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
     index="DirScanResult"
+    :dynamicTags="dynamicTags"
+    :handleClose="handleClose"
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"
