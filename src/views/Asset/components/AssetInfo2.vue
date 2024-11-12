@@ -1,8 +1,8 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { Ref, computed, h, nextTick, reactive, ref } from 'vue'
-import { onMounted } from 'vue'
+import { Ref, h, nextTick, reactive, ref } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
+import { Dialog } from '@/components/Dialog'
 import {
   ElRow,
   ElCol,
@@ -37,6 +37,7 @@ import { useRouter } from 'vue-router'
 import Csearch from '../search/Csearch.vue'
 import { createImageViewer } from '@/components/ImageViewer'
 import { RowState } from '@/api/asset/types'
+import AssetDetail2 from '../detail/AssetDetail2.vue'
 const { push } = useRouter()
 const { t } = useI18n()
 interface Project {
@@ -508,7 +509,10 @@ let crudSchemas = reactive<CrudSchema[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          <BaseButton type="primary" onClick={() => action(row.id)}>
+          <BaseButton
+            type="primary"
+            onClick={() => openDetail(row.id, row.service + '://' + row.domain, row.ip, row.port)}
+          >
             {t('asset.detail')}
           </BaseButton>
         </>
@@ -555,6 +559,7 @@ const saveColumnConfig = () => {
     return acc
   }, {})
   config['statisticsHidden'] = statisticsHidden.value
+  console.log('statisticsHidden.value', statisticsHidden.value)
   localStorage.setItem(`columnConfig_${index}`, JSON.stringify(config)) // 按index保存配置
 }
 
@@ -619,6 +624,21 @@ const handleClose = (tag: string) => {
 const changeStatisticsHidden = (value: boolean) => {
   statisticsHidden.value = value
   saveColumnConfig()
+}
+const detailVisible = ref(false)
+const detailId = ref('')
+const detailhost = ref('')
+const detailip = ref('')
+const detailport = ref()
+const openDetail = (id: string, host: string, ip: string, port: number) => {
+  detailhost.value = ''
+  detailip.value = ''
+  detailport.value = null
+  detailId.value = id
+  detailhost.value = host
+  detailip.value = ip
+  detailport.value = port
+  detailVisible.value = true
 }
 </script>
 
@@ -794,6 +814,15 @@ const changeStatisticsHidden = (value: boolean) => {
       </ElRow>
     </ElCol>
   </ElRow>
+  <Dialog
+    v-model="detailVisible"
+    :title="t('asset.detail')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    width="50%"
+  >
+    <AssetDetail2 :id="detailId" :host="detailhost" :ip="detailip" :port="detailport" />
+  </Dialog>
 </template>
 
 <style lang="less">

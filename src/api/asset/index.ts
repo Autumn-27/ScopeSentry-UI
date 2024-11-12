@@ -13,7 +13,8 @@ import {
   SensitiveBody,
   PageMResponse,
   PageMHistory,
-  SensitiveNames
+  SensitiveNames,
+  AssetChangeLog
 } from './types'
 import { commonRespData } from '../scommon/types'
 
@@ -28,10 +29,6 @@ export const getAssetApi = (
   filter: Record<string, any>
 ): Promise<IResponse<AssetDataResponse>> => {
   return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize, filter } })
-}
-
-export const getAssetStatisticsApi = (search: string): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics2', data: { search } })
 }
 
 export const getAssetStatisticsPortApi = (
@@ -71,6 +68,10 @@ export const getAssetStatisticsTitleApi = (
 
 export const getAssetDetailApi = (id: string): Promise<IResponse<AssetDetail>> => {
   return request.post({ url: '/api/asset/detail', data: { id } })
+}
+
+export const getAssetChangeLogApi = (id: string): Promise<IResponse<AssetChangeLog[]>> => {
+  return request.post({ url: '/api/asset/changelog', data: { id } })
 }
 
 interface SubdomainDataResponse {

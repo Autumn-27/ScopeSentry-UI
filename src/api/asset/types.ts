@@ -1,5 +1,5 @@
-import { InputInstance } from "element-plus"
-import { Ref } from "vue"
+import { InputInstance } from 'element-plus'
+import { Ref } from 'vue'
 
 export type AssetData = {
   id: string
@@ -24,22 +24,18 @@ export type AssetStatistics = {
 }
 
 export type AssetDetail = {
-  ID: string
-  Domain: string
-  IP: string
-  URL: string
-  Port: number
-  Title: string
-  Status: number
-  FaviconHash: string
-  Jarm: string
-  Time: String
-  Products: string[]
-  Service: string
-  TLSData: string
-  Hash: string
-  ResponseHeaders: string
-  ResponseBody: string
+  json: string
+}
+
+export type AssetChangeLogField = {
+  fieldname: string
+  old: string
+  new: string
+}
+export type AssetChangeLog = {
+  timestamp: string
+  isExpanded: boolean
+  change: AssetChangeLogField[]
 }
 
 export type SubdomainData = {
