@@ -15,7 +15,9 @@ import {
   ElTag,
   ElInput,
   ElButton,
-  InputInstance
+  InputInstance,
+  ElSelect,
+  ElOption
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
@@ -25,7 +27,8 @@ import {
   deleteTagApi,
   getSensitiveNamesApi,
   getSensitiveResultApi,
-  getSensitiveResultBodyApi
+  getSensitiveResultBodyApi,
+  updateStatusApi
 } from '@/api/asset'
 import { Icon } from '@iconify/vue'
 import { BaseButton } from '@/components/Button'
@@ -50,11 +53,6 @@ const searchKeywordsData = [
     keyword: 'sname',
     example: 'sname="twilio_account_sid"',
     explain: t('searchHelp.sname')
-  },
-  {
-    keyword: 'body',
-    example: 'body="api-key-example"',
-    explain: t('searchHelp.body')
   },
   {
     keyword: 'info',
@@ -144,6 +142,51 @@ const crudSchemas = reactive<CrudSchema[]>([
         </ElScrollbar>
       )
     }
+  },
+  {
+    field: 'status',
+    label: t('common.state'),
+    minWidth: 100,
+    columnKey: 'status',
+    formatter: (row: Recordable, __: TableColumn, _: number) => {
+      if (row.id.includes('//')) {
+        return
+      }
+      if (row.status == null) {
+        row.status = 1
+      }
+
+      const options = [
+        { value: 1, label: t('common.unprocessed') },
+        { value: 2, label: t('common.processing') },
+        { value: 3, label: t('common.ignored') },
+        { value: 4, label: t('common.suspected') },
+        { value: 5, label: t('common.confirmed') }
+      ]
+
+      return (
+        <ElSelect
+          modelValue={row.status}
+          onUpdate:modelValue={async (newValue) => {
+            try {
+              row.status = newValue
+              updateStatusApi(row.id, 'SensitiveResult', newValue)
+            } catch (error) {}
+          }}
+        >
+          {options.map((item) => (
+            <ElOption key={item.value} label={item.label} value={item.value} />
+          ))}
+        </ElSelect>
+      )
+    },
+    filters: [
+      { text: t('common.unprocessed'), value: 1 },
+      { text: t('common.processing'), value: 2 },
+      { text: t('common.ignored'), value: 3 },
+      { text: t('common.suspected'), value: 4 },
+      { text: t('common.confirmed'), value: 5 }
+    ]
   },
   {
     field: 'tags',

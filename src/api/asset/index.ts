@@ -74,6 +74,14 @@ export const getAssetChangeLogApi = (id: string): Promise<IResponse<AssetChangeL
   return request.post({ url: '/api/asset/changelog', data: { id } })
 }
 
+export const updateStatusApi = (
+  id: string,
+  tp: string,
+  status: number
+): Promise<IResponse<AssetChangeLog[]>> => {
+  return request.post({ url: '/api/data/update/status', data: { id, tp, status } })
+}
+
 interface SubdomainDataResponse {
   list: SubdomainData[]
   total: number

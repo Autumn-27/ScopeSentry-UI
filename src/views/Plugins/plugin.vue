@@ -11,7 +11,12 @@ import {
   ElMessageBox,
   ElTag,
   ElTooltip,
-  ElScrollbar
+  ElScrollbar,
+  UploadInstance,
+  UploadProps,
+  UploadRawFile,
+  ElUpload,
+  ElMessage
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -25,6 +30,7 @@ import {
   getPluginLogApi
 } from '@/api/plugins'
 import detail from './components/detail.vue'
+import { useUserStore } from '@/store/modules/user'
 
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -230,6 +236,52 @@ const cleanLog = async () => {
   await cleanPluginLogApi(logModule.value, logHash.value)
   logContent.value = ''
 }
+const userStore = useUserStore()
+const uploadHeaders = { Authorization: `${userStore.getToken}` }
+const upload = ref<UploadInstance>()
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  upload.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  upload.value!.handleStart(file)
+}
+
+const handleUploadSuccess = (response) => {
+  console.log(response)
+  if (response.code === 200) {
+    ElMessage.success('Upload succes')
+  } else {
+    ElMessage.error(response.message)
+  }
+  if (response.code == 505) {
+    localStorage.removeItem('plugin_key')
+  }
+  getList()
+}
+const handleFileChange = (file, fileList) => {
+  if (fileList.length > 0) {
+    upload.value!.submit()
+  }
+}
+
+const keyDialogVisible = ref(false)
+const pluginKey = ref('')
+
+const LoadPluginKey = () => {
+  const key = localStorage.getItem(`plugin_key`) as string
+  if (!key) {
+    keyDialogVisible.value = true
+  }
+  pluginKey.value = key
+}
+
+const savePluginKey = () => {
+  if (pluginKey.value) {
+    localStorage.setItem('plugin_key', pluginKey.value)
+    keyDialogVisible.value = false
+  }
+}
+
+LoadPluginKey()
 </script>
 
 <template>
@@ -248,13 +300,38 @@ const cleanLog = async () => {
       </ElCol>
     </ElRow>
     <ElRow>
-      <ElCol style="position: relative; top: 16px">
+      <ElCol style="position: relative; top: 16px" :span="4">
         <div class="mb-10px">
           <BaseButton type="primary" @click="addPlugin">{{ t('plugin.new') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('plugin.delete') }}
           </BaseButton>
+          <a href="https://www.example.com" target="_blank" style="margin-left: 15px">
+            <BaseButton type="info">{{ t('plugin.market') }}</BaseButton>
+          </a>
         </div>
+      </ElCol>
+      <ElCol :span="2" style="position: relative; top: 16px">
+        <ElUpload
+          ref="upload"
+          style="margin-left: 15px"
+          :action="'/api/plugin/import?key=' + pluginKey"
+          :headers="uploadHeaders"
+          :on-success="handleUploadSuccess"
+          :limit="1"
+          :on-exceed="handleExceed"
+          :auto-upload="false"
+          @change="handleFileChange"
+        >
+          <template #trigger>
+            <BaseButton>
+              <template #icon>
+                <Icon icon="iconoir:upload" />
+              </template>
+              {{ t('plugin.import') }}
+            </BaseButton>
+          </template>
+        </ElUpload>
       </ElCol>
     </ElRow>
     <div style="position: relative; top: 12px">
@@ -314,5 +391,17 @@ const cleanLog = async () => {
       <BaseButton @click="cleanLog" type="danger">{{ t('common.cleanLog') }}</BaseButton>
       <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
     </template>
+  </Dialog>
+  <Dialog
+    v-model="keyDialogVisible"
+    :title="t('plugin.key')"
+    center
+    width="30%"
+    style="max-width: 400px; height: 200px"
+  >
+    <div class="flex flex-col gap-2">
+      <ElInput v-model="pluginKey" placeholder="请输入插件密钥" />
+      <BaseButton @click="savePluginKey" type="primary" class="w-full">确定</BaseButton>
+    </div>
   </Dialog>
 </template>

@@ -87,7 +87,13 @@ onBeforeMount(async () => {
     await fetchData(props.id)
   }
 })
+const pluginKey = ref('')
 
+const LoadPluginKey = () => {
+  const key = localStorage.getItem(`plugin_key`) as string
+  pluginKey.value = key
+}
+LoadPluginKey()
 const isSystem = ref(false)
 // 根据 id 查询配置数据
 const fetchData = async (id: string) => {
@@ -144,7 +150,7 @@ const save = async () => {
     }
   }
   try {
-    await savePluginDataApi(
+    const res = await savePluginDataApi(
       props.id,
       form.value.name,
       form.value.version,
@@ -152,8 +158,12 @@ const save = async () => {
       form.value.parameter,
       form.value.help,
       form.value.introduction,
-      content.value
+      content.value,
+      pluginKey.value
     )
+    if (res.code == 505) {
+      localStorage.removeItem('plugin_key')
+    }
     props.closeDialog()
     props.getList()
   } catch (error) {

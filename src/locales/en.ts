@@ -507,7 +507,10 @@ export default {
     module: 'Module',
     help: 'Parameter Help',
     source: 'Source',
-    isSystem: 'isSystem'
+    isSystem: 'isSystem',
+    market: 'Plugin Market',
+    import: 'Import',
+    key: 'Plugin Key'
   },
   workplace: {
     goodMorning: 'Good morning',

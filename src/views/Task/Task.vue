@@ -161,22 +161,15 @@ const taskColums = reactive<TableColumn[]>([
           dropdown: () =>
             h(ElDropdownMenu, null, () => {
               // 根据 row.status 渲染不同的菜单项
-              if (row.status === 1) {
-                // 运行中
+              if (row.status === 3) {
                 return [
-                  h(ElDropdownItem, { command: 'stop' }, () => t('task.stop')), // 如果是运行中，显示“停止”按钮
-                  h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
-                  h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
-                ]
-              } else if (row.status === 2) {
-                // 暂停
-                return [
-                  h(ElDropdownItem, { command: 'start' }, () => t('task.start')), // 如果是暂停，显示“开始”按钮
                   h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
                   h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
                 ]
               } else {
                 return [
+                  h(ElDropdownItem, { command: 'start' }, () => t('task.start')),
+                  h(ElDropdownItem, { command: 'stop' }, () => t('task.stop')), // 如果是运行中，显示“停止”按钮
                   h(ElDropdownItem, { command: 'retest' }, () => t('task.retest')),
                   h(ElDropdownItem, { command: 'delete' }, () => t('common.delete'))
                 ]

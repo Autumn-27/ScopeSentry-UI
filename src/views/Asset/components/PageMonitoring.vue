@@ -49,21 +49,6 @@ const searchKeywordsData = [
     explain: t('searchHelp.hash')
   },
   {
-    keyword: 'matched',
-    example: 'matched="https://example.com"',
-    explain: t('searchHelp.matched')
-  },
-  {
-    keyword: 'diff',
-    example: 'diff="example"',
-    explain: t('searchHelp.diff')
-  },
-  {
-    keyword: 'response',
-    example: 'response="root"',
-    explain: t('searchHelp.response')
-  },
-  {
     keyword: 'project',
     example: 'project="Hackerone"',
     explain: t('searchHelp.project')

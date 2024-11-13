@@ -16,7 +16,8 @@ import {
   ElTag,
   InputInstance,
   ElSelect,
-  ElOption
+  ElOption,
+  ElMessage
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
@@ -25,7 +26,7 @@ import { getVulResultDataApi } from '@/api/vul'
 import { Icon } from '@iconify/vue'
 import Csearch from '../search/Csearch.vue'
 import { BaseButton } from '@/components/Button'
-import { addTagApi, deleteTagApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, updateStatusApi } from '@/api/asset'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
 interface Project {
@@ -161,12 +162,11 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('common.state'),
     minWidth: 100,
     columnKey: 'status',
-    formatter: (_: Recordable, __: TableColumn, status: number) => {
-      if (status == null) {
-        status = 1
+    formatter: (row: Recordable, __: TableColumn, _: number) => {
+      if (row.status == null) {
+        row.status = 1
       }
 
-      // 使用符合指定格式的 options 数组
       const options = [
         { value: 1, label: t('common.unprocessed') },
         { value: 2, label: t('common.processing') },
@@ -175,13 +175,14 @@ const crudSchemas = reactive<CrudSchema[]>([
         { value: 5, label: t('common.confirmed') }
       ]
 
-      // 返回一个下拉选择器
       return (
         <ElSelect
-          modelValue={status} // 使用 modelValue 代替 value
-          onUpdate:modelValue={(newValue) => {
-            // 处理选择的新值逻辑，比如更新表格数据
-            // 假设有一个方法 updateStatus 用来更新表格状态
+          modelValue={row.status}
+          onUpdate:modelValue={async (newValue) => {
+            try {
+              row.status = newValue
+              updateStatusApi(row.id, 'vulnerability', newValue)
+            } catch (error) {}
           }}
         >
           {options.map((item) => (

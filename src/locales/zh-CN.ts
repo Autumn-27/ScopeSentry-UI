@@ -502,7 +502,10 @@ export default {
     module: '模块',
     help: '参数说明',
     source: '源码',
-    isSystem: '内置'
+    isSystem: '内置',
+    market: '插件市场',
+    import: '导入',
+    key: '插件Key'
   },
   workplace: {
     goodMorning: '早安',
