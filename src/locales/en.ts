@@ -513,7 +513,10 @@ export default {
     import: 'Import',
     key: 'Plugin Key',
     keyMsg:
-      'Enter the plugin key, view the server running log, or check the PLUGINKEYfile in the project running root directory.'
+      'Enter the plugin key, view the server running log, or check the PLUGINKEYfile in the project running root directory.',
+    reInstall: 'Reinstall',
+    reCheck: 'Recheck',
+    uninstall: 'Uninstall'
   },
   workplace: {
     goodMorning: 'Good morning',

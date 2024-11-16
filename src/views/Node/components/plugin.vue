@@ -1,24 +1,21 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, h } from 'vue'
 import { Table, TableColumn } from '@/components/Table'
-import { getTaskProgressApi } from '@/api/task'
 import { useTable } from '@/hooks/web/useTable'
-import { ElTag, ElTooltip } from 'element-plus'
-import { Icon } from '@/components/Icon'
 import { getPluginInfoApi } from '@/api/node'
+import { useIcon } from '@/hooks/web/useIcon'
+import { BaseButton } from '@/components/Button'
 const { t } = useI18n()
 
 const props = defineProps<{
   closeDialog: () => void
   name: string
 }>()
+const correctIcon = useIcon({ icon: 'icon-park:check-one' })
+const errorIcon = useIcon({ icon: 'line-md:close-circle', color: '#e01f1f' })
+
 const progressColums = reactive<TableColumn[]>([
-  {
-    field: 'target',
-    label: t('task.taskTarget'),
-    minWidth: 40
-  },
   {
     field: 'name',
     label: t('plugin.name'),
@@ -28,50 +25,29 @@ const progressColums = reactive<TableColumn[]>([
     field: 'install',
     label: 'Install',
     minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return cellValue ? correctIcon : errorIcon
     }
   },
   {
     field: 'check',
     label: 'Check',
     minWidth: 30,
-    formatter: (_: Recordable, __: TableColumn, cellValue: string[]) => {
-      if (cellValue.length == 3) {
-        return h(Icon, { icon: 'ph:prohibit' })
-      }
-      if (cellValue[0] == '') {
-        return '-'
-      }
-      let cont = ''
-      cont += `<div>Start:${cellValue[0]}</div>`
-      cont += `<div>End:${cellValue[1]}</div>`
-      if (cellValue[0] != '' && cellValue[1] != '') {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'success' }, () => 'Done')
-        )
-      } else {
-        return h(ElTooltip, { content: cont, placement: 'top', rawContent: true }, () =>
-          h(ElTag, { type: 'primary' }, () => 'Running')
-        )
-      }
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return cellValue ? correctIcon : errorIcon
+    }
+  },
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="warning">{t('plugin.reInstall')}</BaseButton>
+          <BaseButton type="success">{t('plugin.reCheck')}</BaseButton>
+          <BaseButton type="danger">{t('plugin.uninstall')}</BaseButton>
+        </>
+      )
     }
   }
 ])

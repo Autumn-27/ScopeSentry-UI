@@ -142,7 +142,7 @@ const nodeColums = reactive<TableColumn[]>([
       console.log(row)
       return (
         <>
-          <BaseButton type="warning" onClick={() => openPlugin(row.name)}>
+          <BaseButton type="warning" size="small" onClick={() => openPlugin(row.name)}>
             {t('node.plugin')}
           </BaseButton>
           <BaseButton type="success" size="small" onClick={() => openLogDialogVisible(row)}>

@@ -507,7 +507,10 @@ export default {
     market: '插件市场',
     import: '导入',
     key: '插件Key',
-    keyMsg: '输入插件密钥，查看server运行日志，或者在项目运行根目录PLUGINKEY文件查看。'
+    keyMsg: '输入插件密钥，查看server运行日志，或者在项目运行根目录PLUGINKEY文件查看。',
+    reInstall: '重新install',
+    reCheck: '重新check',
+    uninstall: '卸载'
   },
   workplace: {
     goodMorning: '早安',

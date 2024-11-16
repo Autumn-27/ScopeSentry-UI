@@ -1,7 +1,8 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 import {
   ElButton,
   ElCol,
@@ -16,7 +17,11 @@ import {
   UploadProps,
   UploadRawFile,
   ElUpload,
-  ElMessage
+  ElMessage,
+  ElDropdownItem,
+  ElDropdownMenu,
+  ElDropdown,
+  ElIcon
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -65,7 +70,8 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'version',
-    label: t('plugin.version')
+    label: t('plugin.version'),
+    minWidth: 100
   },
   {
     field: 'parameter',
@@ -80,15 +86,66 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'introduction',
-    label: t('plugin.introduction')
+    label: t('plugin.introduction'),
+    minWidth: 200
   },
   {
     field: 'action',
     label: t('tableDemo.action'),
+    minWidth: '300',
+    fixed: 'right',
     formatter: (row, __: TableColumn, _: number) => {
+      const handleCommand = (command) => {
+        switch (command) {
+          case 'retest':
+            break
+          case 'delete':
+            break
+          case 'stop':
+            break
+          case 'start':
+            break
+        }
+      }
+      const retestAndDeleteDropdown = h(
+        ElDropdown,
+        {
+          onCommand: handleCommand
+        },
+        {
+          default: () =>
+            h(
+              ElButton,
+              {
+                style: { outline: 'none', boxShadow: 'none' }
+              },
+              () => [
+                t('common.operation'), // 下拉菜单触发按钮文字
+                h(
+                  ElIcon,
+                  {},
+                  () => h(ArrowDown) // 向下箭头图标
+                )
+              ]
+            ),
+          dropdown: () =>
+            h(ElDropdownMenu, null, () => {
+              return [
+                h(ElDropdownItem, { command: 'retest' }, () => t('plugin.reInstall')),
+                h(ElDropdownItem, { command: 'delete' }, () => t('plugin.reCheck')),
+                h(ElDropdownItem, { command: 'delete' }, () => t('plugin.uninstall'))
+              ]
+            })
+        }
+      )
       return (
         <>
-          <BaseButton type="warning" onClick={() => openLogDialogVisible(row)}>
+          {retestAndDeleteDropdown}
+          <BaseButton
+            type="warning"
+            style={{ marginLeft: '10px' }}
+            onClick={() => openLogDialogVisible(row)}
+          >
             {t('common.log')}
           </BaseButton>
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
@@ -336,18 +393,6 @@ LoadPluginKey()
     </ElRow>
     <div style="position: relative; top: 12px">
       <Table
-        :tooltip-options="{
-          offset: 1,
-          showArrow: false,
-          effect: 'dark',
-          enterable: false,
-          showAfter: 0,
-          popperOptions: {},
-          popperClass: 'test',
-          placement: 'bottom',
-          hideAfter: 0,
-          disabled: true
-        }"
         v-model:pageSize="pageSize"
         v-model:currentPage="currentPage"
         :columns="taskColums"
