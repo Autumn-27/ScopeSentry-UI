@@ -10,14 +10,9 @@ import { onMounted } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import Configuration from './components/Configuration.vue'
+import plugin from './components/plugin.vue'
 import { getNodeDataApi, deleteNodeApi, getNodeLogApi } from '@/api/node'
-// const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
-// const search = ref('')
-// const handleSearch = () => {
-//   console.log('as')
-//   getList()
-// }
 const nodeColums = reactive<TableColumn[]>([
   {
     field: 'selection',
@@ -147,6 +142,9 @@ const nodeColums = reactive<TableColumn[]>([
       console.log(row)
       return (
         <>
+          <BaseButton type="warning" onClick={() => openPlugin(row.name)}>
+            {t('node.plugin')}
+          </BaseButton>
           <BaseButton type="success" size="small" onClick={() => openLogDialogVisible(row)}>
             {t('node.log')}
           </BaseButton>
@@ -255,6 +253,16 @@ const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
 }
+
+const nodeName = ref('')
+const pluginDialogVisible = ref(false)
+const openPlugin = async (data) => {
+  nodeName.value = data
+  pluginDialogVisible.value = true
+}
+const closepluginDialogVisible = () => {
+  pluginDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -322,5 +330,15 @@ const setMaxHeight = () => {
     <template #footer>
       <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
     </template>
+  </Dialog>
+
+  <Dialog
+    v-model="pluginDialogVisible"
+    :title="t('node.plugin')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="maxHeight"
+  >
+    <plugin :closeDialog="closepluginDialogVisible" :name="nodeName" />
   </Dialog>
 </template>

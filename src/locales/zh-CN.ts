@@ -281,7 +281,8 @@ export default {
     createTime: '创建时间',
     updateTime: '更新时间',
     log: '日志',
-    onlineNodeMsg: '没有连接中的扫描节点'
+    onlineNodeMsg: '没有连接中的扫描节点',
+    plugin: '插件'
   },
   task: {
     taskName: '任务名称',
@@ -505,7 +506,8 @@ export default {
     isSystem: '内置',
     market: '插件市场',
     import: '导入',
-    key: '插件Key'
+    key: '插件Key',
+    keyMsg: '输入插件密钥，查看server运行日志，或者在项目运行根目录PLUGINKEY文件查看。'
   },
   workplace: {
     goodMorning: '早安',

@@ -282,7 +282,8 @@ export default {
     createTime: 'Create Time',
     updateTime: 'Update Time',
     log: 'Log',
-    onlineNodeMsg: 'No scanning node is connected'
+    onlineNodeMsg: 'No scanning node is connected',
+    plugin: 'Plugin'
   },
   task: {
     taskName: 'Task Name',
@@ -510,7 +511,9 @@ export default {
     isSystem: 'isSystem',
     market: 'Plugin Market',
     import: 'Import',
-    key: 'Plugin Key'
+    key: 'Plugin Key',
+    keyMsg:
+      'Enter the plugin key, view the server running log, or check the PLUGINKEYfile in the project running root directory.'
   },
   workplace: {
     goodMorning: 'Good morning',

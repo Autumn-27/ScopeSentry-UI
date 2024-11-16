@@ -400,7 +400,9 @@ LoadPluginKey()
     style="max-width: 400px; height: 200px"
   >
     <div class="flex flex-col gap-2">
-      <ElInput v-model="pluginKey" placeholder="请输入插件密钥" />
+      <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
+        <ElInput v-model="pluginKey" />
+      </el-tooltip>
       <BaseButton @click="savePluginKey" type="primary" class="w-full">确定</BaseButton>
     </div>
   </Dialog>

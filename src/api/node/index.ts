@@ -1,5 +1,5 @@
 import request from '@/axios'
-import { NodeData, nodeRespData, nodeLogRespData } from './types'
+import { NodeData, nodeRespData, nodeLogRespData, pluginInfoData } from './types'
 
 interface NodeDataResponse {
   list: NodeData[]
@@ -40,4 +40,11 @@ export const deleteNodeApi = (names: string[]): Promise<IResponse<nodeRespData>>
 
 export const getNodeLogApi = (name: string): Promise<IResponse<nodeLogRespData>> => {
   return request.post({ url: '/api/node/log/data', data: { name } })
+}
+
+interface pluginInfoDataresp {
+  list: pluginInfoData[]
+}
+export const getPluginInfoApi = (name: string): Promise<IResponse<pluginInfoDataresp>> => {
+  return request.post({ url: '/api/node/plugin', data: { name } })
 }
