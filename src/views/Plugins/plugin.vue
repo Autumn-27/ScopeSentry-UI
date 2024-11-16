@@ -367,7 +367,7 @@ LoadPluginKey()
             {{ t('plugin.delete') }}
           </BaseButton>
 
-          <a href="https://www.example.com" target="_blank">
+          <a href="https://plugin.scope-sentry.top/" target="_blank">
             <BaseButton type="info">
               {{ t('plugin.market') }}
             </BaseButton>
