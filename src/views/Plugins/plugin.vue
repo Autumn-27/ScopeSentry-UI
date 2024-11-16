@@ -356,39 +356,44 @@ LoadPluginKey()
         >
       </ElCol>
     </ElRow>
-    <ElRow>
-      <ElCol style="position: relative; top: 16px" :span="4">
-        <div class="mb-10px">
-          <BaseButton type="primary" @click="addPlugin">{{ t('plugin.new') }}</BaseButton>
+    <ElRow :gutter="16" class="mt-4">
+      <ElCol :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+        <div class="flex flex-wrap gap-3 items-center">
+          <BaseButton type="primary" @click="addPlugin">
+            {{ t('plugin.new') }}
+          </BaseButton>
+
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('plugin.delete') }}
           </BaseButton>
-          <a href="https://www.example.com" target="_blank" style="margin-left: 15px">
-            <BaseButton type="info">{{ t('plugin.market') }}</BaseButton>
-          </a>
-        </div>
-      </ElCol>
-      <ElCol :span="2" style="position: relative; top: 16px">
-        <ElUpload
-          ref="upload"
-          style="margin-left: 15px"
-          :action="'/api/plugin/import?key=' + pluginKey"
-          :headers="uploadHeaders"
-          :on-success="handleUploadSuccess"
-          :limit="1"
-          :on-exceed="handleExceed"
-          :auto-upload="false"
-          @change="handleFileChange"
-        >
-          <template #trigger>
-            <BaseButton>
-              <template #icon>
-                <Icon icon="iconoir:upload" />
-              </template>
-              {{ t('plugin.import') }}
+
+          <a href="https://www.example.com" target="_blank">
+            <BaseButton type="info">
+              {{ t('plugin.market') }}
             </BaseButton>
-          </template>
-        </ElUpload>
+          </a>
+
+          <ElUpload
+            ref="upload"
+            class="flex items-center"
+            :action="'/api/plugin/import?key=' + pluginKey"
+            :headers="uploadHeaders"
+            :on-success="handleUploadSuccess"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :auto-upload="false"
+            @change="handleFileChange"
+          >
+            <template #trigger>
+              <BaseButton>
+                <template #icon>
+                  <Icon icon="iconoir:upload" />
+                </template>
+                {{ t('plugin.import') }}
+              </BaseButton>
+            </template>
+          </ElUpload>
+        </div>
       </ElCol>
     </ElRow>
     <div style="position: relative; top: 12px">
