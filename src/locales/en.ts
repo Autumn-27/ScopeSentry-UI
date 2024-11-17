@@ -1,5 +1,6 @@
 export default {
   common: {
+    about: 'About',
     unprocessed: 'Unprocessed',
     processing: 'Processing',
     ignored: 'Ignored',

@@ -356,17 +356,19 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
-    path: '/external-link',
+    path: '/about',
     component: Layout,
+    name: 'About',
     meta: {},
-    name: 'ExternalLink',
     children: [
       {
-        path: 'https://scope-sentry.top/',
-        name: 'DocumentLink',
+        path: 'index',
+        component: () => import('@/views/about.vue'),
+        name: 'about',
         meta: {
-          title: t('router.document'),
-          icon: 'clarity:document-solid'
+          title: 'About',
+          icon: 'carbon:deploy-rules',
+          noCache: true
         }
       }
     ]

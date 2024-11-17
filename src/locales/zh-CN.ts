@@ -1,5 +1,6 @@
 export default {
   common: {
+    about: '关于',
     unprocessed: '未处理',
     processing: '处理中',
     ignored: '忽略',
