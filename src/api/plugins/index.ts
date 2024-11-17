@@ -7,6 +7,11 @@ interface pluginDataResponse {
   total: number
 }
 
+interface PluginDeleteItem {
+  hash: string
+  module: string
+}
+
 export const getPluginDataApi = (
   search: string,
   pageIndex: number,
@@ -36,8 +41,13 @@ export const savePluginDataApi = (
   })
 }
 
-export const deletePluginDataApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/plugin/delete', data: { ids } })
+export const deletePluginDataApi = (
+  items: PluginDeleteItem[]
+): Promise<IResponse<commonRespData>> => {
+  return request.post({
+    url: '/api/plugin/delete',
+    data: { data: items }
+  })
 }
 
 export const getPluginLogApi = (module: string, hash: string): Promise<IResponse<LogRespData>> => {
@@ -55,4 +65,28 @@ export const getPluginDataByModuleApi = (
   module: string
 ): Promise<IResponse<pluginDataResponse>> => {
   return request.post({ url: '/api/plugin/list/bymodule', data: { module } })
+}
+
+export const reInstallPluginApi = (
+  node: string,
+  hash: string,
+  module: string
+): Promise<IResponse<pluginDataResponse>> => {
+  return request.post({ url: '/api/plugin/reinstall', data: { node, hash, module } })
+}
+
+export const reCheckPluginApi = (
+  node: string,
+  hash: string,
+  module: string
+): Promise<IResponse<pluginDataResponse>> => {
+  return request.post({ url: '/api/plugin/recheck', data: { node, hash, module } })
+}
+
+export const uninstallPluginApi = (
+  node: string,
+  hash: string,
+  module: string
+): Promise<IResponse<pluginDataResponse>> => {
+  return request.post({ url: '/api/plugin/uninstall', data: { node, hash, module } })
 }

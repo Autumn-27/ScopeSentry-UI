@@ -32,7 +32,10 @@ import {
   cleanPluginLogApi,
   deletePluginDataApi,
   getPluginDataApi,
-  getPluginLogApi
+  getPluginLogApi,
+  reCheckPluginApi,
+  reInstallPluginApi,
+  uninstallPluginApi
 } from '@/api/plugins'
 import detail from './components/detail.vue'
 import { useUserStore } from '@/store/modules/user'
@@ -44,6 +47,12 @@ const handleSearch = () => {
   getList()
 }
 const taskColums = reactive<TableColumn[]>([
+  {
+    field: 'index',
+    label: t('tableDemo.index'),
+    type: 'index',
+    minWidth: '15'
+  },
   {
     field: 'selection',
     type: 'selection',
@@ -97,13 +106,14 @@ const taskColums = reactive<TableColumn[]>([
     formatter: (row, __: TableColumn, _: number) => {
       const handleCommand = (command) => {
         switch (command) {
-          case 'retest':
+          case 'reinstall':
+            reInstallPluginApi('all', row.hash, row.module)
             break
-          case 'delete':
+          case 'recheck':
+            reCheckPluginApi('all', row.hash, row.module)
             break
-          case 'stop':
-            break
-          case 'start':
+          case 'uninstall':
+            uninstallPluginApi('all', row.hash, row.module)
             break
         }
       }
@@ -131,9 +141,9 @@ const taskColums = reactive<TableColumn[]>([
           dropdown: () =>
             h(ElDropdownMenu, null, () => {
               return [
-                h(ElDropdownItem, { command: 'retest' }, () => t('plugin.reInstall')),
-                h(ElDropdownItem, { command: 'delete' }, () => t('plugin.reCheck')),
-                h(ElDropdownItem, { command: 'delete' }, () => t('plugin.uninstall'))
+                h(ElDropdownItem, { command: 'reinstall' }, () => t('plugin.reInstall')),
+                h(ElDropdownItem, { command: 'recheck' }, () => t('plugin.reCheck')),
+                h(ElDropdownItem, { command: 'uninstall' }, () => t('plugin.uninstall'))
               ]
             })
         }
@@ -151,7 +161,11 @@ const taskColums = reactive<TableColumn[]>([
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
             {t('common.edit')}
           </BaseButton>
-          <BaseButton type="danger" onClick={() => confirmDelete(row.hash)} disabled={row.isSystem}>
+          <BaseButton
+            type="danger"
+            onClick={() => confirmDelete(row.hash, row.module)}
+            disabled={row.isSystem}
+          >
             {t('common.delete')}
           </BaseButton>
         </>
@@ -209,19 +223,19 @@ const confirmDeleteSelect = async () => {
   })
 }
 
-const confirmDelete = async (data) => {
+const confirmDelete = async (hash: string, module: string) => {
   ElMessageBox({
     title: 'Delete',
     draggable: true
   }).then(async () => {
-    await del(data)
+    await del(hash, module)
   })
 }
 const delLoading = ref(false)
-const del = async (data) => {
+const del = async (hash: string, module: string) => {
   delLoading.value = true
   try {
-    const res = await deletePluginDataApi([data])
+    const res = await deletePluginDataApi([{ hash, module }])
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -231,14 +245,17 @@ const del = async (data) => {
     getList()
   }
 }
-const ids = ref<string[]>([])
 const delSelect = async () => {
   const elTableExpose = await getElTableExpose()
   const selectedRows = elTableExpose?.getSelectionRows() || []
-  ids.value = selectedRows.map((row) => row.hash)
+  const deleteData = selectedRows.map((row) => ({
+    hash: row.hash,
+    module: row.module
+  }))
+
   delLoading.value = true
   try {
-    const res = await deletePluginDataApi(ids.value)
+    const res = await deletePluginDataApi(deleteData)
     console.log('Data deleted successfully:', res)
     delLoading.value = false
     getList()
@@ -313,6 +330,7 @@ const handleUploadSuccess = (response) => {
     localStorage.removeItem('plugin_key')
   }
   getList()
+  upload.value?.clearFiles()
 }
 const handleFileChange = (file, fileList) => {
   if (fileList.length > 0) {
