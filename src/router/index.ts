@@ -80,6 +80,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/asset-information',
     component: Layout,
     name: 'AssetInformation',
+    redirect: '/asset-information/index',
     meta: {},
     children: [
       {
@@ -90,19 +91,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           title: t('router.assetinfo'),
           icon: 'carbon:view',
           noCache: true
-        }
-      },
-      {
-        path: 'asset-detail',
-        component: () => import('@/views/Asset/detail/AssetDetail.vue'),
-        name: 'AssetDetail',
-        meta: {
-          title: t('asset.assetDetail'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/asset-information'
         }
       }
     ]
@@ -152,6 +140,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/plugin-management',
     component: Layout,
     name: 'Plugin Management',
+    redirect: '/plugin-management/index',
     meta: {},
     children: [
       {
@@ -170,6 +159,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/node-management',
     component: Layout,
     name: 'NodeManagement',
+    redirect: '/node-management/index',
     meta: {},
     children: [
       {
@@ -188,6 +178,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/project-management',
     component: Layout,
     name: 'ProjectManagement',
+    redirect: '/project-management/index',
     meta: {},
     children: [
       {
@@ -219,6 +210,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/poc-management',
     component: Layout,
     name: 'POCManagement',
+    redirect: '/poc-management/index',
     meta: {},
     children: [
       {
@@ -237,6 +229,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/fingerprint-management',
     component: Layout,
     name: 'FingerprintManagement',
+    redirect: '/fingerprint-management/index',
     meta: {},
     children: [
       {
@@ -255,6 +248,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/sensitive-information-rules',
     component: Layout,
     name: 'Sensitive information rules',
+    redirect: '/sensitive-information-rules/index',
     meta: {},
     children: [
       {
