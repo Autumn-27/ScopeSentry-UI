@@ -78,6 +78,16 @@ const qrCodes = ref([
               https://plugin.scope-sentry.top/
             </a>
           </li>
+          <li>
+            SecureFlow：
+            <a
+              href="https://plugin.scope-sentry.top/"
+              target="_blank"
+              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+            >
+              https://secureflow.scope-sentry.top
+            </a>
+          </li>
         </ul>
       </div>
     </el-card>
