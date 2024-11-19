@@ -27,7 +27,7 @@ const props = defineProps<{
     id: string
     name: string
     content: string
-    level: number
+    level: string
   }
 }>()
 const { pocForm } = toRefs(props)

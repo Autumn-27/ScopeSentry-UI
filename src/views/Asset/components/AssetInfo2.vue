@@ -485,6 +485,9 @@ let crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.screenshot'),
     minWidth: '170',
     formatter: (row) => {
+      if (row.screenshot == undefined) {
+        return
+      }
       if (row.screenshot != '') {
         return (
           <img

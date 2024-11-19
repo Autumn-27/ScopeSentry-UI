@@ -10,7 +10,10 @@ import {
   ElText,
   ElUpload,
   ElTooltip,
-  ElMessage
+  ElMessage,
+  UploadProps,
+  UploadRawFile,
+  UploadInstance
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -123,13 +126,13 @@ function tableHeaderColor() {
 let pocForm = reactive({
   id: '',
   name: '',
-  level: 0,
+  level: '',
   content: ''
 })
 const addPoc = async () => {
   pocForm.id = ''
   pocForm.name = ''
-  pocForm.level = 1
+  pocForm.level = ''
   pocForm.content = ''
   dialogVisible.value = true
 }
@@ -184,10 +187,36 @@ const confirmDelete = async () => {
 }
 const userStore = useUserStore()
 const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
-const uploadicon = useIcon({ icon: 'material-symbols:upload-sharp' })
+
+const upload = ref<UploadInstance>()
 const uploadSuccess = async () => {
   console.log('导入中')
   ElMessage.success('导入中')
+}
+
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  upload.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  upload.value!.handleStart(file)
+}
+
+const handleUploadSuccess = (response) => {
+  console.log(response)
+  if (response.code === 200) {
+    ElMessage.success('Upload succes')
+  } else {
+    ElMessage.error(response.message)
+  }
+  if (response.code == 505) {
+    localStorage.removeItem('plugin_key')
+  }
+  getList()
+  upload.value?.clearFiles()
+}
+const handleFileChange = (file, fileList) => {
+  if (fileList.length > 0) {
+    upload.value!.submit()
+  }
 }
 </script>
 
@@ -220,9 +249,29 @@ const uploadSuccess = async () => {
         </div>
       </ElCol>
       <ElCol :span="3">
-        <ElTooltip :content="t('common.uploadMsg')" placement="top" @on-success="uploadSuccess">
-          <ElUpload class="upload-demo" action="/api/poc/data/import" :headers="uploadHeaders">
+        <ElTooltip :content="t('common.uploadMsg')" placement="top">
+          <!-- <ElUpload class="upload-demo" action="/api/poc/data/import" :headers="uploadHeaders">
             <ElButton :icon="uploadicon">{{ t('common.import') }}</ElButton>
+          </ElUpload> -->
+          <ElUpload
+            ref="upload"
+            class="flex items-center"
+            action="/api/poc/data/import"
+            :headers="uploadHeaders"
+            :on-success="handleUploadSuccess"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :auto-upload="false"
+            @change="handleFileChange"
+          >
+            <template #trigger>
+              <BaseButton>
+                <template #icon>
+                  <Icon icon="iconoir:upload" />
+                </template>
+                {{ t('plugin.import') }}
+              </BaseButton>
+            </template>
           </ElUpload>
         </ElTooltip>
       </ElCol>
