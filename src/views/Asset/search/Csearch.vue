@@ -335,10 +335,10 @@ const refreshPage = () => {
           style="width: 100%"
         >
           <template #append>
-            <ElButton @click="getHelp" text class="icon-button" style="display: contents">
-              <template #default>
-                <ElIcon :icon="help" />
-              </template>
+            <ElButton @click="getHelp" text style="display: contents" :icon="help">
+              <!-- <template #default>
+                <ElIcon :icon="help" style="color: black" />
+              </template> -->
             </ElButton>
           </template>
           <template #default="{ item }">
