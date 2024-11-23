@@ -47,9 +47,11 @@ export const getAssetStatisticsTypeApi = (
 
 export const getAssetStatisticsiconApi = (
   search: string,
-  filter: Record<string, any>
+  filter: Record<string, any>,
+  page: number,
+  size: number
 ): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/icon', data: { search, filter } })
+  return request.post({ url: '/api/asset/statistics/icon', data: { search, filter, page, size } })
 }
 
 export const getAssetStatisticsappApi = (

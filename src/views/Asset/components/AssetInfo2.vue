@@ -132,6 +132,9 @@ let AssetstatisticsData: Ref<{
   Product: [],
   Icon: []
 })
+let iconPage = 1 // 当前页
+const iconPageSize = 50 // 每次加载的数据量
+
 const getAssetstatistics = async () => {
   AssetstatisticsData.value.Port = []
   AssetstatisticsData.value.Service = []
@@ -148,7 +151,7 @@ const getAssetstatistics = async () => {
   AssetstatisticsData.value.Service = serviceRes.data.Service
   AssetstatisticsData.value.Product = productRes.data.Product
   staticLoading.value = false
-  let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter)
+  let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter, iconPage, iconPageSize)
   AssetstatisticsData.value.Icon = iconRes.data.Icon
 }
 
@@ -553,7 +556,7 @@ const loadColumnConfig = () => {
   console.log(savedConfig)
   crudSchemas.forEach((col) => {
     if (savedConfig[col.field] !== undefined && col.field != 'select') {
-      col.hidden = savedConfig[col.field] // 恢复列的显示状态
+      col.hidden = savedConfig[col.field] // 复列的显示状态
     }
   })
   statisticsHidden.value = savedConfig['statisticsHidden']
@@ -646,6 +649,38 @@ const openDetail = (id: string, host: string, ip: string, port: number) => {
   detailip.value = ip
   detailport.value = port
   detailVisible.value = true
+}
+
+const isLoading = ref(false)
+// 滚动监听，触发加载更多
+const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+
+const handleScroll = ({ scrollTop }: { scrollTop: number }) => {
+  const wrap = scrollbarRef.value?.wrapRef
+  if (!wrap || isLoading.value) return
+  const { scrollHeight, clientHeight } = wrap
+  // 当滚动到距离底部 20px 时触发加载
+  if (scrollHeight - (scrollTop + clientHeight) < 20) {
+    loadMoreIcons()
+  }
+}
+
+const loadMoreIcons = async () => {
+  try {
+    isLoading.value = true
+    iconPage++
+    const iconRes = await getAssetStatisticsiconApi(
+      searchParams.value,
+      filter,
+      iconPage,
+      iconPageSize
+    )
+    if (iconRes.data.Icon?.length) {
+      AssetstatisticsData.value.Icon.push(...iconRes.data.Icon)
+    }
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -755,20 +790,22 @@ const openDetail = (id: string, host: string, ip: string, port: number) => {
             <template #title>
               <ElText tag="b" size="small">icon</ElText>
             </template>
-            <ElRow style="margin-top: 10px; margin-left: 10px">
-              <ElCol :span="8" v-for="iconItem in AssetstatisticsData.Icon" :key="iconItem.value">
-                <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
-                  <ElTooltip :content="iconItem.icon_hash" placement="top-start">
-                    <img
-                      :src="'data:image/png;base64,' + iconItem.value"
-                      alt="Icon"
-                      style="width: 30px; height: 30px"
-                      @click="changeTags('icon', iconItem.icon_hash)"
-                    />
-                  </ElTooltip>
-                </ElBadge>
-              </ElCol>
-            </ElRow>
+            <ElScrollbar ref="scrollbarRef" height="25rem" @scroll="handleScroll">
+              <ElRow style="margin-top: 10px; margin-left: 10px">
+                <ElCol :span="8" v-for="iconItem in AssetstatisticsData.Icon" :key="iconItem.value">
+                  <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
+                    <ElTooltip :content="iconItem.icon_hash" placement="top-start">
+                      <img
+                        :src="'data:image/png;base64,' + iconItem.value"
+                        alt="Icon"
+                        style="width: 30px; height: 30px"
+                        @click="changeTags('icon', iconItem.icon_hash)"
+                      />
+                    </ElTooltip>
+                  </ElBadge>
+                </ElCol>
+              </ElRow>
+            </ElScrollbar>
           </ElCollapseItem>
         </ElCollapse>
       </ElCard>
