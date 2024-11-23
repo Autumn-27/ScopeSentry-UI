@@ -179,8 +179,12 @@ let crudSchemas = reactive<CrudSchema[]>([
             size={16}
             color="#409eff"
           />
-          <ElLink href={row.url} underline={false}>
-            {row.service + '://' + domainValue}
+          <ElLink
+            href={row.type === 'http' ? row.url : `${row.service}://${domainValue}`}
+            underline={false}
+            target="_blank"
+          >
+            {row.type === 'http' ? row.url : `${row.service}://${domainValue}`}
           </ElLink>
         </div>
       )
