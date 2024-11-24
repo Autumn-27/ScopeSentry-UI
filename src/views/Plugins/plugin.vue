@@ -60,7 +60,18 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'name',
-    label: t('plugin.name')
+    label: t('plugin.name'),
+    formatter: (row, __: TableColumn, value: string) => {
+      return (
+        <a
+          href={`https://plugin.scope-sentry.top/plugin/${row.hash}`}
+          style="color: #409EFF; text-decoration: none;"
+          target="_blank"
+        >
+          {value}
+        </a>
+      )
+    }
   },
   {
     field: 'module',

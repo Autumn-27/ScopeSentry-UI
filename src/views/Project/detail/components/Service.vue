@@ -89,7 +89,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'domain',
+    field: 'host',
     label: t('asset.domain'),
     minWidth: '200',
     slots: {
@@ -152,7 +152,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
-    field: 'timestamp',
+    field: 'time',
     label: t('asset.time'),
     minWidth: '200'
   }

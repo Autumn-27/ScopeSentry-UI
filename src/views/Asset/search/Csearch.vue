@@ -56,7 +56,13 @@ const newKeyword = {
   example: 'task=="test"',
   explain: t('searchHelp.taskName')
 }
+const tagKeyword = {
+  keyword: 'tag',
+  example: 'tag=="test"',
+  explain: 'find tags'
+}
 localSearchKeywordsData.push(newKeyword)
+localSearchKeywordsData.push(tagKeyword)
 const AssignmentHelp = [
   {
     operator: '=',
