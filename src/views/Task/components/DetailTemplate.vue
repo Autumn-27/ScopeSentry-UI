@@ -216,7 +216,7 @@ getPocList()
             />
           </ElFormItem>
           <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
-            <ElTooltip placement="top" effect="light" :content="plugin.help">
+            <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
               <ElInput v-model="parameters[module][plugin.hash]" />
             </ElTooltip>
           </ElFormItem>
