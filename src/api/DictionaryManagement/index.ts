@@ -53,7 +53,7 @@ export const createDictApi = (formData: FormData): Promise<IResponse<commonRespD
 }
 
 export const downloadDictApi = (id: string) => {
-  return request.get({ url: '/api/dictionary/manage/download?id=' + id })
+  return request.get({ url: '/api/dictionary/manage/download?id=' + id, responseType: 'blob' })
 }
 
 export const deleteDictApi = (ids: string[]): Promise<IResponse<dictRespData>> => {
