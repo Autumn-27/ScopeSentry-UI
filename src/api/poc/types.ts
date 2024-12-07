@@ -3,6 +3,7 @@ export type pocData = {
   name: string
   level: string
   time: string
+  tags: string[]
 }
 
 export type pocRespData = {

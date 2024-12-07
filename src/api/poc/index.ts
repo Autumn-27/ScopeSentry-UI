@@ -14,19 +14,7 @@ export const getPocDataApi = (
   return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize, filter } })
 }
 
-// 定义树形结构的数据类型
-interface TreeNode {
-  value: string
-  label: string
-  children: TreeNode[]
-}
-
-// 修改 getPocDataAllApi 的返回类型定义
-interface PocDataResponse {
-  data: TreeNode[]
-}
-
-export const getPocDataAllApi = (): Promise<IResponse<PocDataResponse>> => {
+export const getPocDataAllApi = (): Promise<IResponse<pocDataResponse>> => {
   return request.get({ url: '/api/poc/data/all' })
 }
 export const getPocNameListApi = (): Promise<IResponse<pocDataResponse>> => {

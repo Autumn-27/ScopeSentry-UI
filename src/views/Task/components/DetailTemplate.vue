@@ -20,6 +20,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
 import { getTemplateDetailApi, saveTemplateDetailApi } from '@/api/task'
+import { pocData } from '@/api/poc/types'
 
 const { t } = useI18n()
 
@@ -173,17 +174,49 @@ interface TreeNode {
 
 const vulOptions = reactive<TreeNode[]>([])
 
+const buildTree = (data: pocData[]): TreeNode[] => {
+  const tree: TreeNode[] = []
+
+  data.forEach((item) => {
+    let currentLevel = tree
+    item.tags.forEach((tag) => {
+      // 查找当前层级是否有该标签
+      const existingNode = currentLevel.find((node) => node.label === tag)
+      if (!existingNode) {
+        // 如果没有找到，则生成一个分类节点
+        const randomString = Math.random().toString(36).substring(2, 8)
+        const newNode: TreeNode = { value: randomString, label: tag, children: [] }
+        currentLevel.push(newNode)
+        currentLevel = newNode.children // 进入下一层
+      } else {
+        currentLevel = existingNode.children // 如果找到了，继续向下
+      }
+    })
+
+    // 添加实际数据节点
+    currentLevel.push({ value: item.id, label: item.name, children: [] })
+  })
+
+  return tree
+}
+
 // 获取数据并生成树形结构
 const getPocList = async () => {
   const res = await getPocDataAllApi() // 调用后端API
   vulOptions.push({ value: 'All Poc', label: 'All Poc', children: [] })
-  vulOptions.push(...res.data.data)
+  const tree = buildTree(res.data.list)
+  vulOptions.push(...tree)
 }
 
 getPocList()
 const dialogVisible = ref(false)
 const openPocList = async () => {
   dialogVisible.value = true
+}
+const propss = {
+  value: 'value',
+  label: 'label',
+  children: 'children'
 }
 </script>
 
@@ -234,7 +267,13 @@ const openPocList = async () => {
     fullscreen
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <ElTreeV2 :data="vulOptions" multiple show-checkbox :height="600" />
+    <ElTreeV2
+      style="max-width: 600px"
+      :data="vulOptions"
+      :props="propss"
+      show-checkbox
+      :height="600"
+    />
   </Dialog>
 </template>
 
