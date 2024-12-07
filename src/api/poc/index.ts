@@ -8,11 +8,25 @@ interface pocDataResponse {
 export const getPocDataApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  filter: Record<string, any>
 ): Promise<IResponse<pocDataResponse>> => {
-  return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize, filter } })
 }
-export const getPocDataAllApi = (): Promise<IResponse<pocDataResponse>> => {
+
+// 定义树形结构的数据类型
+interface TreeNode {
+  value: string
+  label: string
+  children: TreeNode[]
+}
+
+// 修改 getPocDataAllApi 的返回类型定义
+interface PocDataResponse {
+  data: TreeNode[]
+}
+
+export const getPocDataAllApi = (): Promise<IResponse<PocDataResponse>> => {
   return request.get({ url: '/api/poc/data/all' })
 }
 export const getPocNameListApi = (): Promise<IResponse<pocDataResponse>> => {
@@ -26,18 +40,20 @@ export const getPocContentApi = (id: string): Promise<IResponse<pocContent>> => 
 export const addPocDataApi = (
   name: string,
   content: string,
-  level: number
+  level: string,
+  tags: string[]
 ): Promise<IResponse<pocRespData>> => {
-  return request.post({ url: '/api/poc/add', data: { name, content, level } })
+  return request.post({ url: '/api/poc/add', data: { name, content, level, tags } })
 }
 
 export const updatePocDataApi = (
   id: string,
   name: string,
   content: string,
-  level: number
+  level: string,
+  tags: string[]
 ): Promise<IResponse<pocRespData>> => {
-  return request.post({ url: '/api/poc/update', data: { id, name, content, level } })
+  return request.post({ url: '/api/poc/update', data: { id, name, content, level, tags } })
 }
 
 export const deletePocDataApi = (ids: string[]): Promise<IResponse<pocRespData>> => {

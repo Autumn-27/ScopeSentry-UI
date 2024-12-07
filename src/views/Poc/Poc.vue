@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive } from 'vue'
+import { ref, reactive, h, nextTick, Ref } from 'vue'
 import {
   ElButton,
   ElCol,
@@ -13,7 +13,9 @@ import {
   ElMessage,
   UploadProps,
   UploadRawFile,
-  UploadInstance
+  UploadInstance,
+  ElTag,
+  InputInstance
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -24,6 +26,8 @@ import { getPocDataApi, getPocContentApi, deletePocDataApi } from '@/api/poc'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { useUserStore } from '@/store/modules/user'
+import { RowState } from '@/api/asset/types'
+import { addTagApi, deleteTagApi } from '@/api/asset'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -31,6 +35,7 @@ const search = ref('')
 const handleSearch = () => {
   getList()
 }
+const rowStateMap = reactive<Record<string, RowState>>({})
 const nodeColums = reactive<TableColumn[]>([
   {
     field: 'selection',
@@ -46,6 +51,7 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'level',
     label: t('poc.level'),
     minWidth: 50,
+    columnKey: 'level',
     formatter: (_: Recordable, __: TableColumn, levelValue: string) => {
       if (levelValue == null) {
         return <div></div>
@@ -81,6 +87,75 @@ const nodeColums = reactive<TableColumn[]>([
           </ElCol>
         </ElRow>
       )
+    },
+    filters: [
+      { text: t('poc.critical'), value: 'critical' },
+      { text: t('poc.high'), value: 'high' },
+      { text: t('poc.medium'), value: 'medium' },
+      { text: t('poc.low'), value: 'low' },
+      { text: t('poc.info'), value: 'info' },
+      { text: t('poc.unknown'), value: 'unknown' }
+    ]
+  },
+  {
+    field: 'tags',
+    label: 'TAG',
+    fit: 'true',
+    formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
+      if (tags.length != 0) {
+        return (
+          <ElRow style={{ flexWrap: 'wrap' }}>
+            {tags.map((product) => (
+              <ElCol span={24} key={product}>
+                <div
+                  onClick={() => changeTags('app', product)}
+                  style={'display: inline-block; cursor: pointer'}
+                >
+                  <ElTag type={'success'}>{product}</ElTag>
+                </div>
+              </ElCol>
+            ))}
+          </ElRow>
+        )
+        // if (ProductsValue.length > 1) {
+        //   let contentTool = ''
+        //   if (Array.isArray(ProductsValue)) {
+        //     // It's an array, you can use forEach
+        //     ProductsValue.forEach((item, _) => {
+        //       contentTool += `<div>${item}</div>`
+        //     })
+        //   } else {
+        //     console.error('ProductsValue is not an array')
+        //   }
+        //   return (
+        //     <div class="flex">
+        //       <ElTag type="success" effect="light" round>
+        //         {ProductsValue[0]}
+        //       </ElTag>
+        //       <ElTooltip
+        //         class="box-item"
+        //         effect="dark"
+        //         placement="top-start"
+        //         content={contentTool}
+        //         popper-class="tagtooltip"
+        //         rawContent
+        //       >
+        //         <ElTag type="info" effect="plain" round style={'left:3px; position:relative'}>
+        //           {t('asset.total')} {ProductsValue.length} {t('asset.p')}
+        //         </ElTag>
+        //       </ElTooltip>
+        //     </div>
+        //   )
+        // } else {
+        //   return (
+        //     <div class="flex">
+        //       <ElTag type="success" effect="light">
+        //         {ProductsValue[0]}
+        //       </ElTag>
+        //     </div>
+        //   )
+        // }
+      }
     }
   },
   {
@@ -88,12 +163,12 @@ const nodeColums = reactive<TableColumn[]>([
     label: t('node.createTime'),
     minWidth: 50
   },
+
   {
     field: 'action',
     label: t('tableDemo.action'),
     minWidth: 30,
     formatter: (row, __: TableColumn, _: number) => {
-      console.log(row)
       return (
         <>
           <BaseButton type="primary" onClick={() => edit(row)}>
@@ -110,7 +185,7 @@ const nodeColums = reactive<TableColumn[]>([
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getPocDataApi(search.value, currentPage.value, pageSize.value)
+    const res = await getPocDataApi(search.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total
@@ -123,23 +198,32 @@ function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
 
+const changeTags = (type, value) => {
+  const key = `${type}=${value}`
+  console.log(key)
+  // dynamicTags.value = [...dynamicTags.value, key]
+}
+
 let pocForm = reactive({
   id: '',
   name: '',
   level: '',
-  content: ''
+  content: '',
+  tags: []
 })
 const addPoc = async () => {
   pocForm.id = ''
   pocForm.name = ''
   pocForm.level = ''
   pocForm.content = ''
+  pocForm.tags = []
   dialogVisible.value = true
 }
 const edit = async (data) => {
   pocForm.id = data.id
   pocForm.name = data.name
   pocForm.level = data.level
+  pocForm.tags = data.tags
   const res = await getPocContentApi(pocForm.id)
   pocForm.content = res.data.content
   dialogVisible.value = true
@@ -218,6 +302,11 @@ const handleFileChange = (file, fileList) => {
     upload.value!.submit()
   }
 }
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
+  getList()
+}
 </script>
 
 <template>
@@ -279,6 +368,7 @@ const handleFileChange = (file, fileList) => {
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
+      @filter-change="filterChange"
       :columns="nodeColums"
       :data="dataList"
       stripe

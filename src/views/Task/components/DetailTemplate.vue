@@ -10,10 +10,12 @@ import {
   ElButton,
   ElForm,
   ElFormItem,
-  ElSelectV2,
   ElRow,
-  ElCol
+  ElCol,
+  ElTreeSelect,
+  ElTreeV2
 } from 'element-plus'
+import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
@@ -85,7 +87,6 @@ const loadTemplate = async (id: string) => {
   const template = await getTemplateDetailApi(id) // 调用实际接口获取已有数据
   templateName.value = template.data.name
   vulList.value = template.data.vullist
-  console.log(template.data.vullist)
   for (const module of modules) {
     parameters[module] = {}
 
@@ -164,18 +165,26 @@ const moduleColorMap = {
   URLSecurity: '#FFE4BA' // 浅米色
 }
 const templateName = ref('')
-const vulOptions = reactive<{ value: string; label: string }[]>([])
+interface TreeNode {
+  value: string
+  label: string
+  children: TreeNode[]
+}
+
+const vulOptions = reactive<TreeNode[]>([])
+
+// 获取数据并生成树形结构
 const getPocList = async () => {
-  const res = await getPocDataAllApi()
-  if (res.data.list.length > 0) {
-    vulOptions.push({ value: 'All Poc', label: 'All Poc' })
-    res.data.list.forEach((item) => {
-      vulOptions.push({ value: item.id, label: item.name })
-    })
-  }
+  const res = await getPocDataAllApi() // 调用后端API
+  vulOptions.push({ value: 'All Poc', label: 'All Poc', children: [] })
+  vulOptions.push(...res.data.data)
 }
 
 getPocList()
+const dialogVisible = ref(false)
+const openPocList = async () => {
+  dialogVisible.value = true
+}
 </script>
 
 <template>
@@ -202,18 +211,7 @@ getPocList()
             prop="type"
             v-if="plugin.enabled && plugin.hash === 'ed93b8af6b72fe54a60efdb932cf6fbc'"
           >
-            <ElSelectV2
-              v-model="vulList"
-              filterable
-              :options="vulOptions"
-              placeholder="Please select vul"
-              style="width: 80%"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              tag-type="info"
-              :max-collapse-tags="3"
-            />
+            <ElButton type="primary" @click="openPocList" :loading="saveLoading"> Select </ElButton>
           </ElFormItem>
           <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
             <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
@@ -229,6 +227,15 @@ getPocList()
       </ElCol>
     </ElRow>
   </ElForm>
+  <Dialog
+    v-model="dialogVisible"
+    title="POC"
+    center
+    fullscreen
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <ElTreeV2 :data="vulOptions" multiple show-checkbox :height="600" />
+  </Dialog>
 </template>
 
 <style scoped>

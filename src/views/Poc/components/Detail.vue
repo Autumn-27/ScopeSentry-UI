@@ -9,13 +9,15 @@ import {
   ElForm,
   ElButton,
   ElDivider,
-  ElSelectV2
+  ElSelectV2,
+  InputInstance,
+  ElTag
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { updatePocDataApi, addPocDataApi } from '@/api/poc'
 const { t } = useI18n()
@@ -28,6 +30,7 @@ const props = defineProps<{
     name: string
     content: string
     level: string
+    tags: string[]
   }
 }>()
 const { pocForm } = toRefs(props)
@@ -63,12 +66,14 @@ const levelOptions = [
     label: 'info'
   },
   {
-    value: 'unkown',
-    label: 'unkown'
+    value: 'unknown',
+    label: 'unknown'
   }
 ]
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
+
+const dynamicTags = ref<string[]>([...pocForm.value.tags])
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
@@ -80,13 +85,15 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           localForm.value.id,
           localForm.value.name,
           localForm.value.content,
-          localForm.value.level
+          localForm.value.level,
+          dynamicTags.value
         )
       } else {
         res = await addPocDataApi(
           localForm.value.name,
           localForm.value.content,
-          localForm.value.level
+          localForm.value.level,
+          dynamicTags.value
         )
       }
       if (res.code === 200) {
@@ -99,6 +106,28 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       saveLoading.value = false
     }
   })
+}
+const inputValue = ref('')
+const inputVisible = ref(false)
+const InputRef = ref<InputInstance>()
+
+const handleClose = (tag: string) => {
+  dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1)
+}
+
+const showInput = () => {
+  inputVisible.value = true
+  nextTick(() => {
+    InputRef.value!.input!.focus()
+  })
+}
+
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    dynamicTags.value.push(inputValue.value)
+  }
+  inputVisible.value = false
+  inputValue.value = ''
 }
 </script>
 <template>
@@ -122,6 +151,31 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         placeholder="Please select level"
         :options="levelOptions"
       />
+    </ElFormItem>
+    <ElFormItem label="TAG">
+      <div class="flex gap-2">
+        <ElTag
+          v-for="tag in dynamicTags"
+          :key="tag"
+          closable
+          :disable-transitions="false"
+          @close="handleClose(tag)"
+        >
+          {{ tag }}
+        </ElTag>
+        <ElInput
+          v-if="inputVisible"
+          ref="InputRef"
+          v-model="inputValue"
+          class="w-20"
+          size="small"
+          @keyup.enter="handleInputConfirm"
+          @blur="handleInputConfirm"
+        />
+        <el-button v-else class="button-new-tag" size="small" @click="showInput">
+          + New Tag
+        </el-button>
+      </div>
     </ElFormItem>
     <ElDivider />
     <ElRow>
