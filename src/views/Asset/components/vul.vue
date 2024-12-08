@@ -28,6 +28,8 @@ import Csearch from '../search/Csearch.vue'
 import { BaseButton } from '@/components/Button'
 import { addTagApi, deleteTagApi, updateStatusApi } from '@/api/asset'
 import { RowState } from '@/api/asset/types'
+import Detail from '../../Poc/components/Detail.vue'
+import { getPocContentApi, getPocDetailApi } from '@/api/poc'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -305,6 +307,9 @@ const crudSchemas = reactive<CrudSchema[]>([
           <BaseButton type="primary" onClick={() => action(row)}>
             {t('asset.detail')}
           </BaseButton>
+          <BaseButton type="success" onClick={() => openPoc(row.vulnid)}>
+            POC
+          </BaseButton>
         </>
       )
     },
@@ -435,6 +440,7 @@ const action = (data: any) => {
   DialogData.Response = data.response
   DialogVisible.value = true
 }
+
 const filter = reactive<{ [key: string]: any }>({})
 const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
@@ -462,6 +468,32 @@ const handleClose = (tag: string) => {
     }
     dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
   }
+}
+let pocForm = reactive({
+  id: '',
+  name: '',
+  level: '',
+  content: '',
+  tags: []
+})
+
+const dialogVisible = ref(false)
+const openPoc = async (id) => {
+  pocForm.id = ''
+  pocForm.name = ''
+  pocForm.level = ''
+  pocForm.content = ''
+  pocForm.tags = []
+  const res = await getPocDetailApi(id)
+  pocForm.id = res.data.data.id
+  pocForm.name = res.data.data.name
+  pocForm.level = res.data.data.level
+  pocForm.content = res.data.data.content
+  pocForm.tags = res.data.data.tags
+  dialogVisible.value = true
+}
+const closeDialog = () => {
+  dialogVisible.value = false
 }
 </script>
 
@@ -542,6 +574,15 @@ const handleClose = (tag: string) => {
         </ElScrollbar>
       </ElDescriptionsItem>
     </ElDescriptions>
+  </Dialog>
+  <Dialog
+    v-model="dialogVisible"
+    :title="pocForm.id ? $t('common.edit') : $t('common.new')"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="800"
+  >
+    <Detail :closeDialog="closeDialog" :pocForm="pocForm" :getList="getList" />
   </Dialog>
 </template>
 
