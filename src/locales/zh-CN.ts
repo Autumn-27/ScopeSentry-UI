@@ -1,5 +1,6 @@
 export default {
   common: {
+    selectCategory: '分类选择',
     about: '关于',
     unprocessed: '未处理',
     processing: '处理中',

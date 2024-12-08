@@ -1,5 +1,6 @@
 export default {
   common: {
+    selectCategory: 'Select Category',
     about: 'About',
     unprocessed: 'Unprocessed',
     processing: 'Processing',

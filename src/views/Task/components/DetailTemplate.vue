@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import {
   ElMessage,
   ElTooltip,
@@ -12,8 +12,9 @@ import {
   ElFormItem,
   ElRow,
   ElCol,
-  ElTreeSelect,
-  ElTreeV2
+  ElSelectV2,
+  ElTreeV2,
+  ElTree
 } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -200,9 +201,17 @@ const buildTree = (data: pocData[]): TreeNode[] => {
   return tree
 }
 
+const vulSelectOptions = reactive<{ value: string; label: string }[]>([])
 // 获取数据并生成树形结构
 const getPocList = async () => {
   const res = await getPocDataAllApi() // 调用后端API
+  if (res.data.list.length > 0) {
+    vulSelectOptions.push({ value: 'All Poc', label: 'All Poc' })
+    res.data.list.forEach((item) => {
+      vulSelectOptions.push({ value: item.id, label: item.name })
+    })
+  }
+
   vulOptions.push({ value: 'All Poc', label: 'All Poc', children: [] })
   const tree = buildTree(res.data.list)
   vulOptions.push(...tree)
@@ -213,10 +222,82 @@ const dialogVisible = ref(false)
 const openPocList = async () => {
   dialogVisible.value = true
 }
+watch(dialogVisible, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      const tree = treeRef.value
+      if (tree) {
+        console.log('treeRef 已经获取到实例:', tree)
+        setTreeCheckedNodes(vulList.value) // 初始化选中的节点
+      } else {
+        console.log('treeRef 未能正确获取到实例')
+      }
+    })
+  }
+})
+const treeRef = ref<InstanceType<typeof ElTreeV2> | null>(null)
+const setTreeCheckedNodes = (checkedKeys) => {
+  nextTick(() => {
+    const tree = treeRef.value
+    if (tree) {
+      tree.setCheckedKeys(checkedKeys) // 使用 setCheckedKeys 方法来批量选中指定的节点
+    } else {
+      console.log('treeRef 未能正确获取到实例')
+    }
+  })
+}
 const propss = {
   value: 'value',
   label: 'label',
   children: 'children'
+}
+
+const handleCheckChange = (data, checked) => {
+  const nodeValue = data.value // 当前节点的 value
+
+  // 判断当前节点是否是叶子节点
+  const isLeafNode = !data.children || data.children.length === 0
+
+  // 如果是叶子节点，直接处理它
+  if (isLeafNode) {
+    if (checked && !vulList.value.includes(nodeValue)) {
+      vulList.value.push(nodeValue) // 选中叶子节点，添加到 vulList
+    } else if (!checked) {
+      const index = vulList.value.indexOf(nodeValue)
+      if (index > -1) {
+        vulList.value.splice(index, 1) // 取消选中叶子节点，移除它
+      }
+    }
+  } else {
+    // 如果是父节点，遍历它的所有子节点并处理
+    const addLeafNodes = (node) => {
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => {
+          const isChildLeafNode = !child.children || child.children.length === 0 // 判断子节点是否为叶子节点
+          if (isChildLeafNode) {
+            // 只处理叶子节点
+            if (checked && !vulList.value.includes(child.value)) {
+              vulList.value.push(child.value) // 添加叶子节点到 vulList
+            } else if (!checked) {
+              const index = vulList.value.indexOf(child.value)
+              if (index > -1) {
+                vulList.value.splice(index, 1) // 移除取消选中的叶子节点
+              }
+            }
+          } else {
+            // 如果是父节点，则递归处理其子节点
+            addLeafNodes(child)
+          }
+        })
+      }
+    }
+
+    // 如果是父节点，递归地添加或移除其叶子节点
+    addLeafNodes(data)
+  }
+
+  // 打印当前选中的叶子节点的值
+  console.log('当前选中的叶子节点的值:', vulList.value)
 }
 </script>
 
@@ -244,7 +325,21 @@ const propss = {
             prop="type"
             v-if="plugin.enabled && plugin.hash === 'ed93b8af6b72fe54a60efdb932cf6fbc'"
           >
-            <ElButton type="primary" @click="openPocList" :loading="saveLoading"> Select </ElButton>
+            <ElSelectV2
+              v-model="vulList"
+              filterable
+              :options="vulOptions"
+              placeholder="Please select vul"
+              style="width: 80%; margin-right: 10px"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              tag-type="info"
+              :max-collapse-tags="3"
+            />
+            <ElButton type="primary" @click="openPocList" :loading="saveLoading">
+              {{ t('common.selectCategory') }}
+            </ElButton>
           </ElFormItem>
           <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
             <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
@@ -268,11 +363,13 @@ const propss = {
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
     <ElTreeV2
-      style="max-width: 600px"
+      ref="treeRef"
+      style="max-width: 100%"
       :data="vulOptions"
       :props="propss"
       show-checkbox
       :height="600"
+      @check-change="handleCheckChange"
     />
   </Dialog>
 </template>
