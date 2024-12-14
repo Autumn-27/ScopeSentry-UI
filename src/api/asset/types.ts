@@ -15,6 +15,10 @@ export type AssetData = {
   icon: string
 }
 
+export type AssetScreenshot = {
+  screenshot: string
+}
+
 export type AssetStatistics = {
   Port: { value: number; number: number }[]
   Service: { value: string; number: number }[]

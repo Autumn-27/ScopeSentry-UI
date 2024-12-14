@@ -26,6 +26,7 @@ import {
   addTagApi,
   deleteTagApi,
   getAssetApi,
+  getAssetScreenshotApi,
   getAssetStatisticsPortApi,
   getAssetStatisticsTypeApi,
   getAssetStatisticsappApi,
@@ -500,7 +501,7 @@ let crudSchemas = reactive<CrudSchema[]>([
           <img
             src={`${row.screenshot}`}
             alt="screenshot"
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: '100%', height: 'auto', maxHeight: '250px' }}
             onClick={() => handleImageClick(row.screenshot)}
           />
         )
@@ -532,6 +533,10 @@ let crudSchemas = reactive<CrudSchema[]>([
   }
 ])
 
+const getScreenshot = async (id) => {
+  const response = await getAssetScreenshotApi(id)
+  return response.data.screenshot
+}
 const filterChange = async (newFilters: any) => {
   Object.assign(filter, newFilters)
   getList()

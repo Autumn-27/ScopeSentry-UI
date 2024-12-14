@@ -61,12 +61,15 @@ const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
-  if (!formEl) return
-  await formEl.validate(async (valid, _) => {
+  try {
+    if (!formEl) return
+
+    const valid = await formEl.validate() // 使用 Promise 风格的 validate
     if (valid) {
+      let res
       if (props.taskid) {
-        // 这里任务类型是不允许修改的，所以将修改内容提交到计划任务中
-        const res = await updateScheduleApi(
+        // 修改计划任务
+        res = await updateScheduleApi(
           props.taskid,
           taskData.name,
           taskData.target,
@@ -78,13 +81,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.hour,
           taskData.template
         )
-        if (res.code === 200) {
-          props.closeDialog()
-          props.getList()
-        }
       } else {
-        // id为空则为创建新任务
-        const res = await addTaskApi(
+        // 创建新任务
+        res = await addTaskApi(
           taskData.name,
           taskData.target,
           taskData.ignore,
@@ -95,14 +94,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.hour,
           taskData.template
         )
-        if (res.code == 200) {
-          props.closeDialog()
-          props.getList()
-        }
+      }
+
+      if (res.code === 200) {
+        props.closeDialog()
+        props.getList()
       }
     }
-    saveLoading.value = false
-  })
+  } catch (error) {
+    console.error('提交表单时发生错误:', error)
+  } finally {
+    saveLoading.value = false // 确保无论成功或失败都重置加载状态
+  }
 }
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
 const getNodeList = async () => {

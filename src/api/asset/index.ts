@@ -14,7 +14,8 @@ import {
   PageMResponse,
   PageMHistory,
   SensitiveNames,
-  AssetChangeLog
+  AssetChangeLog,
+  AssetScreenshot
 } from './types'
 import { commonRespData } from '../scommon/types'
 
@@ -29,6 +30,10 @@ export const getAssetApi = (
   filter: Record<string, any>
 ): Promise<IResponse<AssetDataResponse>> => {
   return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize, filter } })
+}
+
+export const getAssetScreenshotApi = (id: string): Promise<IResponse<AssetScreenshot>> => {
+  return request.post({ url: '/api/asset/screenshot', data: { id } })
 }
 
 export const getAssetStatisticsPortApi = (
