@@ -19,6 +19,7 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import { getAssetChangeLogApi, getAssetDetailApi } from '@/api/asset'
 import { ref } from 'vue'
 import { AssetChangeLog } from '@/api/asset/types'
+import { createImageViewer } from '@/components/ImageViewer'
 const extensions = [javascript(), oneDark]
 const props = defineProps<{
   id: string
@@ -50,6 +51,12 @@ const getAssetChangeLog = async () => {
   }
 }
 getAssetChangeLog()
+const handleImageClick = (screenshot: string) => {
+  createImageViewer({
+    urlList: [screenshot],
+    zIndex: 999999
+  })
+}
 </script>
 
 <template>
@@ -118,7 +125,18 @@ getAssetChangeLog()
                         <div class="p-4 text-sm whitespace-pre-wrap">
                           <!-- 遍历并输出 fieldname: old -->
                           <div v-for="(change, index) in log.change" :key="'old-' + index">
-                            <strong>{{ change.fieldname }}:</strong> {{ change.old }}
+                            <strong>{{ change.fieldname }}:</strong>
+                            <template v-if="change.fieldname === 'Screenshot'">
+                              <img
+                                :src="change.old"
+                                alt="screenshot"
+                                style="width: 100%; height: auto; max-height: 250px"
+                                @click="handleImageClick(change.old)"
+                              />
+                            </template>
+                            <template v-else>
+                              {{ change.old }}
+                            </template>
                           </div>
                         </div>
                       </div>
@@ -135,7 +153,18 @@ getAssetChangeLog()
                         <div class="p-4 text-sm whitespace-pre-wrap">
                           <!-- 遍历并输出 fieldname: new -->
                           <div v-for="(change, index) in log.change" :key="'new-' + index">
-                            <strong>{{ change.fieldname }}:</strong> {{ change.new }}
+                            <strong>{{ change.fieldname }}:</strong>
+                            <template v-if="change.fieldname === 'Screenshot'">
+                              <img
+                                :src="change.new"
+                                alt="screenshot"
+                                style="width: 100%; height: auto; max-height: 250px"
+                                @click="handleImageClick(change.new)"
+                              />
+                            </template>
+                            <template v-else>
+                              {{ change.new }}
+                            </template>
                           </div>
                         </div>
                       </div>
