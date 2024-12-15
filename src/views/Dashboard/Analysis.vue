@@ -8,15 +8,20 @@ import {
   ElText,
   ElTooltip,
   ElButton,
-  ElPopconfirm
+  ElPopconfirm,
+  ElForm,
+  ElFormItem,
+  ElInput
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { ElTag } from 'element-plus'
+import { Dialog } from '@/components/Dialog'
 import { ref, reactive, h, onBeforeUnmount, Ref } from 'vue'
 import { getNodeDataApi } from '@/api/node'
 import { getTaskDataApi } from '@/api/task'
 import { useI18n } from '@/hooks/web/useI18n'
 import { UPDATEsYSTEMApi, getVersionDataApi } from '@/api/dashboard/analysis'
+import { checkKeyApi } from '@/api/plugins'
 
 const { t } = useI18n()
 
@@ -274,10 +279,40 @@ onBeforeUnmount(() => {
   clearInterval(refreshInterval)
 })
 
+const pluginKey = ref('')
 const updateSystem = async () => {
-  await UPDATEsYSTEMApi()
+  const key = localStorage.getItem(`plugin_key`) as string
+  if (!key) {
+    keyDialogVisible.value = true
+  } else {
+    UpdatedialogVisible.value = true
+  }
+}
+const savePluginKey = async () => {
+  if (pluginKey.value) {
+    const res = await checkKeyApi(pluginKey.value)
+    if (res.code == 200) {
+      localStorage.setItem('plugin_key', pluginKey.value)
+      keyDialogVisible.value = false
+      UpdatedialogVisible.value = true
+    }
+  }
 }
 const updateFlag = ref(false)
+
+const form = ref({
+  server: 'https://github.com/Autumn-27/ScopeSentry/archive/refs/heads/main.zip',
+  scan: ''
+})
+const UpdatedialogVisible = ref(false)
+const keyDialogVisible = ref(false)
+async function handleSubmit() {
+  const key = localStorage.getItem(`plugin_key`) as string
+  const res = await UPDATEsYSTEMApi(form.value.server, form.value.scan, key)
+  if (res.code == 505) {
+    localStorage.removeItem('plugin_key')
+  }
+}
 </script>
 
 <template>
@@ -354,13 +389,7 @@ const updateFlag = ref(false)
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
                   <ElButton color="#626aef">
-                    <ElTooltip
-                      :content="t('common.updateButtonMsg')"
-                      lacement="top-start"
-                      effect="dark"
-                    >
-                      {{ t('common.update') }}
-                    </ElTooltip>
+                    {{ t('common.update') }}
                   </ElButton>
                 </template>
               </ElPopconfirm>
@@ -371,6 +400,45 @@ const updateFlag = ref(false)
       </ElCard>
     </ElCol>
   </ElRow>
+  <Dialog
+    v-model="UpdatedialogVisible"
+    title="Update"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+    :maxHeight="430"
+  >
+    <ElText type="danger" size="small" style="position: relative; left: 1rem"
+      >*更新目前只支持docker容器搭建的程序，输入的url地址确保docker内可访问，节点最新版在github中releases的linux版本</ElText
+    >
+    <ElForm :model="form" label-width="120px" class="upload-form">
+      <ElFormItem label="server url">
+        <ElInput v-model="form.server" placeholder="server url" />
+      </ElFormItem>
+      <ElFormItem label="scan url">
+        <ElInput
+          v-model="form.scan"
+          placeholder="scan url(https://github.com/Autumn-27/ScopeSentry-Scan/releases/download/vx.x.x/ScopeSentry-Scan_linux_amd64_vx.x.x.zip)"
+        />
+      </ElFormItem>
+      <ElFormItem>
+        <ElButton type="primary" @click="handleSubmit">Submit</ElButton>
+      </ElFormItem>
+    </ElForm>
+  </Dialog>
+  <Dialog
+    v-model="keyDialogVisible"
+    :title="t('plugin.key')"
+    center
+    width="30%"
+    style="max-width: 400px; height: 200px"
+  >
+    <div class="flex flex-col gap-2">
+      <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
+        <ElInput v-model="pluginKey" />
+      </el-tooltip>
+      <BaseButton @click="savePluginKey" type="primary" class="w-full">确定</BaseButton>
+    </div>
+  </Dialog>
 </template>
 
 <style scoped>

@@ -34,6 +34,10 @@ export const getVersionDataApi = (): Promise<IResponse<VersionDataResponse>> => 
   return request.get({ url: '/api/system/version' })
 }
 
-export const UPDATEsYSTEMApi = (): Promise<IResponse<VersionDataResponse>> => {
-  return request.get({ url: '/api/system/update' })
+export const UPDATEsYSTEMApi = (
+  server: string,
+  scan: string,
+  key: string
+): Promise<IResponse<VersionDataResponse>> => {
+  return request.post({ url: '/api/system/update', data: { server, scan, key } })
 }

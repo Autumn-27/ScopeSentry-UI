@@ -29,6 +29,7 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import {
+  checkKeyApi,
   cleanPluginLogApi,
   deletePluginDataApi,
   getPluginDataApi,
@@ -360,10 +361,13 @@ const LoadPluginKey = () => {
   pluginKey.value = key
 }
 
-const savePluginKey = () => {
+const savePluginKey = async () => {
   if (pluginKey.value) {
-    localStorage.setItem('plugin_key', pluginKey.value)
-    keyDialogVisible.value = false
+    const res = await checkKeyApi(pluginKey.value)
+    if (res.code == 200) {
+      localStorage.setItem('plugin_key', pluginKey.value)
+      keyDialogVisible.value = false
+    }
   }
 }
 

@@ -50,6 +50,10 @@ export const deletePluginDataApi = (
   })
 }
 
+export const checkKeyApi = (key: string): Promise<IResponse<LogRespData>> => {
+  return request.post({ url: '/api/plugin/key/check', data: { key } })
+}
+
 export const getPluginLogApi = (module: string, hash: string): Promise<IResponse<LogRespData>> => {
   return request.post({ url: '/api/plugin/log', data: { module, hash } })
 }
