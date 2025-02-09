@@ -363,7 +363,8 @@ export default {
     VulnerabilityScan: 'Vulnerability Scan',
     AssetHandle: 'Asset Processing',
     PortFingerprint: 'Port Fingerprint Recognition',
-    URLSecurity: 'URL Security Check'
+    URLSecurity: 'URL Security Check',
+    PassiveScan: 'PassiveScan'
   },
   asset: {
     assetName: 'Asset',

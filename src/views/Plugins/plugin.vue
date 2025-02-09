@@ -199,7 +199,8 @@ const moduleColorMap = {
   VulnerabilityScan: '#FF677D', // 浅粉色
   AssetHandle: '#B2E1FF', // 浅青色
   PortFingerprint: '#ffb5e4', // 更亮的浅橙色
-  URLSecurity: '#FFE4BA' // 浅米色
+  URLSecurity: '#FFE4BA', // 浅米色
+  PassiveScan: '#A2DFF7'
 }
 
 const { tableRegister, tableState, tableMethods } = useTable({

@@ -72,7 +72,8 @@ const moduleOptions = ref([
   { label: 'VulnerabilityScan', value: 'VulnerabilityScan' },
   { label: 'AssetHandle', value: 'AssetHandle' },
   { label: 'PortFingerprint', value: 'PortFingerprint' },
-  { label: 'URLSecurity', value: 'URLSecurity' }
+  { label: 'URLSecurity', value: 'URLSecurity' },
+  { label: 'PassiveScan', value: 'PassiveScan' }
 ])
 
 // Codemirror 配置

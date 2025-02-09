@@ -288,6 +288,9 @@ watch(
   (newTags) => {
     if (newTags) {
       localDynamicTags.value = [...newTags]
+      if (task !== undefined && task !== '') {
+        localDynamicTags.value.push(`task=${task}`)
+      }
     } else {
       localDynamicTags.value = []
     }

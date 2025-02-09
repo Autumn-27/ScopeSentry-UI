@@ -360,7 +360,8 @@ export default {
     VulnerabilityScan: '漏洞扫描',
     AssetHandle: '资产处理',
     PortFingerprint: '端口指纹识别',
-    URLSecurity: 'URL安全检测'
+    URLSecurity: 'URL安全检测',
+    PassiveScan: '被动扫描'
   },
   asset: {
     assetName: '资产',
