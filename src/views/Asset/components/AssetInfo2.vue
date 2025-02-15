@@ -137,6 +137,9 @@ let iconPage = 1 // 当前页
 const iconPageSize = 50 // 每次加载的数据量
 
 const getAssetstatistics = async () => {
+  if (statisticsHidden.value) {
+    return
+  }
   AssetstatisticsData.value.Port = []
   AssetstatisticsData.value.Service = []
   AssetstatisticsData.value.Product = []
@@ -188,7 +191,7 @@ let crudSchemas = reactive<CrudSchema[]>([
             underline={false}
             target="_blank"
           >
-            {row.type === 'http' ? row.url : `${row.service}://${domainValue}`}
+            {domainValue}
           </ElLink>
         </div>
       )
@@ -704,6 +707,7 @@ const loadMoreIcons = async () => {
     @update-column-visibility="handleColumnVisibilityChange"
     :statisticsHidden="statisticsHidden"
     :changeStatisticsHidden="changeStatisticsHidden"
+    :searchResultCount="total"
   />
   <ElRow :gutter="3">
     <ElCol :span="statisticsHidden ? 0 : 3">

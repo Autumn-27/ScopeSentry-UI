@@ -49,6 +49,7 @@ const props = defineProps<{
   crudSchemas: Array<CrudSchema>
   statisticsHidden?: boolean
   changeStatisticsHidden?: (boolean) => void
+  searchResultCount: number
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -316,6 +317,9 @@ const localStatisticsHidden = ref(props.statisticsHidden)
 const refreshPage = () => {
   location.reload()
 }
+const tableDisplayValue = ref('Mon')
+
+const tableDisplayOptions = ['Table', 'Card']
 </script>
 
 <template>
@@ -432,6 +436,13 @@ const refreshPage = () => {
           </template>
         </ElDropdown>
       </ElCol>
+      <!-- <ElCol>
+        <div class="flex flex-col items-start gap-4">
+          <el-segmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="large" />
+          <ElSegmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="default" />
+          <ElSegmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="small" />
+        </div>
+      </ElCol> -->
       <ElCol :span="2" :xs="2" :sm="2" :md="2">
         <ElButton
           type="success"
@@ -446,6 +457,9 @@ const refreshPage = () => {
     <ElRow style="margin-top: 10px">
       <ElCol :span="24">
         <div class="flex gap-2">
+          <span style="color: #888">{{ t('asset.total') }}</span>
+          <span style="font-weight: bold; color: #333333">{{ props.searchResultCount }}</span>
+          <span style="color: #888">{{ t('asset.result') }}</span>
           <ElTag
             v-for="tag in localDynamicTags"
             :key="tag"

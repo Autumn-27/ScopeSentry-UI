@@ -376,6 +376,7 @@ export default {
     time: '时间',
     total: '共',
     p: '条',
+    result: '条结果',
     detail: '详情',
     assetDetail: '资产详情',
     assetTotalNum: '资产总数',

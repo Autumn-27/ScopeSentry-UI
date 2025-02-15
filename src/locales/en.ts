@@ -379,6 +379,7 @@ export default {
     time: 'time',
     total: 'Total',
     p: '',
+    result: 'results',
     detail: 'Detail',
     assetDetail: 'Asset Detail',
     assetTotalNum: 'Total Assets',
