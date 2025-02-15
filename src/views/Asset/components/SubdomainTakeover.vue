@@ -306,6 +306,7 @@ const handleClose = (tag: string) => {
     :dynamicTags="dynamicTags"
     :handleClose="handleClose"
     @update-column-visibility="handleColumnVisibilityChange"
+    :searchResultCount="total"
   />
   <ElRow>
     <ElCol>

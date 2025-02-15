@@ -291,6 +291,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :handleFilterSearch="handleFilterSearch"
     :crudSchemas="crudSchemas"
     @update-column-visibility="handleColumnVisibilityChange"
+    :searchResultCount="total"
   />
   <ElRow>
     <ElCol>

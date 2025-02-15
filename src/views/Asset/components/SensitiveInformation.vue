@@ -469,6 +469,7 @@ const handleClose = (tag: string) => {
     :handleClose="handleClose"
     :crudSchemas="crudSchemas"
     @update-column-visibility="handleColumnVisibilityChange"
+    :searchResultCount="total"
   />
   <ElRow>
     <ElCol>

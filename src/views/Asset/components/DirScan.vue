@@ -358,6 +358,7 @@ const handleClose = (tag: string) => {
     :projectList="$props.projectList"
     :crudSchemas="crudSchemas"
     @update-column-visibility="handleColumnVisibilityChange"
+    :searchResultCount="total"
   />
   <ElRow>
     <ElCol>
