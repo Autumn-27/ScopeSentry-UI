@@ -416,7 +416,7 @@ let crudSchemas = reactive<CrudSchema[]>([
     field: 'banner',
     label: t('asset.banner'),
     fit: 'true',
-    formatter: (_: Recordable, __: TableColumn, bannerValue: string) => {
+    formatter: (row: Recordable, __: TableColumn, bannerValue: string) => {
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
       return (
