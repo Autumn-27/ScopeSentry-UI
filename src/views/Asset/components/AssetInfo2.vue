@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { Ref, h, nextTick, reactive, ref } from 'vue'
+import { Ref, h, nextTick, onMounted, reactive, ref } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import { Dialog } from '@/components/Dialog'
 import {
@@ -690,6 +690,21 @@ const loadMoreIcons = async () => {
     isLoading.value = false
   }
 }
+const activeSegment = ref<'tableSegment' | 'cardSegment'>('tableSegment')
+
+onMounted(() => {
+  const savedActiveSegmentConfig = JSON.parse(localStorage.getItem('assetActiveSegment') || '{}')
+
+  // 如果配置中有 activeSegment，则使用它，否则使用默认值
+  if (savedActiveSegmentConfig && savedActiveSegmentConfig.activeSegment) {
+    activeSegment.value = savedActiveSegmentConfig.activeSegment
+  }
+})
+const setActiveSegment = (segment: 'tableSegment' | 'cardSegment') => {
+  activeSegment.value = segment
+  // 将配置存储到 localStorage
+  localStorage.setItem(`assetActiveSegment`, JSON.stringify({ activeSegment: segment }))
+}
 </script>
 
 <template>
@@ -708,8 +723,10 @@ const loadMoreIcons = async () => {
     :statisticsHidden="statisticsHidden"
     :changeStatisticsHidden="changeStatisticsHidden"
     :searchResultCount="total"
+    :activeSegment="activeSegment"
+    :setActiveSegment="setActiveSegment"
   />
-  <ElRow :gutter="3">
+  <ElRow :gutter="3" v-if="activeSegment == 'tableSegment'">
     <ElCol :span="statisticsHidden ? 0 : 3">
       <ElCard v-loading="staticLoading">
         <div>
@@ -867,6 +884,20 @@ const loadMoreIcons = async () => {
       </ElRow>
     </ElCol>
   </ElRow>
+  <el-row :gutter="20">
+    <el-col :span="6" v-for="(site, index) in websites" :key="index">
+      <el-card :body-style="{ padding: '20px' }">
+        <div class="card-content">
+          <img :src="site.image" alt="website screenshot" class="site-image" />
+          <div class="site-info">
+            <h3>{{ site.title }}</h3>
+            <p>网址: <a :href="site.url" target="_blank">{{ site.url }}</a></p>
+            <p>响应码: {{ site.statusCode }}</p>
+          </div>
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
   <Dialog
     v-model="detailVisible"
     :title="t('asset.detail')"

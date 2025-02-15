@@ -50,6 +50,8 @@ const props = defineProps<{
   statisticsHidden?: boolean
   changeStatisticsHidden?: (boolean) => void
   searchResultCount: number
+  activeSegment?: 'tableSegment' | 'cardSegment' // 可选属性
+  setActiveSegment?: (segment: 'tableSegment' | 'cardSegment') => void // 可选方法
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -317,9 +319,19 @@ const localStatisticsHidden = ref(props.statisticsHidden)
 const refreshPage = () => {
   location.reload()
 }
-const tableDisplayValue = ref('Mon')
+// const activeSegment = ref<'tableSegment' | 'cardSegment'>('tableSegment')
 
-const tableDisplayOptions = ['Table', 'Card']
+// const setActiveSegment = (segment: 'tableSegment' | 'cardSegment') => {
+//   activeSegment.value = segment
+// }
+
+const tableSegmentIcon = useIcon({ icon: 'icons8:insert-table' })
+const cardSegmentIcon = useIcon({ icon: 'flowbite:grid-solid' })
+function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
+  if (props.setActiveSegment) {
+    props.setActiveSegment(segment)
+  }
+}
 </script>
 
 <template>
@@ -436,13 +448,28 @@ const tableDisplayOptions = ['Table', 'Card']
           </template>
         </ElDropdown>
       </ElCol>
-      <!-- <ElCol>
-        <div class="flex flex-col items-start gap-4">
-          <el-segmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="large" />
-          <ElSegmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="default" />
-          <ElSegmented v-model="tableDisplayValue" :options="tableDisplayOptions" size="small" />
+      <ElCol :span="1" style="display: flex; align-items: center" v-if="index == 'asset'">
+        <div class="segment-control">
+          <div
+            class="segment"
+            :class="{ active: props.activeSegment === 'tableSegment' }"
+            @click="handleSetActiveSegment('tableSegment')"
+          >
+            <ElIcon>
+              <tableSegmentIcon />
+            </ElIcon>
+          </div>
+          <div
+            class="segment"
+            :class="{ active: props.activeSegment === 'cardSegment' }"
+            @click="handleSetActiveSegment('cardSegment')"
+          >
+            <ElIcon>
+              <cardSegmentIcon />
+            </ElIcon>
+          </div>
         </div>
-      </ElCol> -->
+      </ElCol>
       <ElCol :span="2" :xs="2" :sm="2" :md="2">
         <ElButton
           type="success"
@@ -553,5 +580,24 @@ const tableDisplayOptions = ['Table', 'Card']
 }
 .label-text {
   margin-right: 10px; /* 设置标签与开关之间的间距 */
+}
+.segment-control {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.segment {
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.segment.active {
+  background-color: #007bff;
+  color: white;
 }
 </style>
