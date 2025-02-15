@@ -32,6 +32,18 @@ export const getAssetApi = (
   return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize, filter } })
 }
 
+export const getAssetCardApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<AssetDataResponse>> => {
+  return request.post({
+    url: '/api/asset/data/card',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}
+
 export const getAssetScreenshotApi = (id: string): Promise<IResponse<AssetScreenshot>> => {
   return request.post({ url: '/api/asset/screenshot', data: { id } })
 }

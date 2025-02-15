@@ -4,6 +4,7 @@ import { Ref } from 'vue'
 export type AssetData = {
   id: string
   domain: string
+  host: string
   ip: string
   port: number
   service: string
@@ -13,6 +14,10 @@ export type AssetData = {
   products: string[]
   time: String
   icon: string
+  screenshot: string
+  type: string
+  statuscode: number
+  url: string
 }
 
 export type AssetScreenshot = {

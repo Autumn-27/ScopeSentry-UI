@@ -26,6 +26,7 @@ import {
   addTagApi,
   deleteTagApi,
   getAssetApi,
+  getAssetCardApi,
   getAssetScreenshotApi,
   getAssetStatisticsPortApi,
   getAssetStatisticsTypeApi,
@@ -37,8 +38,9 @@ import { BaseButton } from '@/components/Button'
 import { useRouter } from 'vue-router'
 import Csearch from '../search/Csearch.vue'
 import { createImageViewer } from '@/components/ImageViewer'
-import { RowState } from '@/api/asset/types'
+import { AssetData, RowState } from '@/api/asset/types'
 import AssetDetail2 from '../detail/AssetDetail2.vue'
+import { url } from 'inspector'
 const { push } = useRouter()
 const { t } = useI18n()
 interface Project {
@@ -109,6 +111,11 @@ const searchKeywordsData = [
     keyword: 'project',
     example: 'project="Hackerone"',
     explain: t('searchHelp.project')
+  },
+  {
+    keyword: 'type',
+    example: 'type="http"',
+    explain: t('searchHelp.protocol')
   }
 ]
 
@@ -116,6 +123,10 @@ const staticLoading = ref(true)
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data
+  if (activeSegment.value == 'cardSegment') {
+    getAssetCardData()
+    return
+  }
   staticLoading.value = true
   AssetstatisticsData.value.Icon = []
   getList()
@@ -596,8 +607,18 @@ loadColumnConfig()
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    getAssetstatistics()
+    console.log(activeSegment.value)
+    if (activeSegment.value == 'cardSegment') {
+      const resCard = await getAssetCardData()
+      return {
+        list: [],
+        total: resCard
+      }
+    }
+    console.log('dsadwas')
     const { currentPage, pageSize } = tableState
+    getAssetstatistics()
+    console.log('dsadwas2222')
     const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
@@ -619,6 +640,10 @@ const filter = reactive<{ [key: string]: any }>({})
 const handleFilterSearch = (data: any, newFilters: any) => {
   Object.assign(filter, newFilters)
   searchParams.value = data
+  if (activeSegment.value == 'cardSegment') {
+    getAssetCardData()
+    return
+  }
   getList()
 }
 const dynamicTags = ref<string[]>([])
@@ -699,11 +724,31 @@ onMounted(() => {
   if (savedActiveSegmentConfig && savedActiveSegmentConfig.activeSegment) {
     activeSegment.value = savedActiveSegmentConfig.activeSegment
   }
+  getList()
 })
 const setActiveSegment = (segment: 'tableSegment' | 'cardSegment') => {
   activeSegment.value = segment
   // 将配置存储到 localStorage
   localStorage.setItem(`assetActiveSegment`, JSON.stringify({ activeSegment: segment }))
+  getList()
+}
+const websites = ref<AssetData[]>([])
+const getAssetCardData = async () => {
+  websites.value = []
+  const res = await getAssetCardApi(searchParams.value, currentPage.value, pageSize.value, filter)
+  websites.value = res.data.list
+  total.value = 0
+  total.value = res.data.total
+  return res.data.total
+}
+const getStatusColor = (statusValue) => {
+  if (statusValue < 300) {
+    return '#2eb98a' // 绿色，表示成功
+  } else if (statusValue < 400) {
+    return '#ff9800' // 橙色，表示重定向
+  } else {
+    return '#ff5252' // 红色，表示错误
+  }
 }
 </script>
 
@@ -884,20 +929,100 @@ const setActiveSegment = (segment: 'tableSegment' | 'cardSegment') => {
       </ElRow>
     </ElCol>
   </ElRow>
-  <el-row :gutter="20">
-    <el-col :span="6" v-for="(site, index) in websites" :key="index">
-      <el-card :body-style="{ padding: '20px' }">
-        <div class="card-content">
-          <img :src="site.image" alt="website screenshot" class="site-image" />
-          <div class="site-info">
-            <h3>{{ site.title }}</h3>
-            <p>网址: <a :href="site.url" target="_blank">{{ site.url }}</a></p>
-            <p>响应码: {{ site.statusCode }}</p>
+  <div v-if="activeSegment != 'tableSegment'" v-loading="loading">
+    <ElRow :gutter="20" type="flex" justify="start" wrap>
+      <ElCol
+        :span="6"
+        v-for="(site, index) in websites"
+        :key="index"
+        style="margin-bottom: 20px; display: flex; flex-direction: column; height: 350px"
+      >
+        <ElCard
+          :body-style="{ padding: '0px', height: '100%', width: '100%' }"
+          style="display: flex; flex-direction: column; height: 100%"
+        >
+          <img
+            :src="site.screenshot"
+            style="width: 100%; height: 100%; max-height: 270px"
+            v-if="site.screenshot"
+          />
+          <div
+            v-else
+            style="
+              width: 100%;
+              height: 100%;
+              max-height: 270px;
+              background-color: #f0f0f0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #ccc;
+            "
+          >
+            <span v-if="site.type == 'http'">无图片</span>
+            <span v-else>{{ site.service }}</span>
           </div>
-        </div>
-      </el-card>
-    </el-col>
-  </el-row>
+          <template #footer>
+            <ElRow>
+              <ElCol
+                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+                :span="20"
+              >
+                <ElText>
+                  {{ site.type == 'http' ? site.title : site.service }}
+                </ElText>
+              </ElCol>
+              <ElCol :span="4" v-if="site.type == 'http'">
+                <Icon
+                  icon="clarity:circle-solid"
+                  :color="getStatusColor(site.statuscode)"
+                  :size="6"
+                  style="transform: translateY(-30%)"
+                />
+                <ElText style="margin-left: 5px">{{ site.statuscode }}</ElText>
+              </ElCol>
+            </ElRow>
+            <ElRow>
+              <ElCol
+                :span="20"
+                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+              >
+                <ElLink
+                  :underline="false"
+                  target="_blank"
+                  :href="site.type == 'http' ? site.url : site.host"
+                  style="font-weight: bold; color: #60a0ef"
+                >
+                  <Icon
+                    icon="carbon:link"
+                    :size="16"
+                    style="margin-right: 5px"
+                    v-if="site.type == 'http'"
+                  />
+                  {{ site.type == 'http' ? site.url : site.host }}
+                </ElLink>
+              </ElCol>
+              <ElCol :span="4">
+                <ElTag>{{ site.port }}</ElTag>
+              </ElCol>
+            </ElRow>
+          </template>
+        </ElCard>
+      </ElCol>
+      <ElCol ::span="24">
+        <ElCard>
+          <ElPagination
+            v-model:pageSize="pageSize"
+            v-model:currentPage="currentPage"
+            :page-sizes="[20, 40, 60, 100, 200, 400, 600, 1000]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+          />
+        </ElCard>
+      </ElCol>
+    </ElRow>
+  </div>
+
   <Dialog
     v-model="detailVisible"
     :title="t('asset.detail')"

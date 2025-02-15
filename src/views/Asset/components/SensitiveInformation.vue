@@ -361,11 +361,10 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: res.data.total
     }
   },
-  immediate: false
+  immediate: true
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
-getList()
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -425,7 +424,6 @@ const getSensNames = async () => {
   } finally {
   }
 }
-getSensNames()
 const callFunctionsConcurrently = async () => {
   try {
     await Promise.all([getList(), getSensNames()])

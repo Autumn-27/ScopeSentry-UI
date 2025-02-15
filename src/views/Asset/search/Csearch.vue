@@ -285,7 +285,6 @@ let task = query.task as string
 if (task !== undefined && task !== '') {
   localDynamicTags.value.push(`task=${task}`)
 }
-tagClickFilterSearch()
 watch(
   () => props.dynamicTags,
   (newTags) => {
@@ -448,7 +447,7 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
           </template>
         </ElDropdown>
       </ElCol>
-      <ElCol :span="1" style="display: flex; align-items: center" v-if="index == 'asset'">
+      <ElCol :span="2" style="display: flex; align-items: center" v-if="index == 'asset'">
         <div class="segment-control">
           <div
             class="segment"
@@ -586,6 +585,7 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .segment {
