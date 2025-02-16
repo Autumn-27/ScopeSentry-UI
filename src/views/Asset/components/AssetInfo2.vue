@@ -717,20 +717,13 @@ const loadMoreIcons = async () => {
 }
 const activeSegment = ref<'tableSegment' | 'cardSegment'>('tableSegment')
 
-onMounted(() => {
-  const savedActiveSegmentConfig = JSON.parse(localStorage.getItem('assetActiveSegment') || '{}')
-
-  // 如果配置中有 activeSegment，则使用它，否则使用默认值
-  if (savedActiveSegmentConfig && savedActiveSegmentConfig.activeSegment) {
-    activeSegment.value = savedActiveSegmentConfig.activeSegment
-  }
-  getList()
-})
-const setActiveSegment = (segment: 'tableSegment' | 'cardSegment') => {
+const setActiveSegment = (segment: 'tableSegment' | 'cardSegment', flag: boolean) => {
   activeSegment.value = segment
   // 将配置存储到 localStorage
   localStorage.setItem(`assetActiveSegment`, JSON.stringify({ activeSegment: segment }))
-  getList()
+  if (flag) {
+    getList()
+  }
 }
 const websites = ref<AssetData[]>([])
 const getAssetCardData = async () => {
@@ -943,7 +936,9 @@ const getStatusColor = (statusValue) => {
         >
           <img
             :src="site.screenshot"
+            alt="screenshot"
             style="width: 100%; height: 100%; max-height: 270px"
+            @click="handleImageClick(site.screenshot)"
             v-if="site.screenshot"
           />
           <div
@@ -1012,6 +1007,7 @@ const getStatusColor = (statusValue) => {
       <ElCol ::span="24">
         <ElCard>
           <ElPagination
+            :loading="loading"
             v-model:pageSize="pageSize"
             v-model:currentPage="currentPage"
             :page-sizes="[20, 40, 60, 100, 200, 400, 600, 1000]"

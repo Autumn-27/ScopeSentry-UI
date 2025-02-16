@@ -51,7 +51,7 @@ const props = defineProps<{
   changeStatisticsHidden?: (boolean) => void
   searchResultCount: number
   activeSegment?: 'tableSegment' | 'cardSegment' // 可选属性
-  setActiveSegment?: (segment: 'tableSegment' | 'cardSegment') => void // 可选方法
+  setActiveSegment?: (segment: 'tableSegment' | 'cardSegment', flag: boolean) => void // 可选方法
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -285,6 +285,15 @@ let task = query.task as string
 if (task !== undefined && task !== '') {
   localDynamicTags.value.push(`task=${task}`)
 }
+const savedActiveSegmentConfig = JSON.parse(localStorage.getItem('assetActiveSegment') || '{}')
+
+// 如果配置中有 activeSegment，则使用它，否则使用默认值
+if (savedActiveSegmentConfig && savedActiveSegmentConfig.activeSegment) {
+  if (props.setActiveSegment) {
+    props.setActiveSegment(savedActiveSegmentConfig.activeSegment, false)
+  }
+}
+tagClickFilterSearch()
 watch(
   () => props.dynamicTags,
   (newTags) => {
@@ -301,6 +310,9 @@ watch(
   { immediate: false }
 )
 function handleCloseTag(tag: string) {
+  if (tag.includes('task=')) {
+    task = ''
+  }
   if (props.handleClose) {
     props.handleClose(tag)
   } else {
@@ -328,7 +340,7 @@ const tableSegmentIcon = useIcon({ icon: 'icons8:insert-table' })
 const cardSegmentIcon = useIcon({ icon: 'flowbite:grid-solid' })
 function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
   if (props.setActiveSegment) {
-    props.setActiveSegment(segment)
+    props.setActiveSegment(segment, true)
   }
 }
 </script>
@@ -407,6 +419,7 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
               <ElDropdownItem :icon="deleteicon" @click="delSelect">{{
                 t('common.delete')
               }}</ElDropdownItem>
+              <ElDropdownItem :icon="deleteicon" @click="delSelect">扫描</ElDropdownItem>
             </ElDropdownMenu>
           </template>
         </ElDropdown>
