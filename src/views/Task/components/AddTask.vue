@@ -42,6 +42,10 @@ const props = defineProps<{
   create: boolean
   schedule: boolean
   taskid: string
+  tp: string
+  targetIds: string[]
+  getFilter?: () => { [key: string]: any }
+  searchParams?: string
 }>()
 
 interface RuleForm {
@@ -50,9 +54,17 @@ interface RuleForm {
   node: []
   template: string
 }
+const sourceTp = props.tp.includes('Source') ? true : false
+
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, message: t('task.msgTaskName'), trigger: 'blur' }],
-  target: [{ required: true, message: t('task.msgTarget'), trigger: 'blur' }],
+  target: [
+    {
+      required: sourceTp ? false : true,
+      message: t('task.msgTarget'),
+      trigger: 'blur'
+    }
+  ],
   node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }],
   template: [{ required: true, message: 'Please select template', trigger: 'blur' }]
 })
@@ -83,6 +95,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         )
       } else {
         // 创建新任务
+        let searchFilter = reactive<{ [key: string]: any }>({})
+        let search = ''
+        if (targetTp.value == 'search') {
+          if (props.getFilter) {
+            searchFilter = props.getFilter()
+          }
+          if (props.searchParams) {
+            search = props.searchParams
+          }
+        }
         res = await addTaskApi(
           taskData.name,
           taskData.target,
@@ -92,10 +114,15 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.duplicates,
           taskData.scheduledTasks,
           taskData.hour,
-          taskData.template
+          taskData.template,
+          props.tp,
+          targetTp.value,
+          search,
+          searchFilter,
+          targetNumber.value,
+          props.targetIds
         )
       }
-
       if (res.code === 200) {
         props.closeDialog()
         props.getList()
@@ -228,6 +255,8 @@ watch(
   },
   { immediate: true } // 确保组件挂载时立即触发
 )
+const targetTp = ref('select')
+const targetNumber = ref(0)
 </script>
 <template>
   <ElForm
@@ -247,7 +276,15 @@ watch(
         :placeholder="t('task.msgTarget')"
         type="textarea"
         rows="10"
+        v-if="!sourceTp"
       />
+      <ElRadioGroup v-model="targetTp" v-if="sourceTp">
+        <ElRadio value="select">{{ t('task.select') }}</ElRadio>
+        <ElRadio value="search">{{ t('export.exportTypeSearch') }}</ElRadio>
+      </ElRadioGroup>
+    </ElFormItem>
+    <ElFormItem :label="t('task.targetNumber')" v-if="targetTp == 'search' && sourceTp">
+      <ElInput v-model="targetNumber" />
     </ElFormItem>
     <ElFormItem :label="t('task.ignore')" prop="ignore">
       <ElInput

@@ -29,6 +29,7 @@ import { delDataApi } from '@/api/asset'
 import { useRoute } from 'vue-router'
 import { defineProps, defineEmits } from 'vue'
 import { CrudSchema } from '@/hooks/web/useCrudSchemas'
+import AddTask from '../../Task/components/AddTask.vue'
 const { t } = useI18n()
 const { query } = useRoute()
 const props = defineProps<{
@@ -52,6 +53,7 @@ const props = defineProps<{
   searchResultCount: number
   activeSegment?: 'tableSegment' | 'cardSegment' // 可选属性
   setActiveSegment?: (segment: 'tableSegment' | 'cardSegment', flag: boolean) => void // 可选方法
+  getFilter: () => { [key: string]: any }
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -149,11 +151,19 @@ const elDropdownicon = useIcon({ icon: 'ri:arrow-drop-down-line' })
 const exporticon = useIcon({ icon: 'ph:export-light' })
 const aggregationIcon = useIcon({ icon: 'carbon:data-vis-1' })
 const deleteicon = useIcon({ icon: 'openmoji:delete' })
+const TASKicon = useIcon({ icon: 'carbon:task-complete' })
 const exportDialogVisible = ref(false)
 const openExport = () => {
   exportDialogVisible.value = true
 }
 const ids = ref<string[]>([])
+
+const getIds = async () => {
+  const elTableExpose = await props.getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.id)
+  return ids.value
+}
 const delSelect = async () => {
   ElMessageBox.confirm('Whether to delete?', 'Warning', {
     confirmButtonText: 'OK',
@@ -161,9 +171,7 @@ const delSelect = async () => {
     type: 'warning'
   })
     .then(async () => {
-      const elTableExpose = await props.getElTableExpose()
-      const selectedRows = elTableExpose?.getSelectionRows() || []
-      ids.value = selectedRows.map((row) => row.id)
+      await getIds()
       await delDataApi(ids.value, props.index)
       props.getList()
     })
@@ -343,6 +351,15 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
     props.setActiveSegment(segment, true)
   }
 }
+const taskDialogVisible = ref(false)
+let DialogTitle = t('task.addTask')
+const taskCloseDialog = () => {
+  taskDialogVisible.value = false
+}
+const openCreateTask = async () => {
+  await getIds()
+  taskDialogVisible.value = true
+}
 </script>
 
 <template>
@@ -419,7 +436,9 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
               <ElDropdownItem :icon="deleteicon" @click="delSelect">{{
                 t('common.delete')
               }}</ElDropdownItem>
-              <ElDropdownItem :icon="deleteicon" @click="delSelect">扫描</ElDropdownItem>
+              <ElDropdownItem :icon="TASKicon" @click="openCreateTask">{{
+                t('task.addTask')
+              }}</ElDropdownItem>
             </ElDropdownMenu>
           </template>
         </ElDropdown>
@@ -552,7 +571,25 @@ function handleSetActiveSegment(segment: 'tableSegment' | 'cardSegment') {
     width="auto"
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
-    <exportData :index="$props.index" :searchParams="searchParams" />
+    <exportData :index="$props.index" :searchParams="searchParams" :getFilter="$props.getFilter" />
+  </Dialog>
+  <Dialog
+    v-model="taskDialogVisible"
+    :title="DialogTitle"
+    center
+    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
+  >
+    <AddTask
+      :closeDialog="taskCloseDialog"
+      :create="true"
+      taskid=""
+      :schedule="false"
+      :getList="function () {}"
+      :tp="$props.index + 'Source'"
+      :target-ids="ids"
+      :getFilter="$props.getFilter"
+      :searchParams="searchParams"
+    />
   </Dialog>
 </template>
 <style scoped>

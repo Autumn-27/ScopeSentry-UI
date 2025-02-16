@@ -348,7 +348,9 @@ export default {
     stop: 'Stop',
     start: 'Start',
     finish: 'Finish',
-    result: 'Result'
+    result: 'Result',
+    select: 'Select data',
+    targetNumber: 'Target number'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',

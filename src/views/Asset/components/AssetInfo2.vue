@@ -743,6 +743,9 @@ const getStatusColor = (statusValue) => {
     return '#ff5252' // 红色，表示错误
   }
 }
+const getFilter = () => {
+  return filter
+}
 </script>
 
 <template>
@@ -763,6 +766,7 @@ const getStatusColor = (statusValue) => {
     :searchResultCount="total"
     :activeSegment="activeSegment"
     :setActiveSegment="setActiveSegment"
+    :getFilter="getFilter"
   />
   <ElRow :gutter="3" v-if="activeSegment == 'tableSegment'">
     <ElCol :span="statisticsHidden ? 0 : 3">

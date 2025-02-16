@@ -22,6 +22,7 @@ const { t } = useI18n()
 const props = defineProps<{
   index: string
   searchParams: string
+  getFilter: () => { [key: string]: any }
 }>()
 const exportForm = reactive({
   type: 'all',
@@ -29,7 +30,14 @@ const exportForm = reactive({
 })
 const create = async () => {
   createLoading.value = true
-  await exportApi(props.index, exportForm.quantity, exportForm.type, props.searchParams)
+  const searchFilter = props.getFilter()
+  await exportApi(
+    props.index,
+    exportForm.quantity,
+    exportForm.type,
+    props.searchParams,
+    searchFilter
+  )
   createLoading.value = false
 }
 

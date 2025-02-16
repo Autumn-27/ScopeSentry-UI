@@ -355,6 +355,9 @@ const handleClose = (tag: string) => {
     dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
   }
 }
+const getFilter = () => {
+  return filter
+}
 </script>
 
 <template>
@@ -371,6 +374,7 @@ const handleClose = (tag: string) => {
     :handleClose="handleClose"
     @update-column-visibility="handleColumnVisibilityChange"
     :searchResultCount="total"
+    :getFilter="getFilter"
   />
   <ElRow>
     <ElCol>

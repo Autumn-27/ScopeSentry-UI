@@ -39,7 +39,13 @@ export const addTaskApi = (
   duplicates: string,
   scheduledTasks: boolean,
   hour: number,
-  template: string
+  template: string,
+  tp: string,
+  targetTp: string,
+  search: string,
+  filter: Record<string, any>,
+  targetNumber: number,
+  targetIds: string[]
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -52,7 +58,13 @@ export const addTaskApi = (
       duplicates,
       scheduledTasks,
       hour,
-      template
+      template,
+      tp,
+      targetTp,
+      search,
+      filter,
+      targetNumber,
+      targetIds
     }
   })
 }

@@ -345,7 +345,9 @@ export default {
     stop: '暂停',
     start: '开始',
     finish: '完成',
-    result: '结果'
+    result: '结果',
+    select: '选中数据',
+    targetNumber: '目标数量'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

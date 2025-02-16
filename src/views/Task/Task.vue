@@ -442,6 +442,8 @@ const setMaxHeight = () => {
       :create="Create"
       :taskid="taskid"
       :schedule="false"
+      tp="scan"
+      :targetIds="[]"
     />
   </Dialog>
   <Dialog

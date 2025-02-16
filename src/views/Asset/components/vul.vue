@@ -495,6 +495,9 @@ const openPoc = async (id) => {
 const closeDialog = () => {
   dialogVisible.value = false
 }
+const getFilter = () => {
+  return filter
+}
 </script>
 
 <template>
@@ -511,6 +514,7 @@ const closeDialog = () => {
     :handleClose="handleClose"
     @update-column-visibility="handleColumnVisibilityChange"
     :searchResultCount="total"
+    :getFilter="getFilter"
   />
   <ElRow>
     <ElCol>

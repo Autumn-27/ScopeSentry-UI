@@ -276,6 +276,9 @@ const handleFilterSearch = (data: any, newFilters: any) => {
   searchParams.value = data
   getList()
 }
+const getFilter = () => {
+  return filter
+}
 </script>
 
 <template>
@@ -292,6 +295,7 @@ const handleFilterSearch = (data: any, newFilters: any) => {
     :crudSchemas="crudSchemas"
     @update-column-visibility="handleColumnVisibilityChange"
     :searchResultCount="total"
+    :getFilter="getFilter"
   />
   <ElRow>
     <ElCol>

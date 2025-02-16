@@ -369,6 +369,8 @@ getNodeList()
         :create="Create"
         :taskid="TaskId"
         :schedule="true"
+        tp="scheduler"
+        :target-ids="[]"
       />
     </Dialog>
     <Dialog
