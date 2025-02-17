@@ -111,7 +111,9 @@ export default {
     success: '成功',
     fail: '失败',
     type: '类型',
-    download: '下载'
+    download: '下载',
+    field: '字段',
+    fileType: '文件类型'
   },
   searchHelp: {
     notice: '关键字需要用双引号包裹',

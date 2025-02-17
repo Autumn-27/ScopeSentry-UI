@@ -35,3 +35,11 @@ export const downloadExportApi = (id: string): Promise<Blob> => {
       })
   })
 }
+
+type FieldRespData = {
+  field: string[]
+}
+
+export const getFieldApi = (index: string): Promise<IResponse<FieldRespData>> => {
+  return request.post({ url: '/api/getfield', data: { index } })
+}

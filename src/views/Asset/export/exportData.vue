@@ -10,10 +10,13 @@ import {
   ElInput,
   ElButton,
   ElTag,
-  ElSpace
+  ElSpace,
+  ElCheckbox,
+  CheckboxValueType,
+  ElCheckboxGroup
 } from 'element-plus'
-import { reactive, ref } from 'vue'
-import { exportApi, getExportRecordApi, delExportApi } from '@/api/export'
+import { onMounted, reactive, Ref, ref } from 'vue'
+import { exportApi, getExportRecordApi, delExportApi, getFieldApi } from '@/api/export'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { BaseButton } from '@/components/Button'
@@ -183,6 +186,28 @@ const delSelect = async () => {
     getList()
   }
 }
+const fields = ref([]) as Ref<string[]>
+const getField = async () => {
+  const res = await getFieldApi(props.index)
+  fields.value = res.data.field
+}
+
+onMounted(() => {
+  getField()
+})
+const isIndeterminate = ref(true)
+const checkAll = ref(false)
+const checkedField = ref([]) as Ref<string[]>
+const handleCheckAllChange = (val: CheckboxValueType) => {
+  checkedField.value = val ? fields.value : []
+  isIndeterminate.value = false
+}
+const handleCheckedCitiesChange = (value: CheckboxValueType[]) => {
+  const checkedCount = value.length
+  checkAll.value = checkedCount === fields.value.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+}
+const filetype = ref('csv')
 </script>
 
 <template>
@@ -197,6 +222,26 @@ const delSelect = async () => {
         </ElFormItem>
         <ElFormItem :label="t('export.exportQuantity')">
           <ElInput v-model="exportForm.quantity" />
+        </ElFormItem>
+        <ElFormItem :label="t('export.field')">
+          <ElCheckbox
+            v-model="checkAll"
+            :indeterminate="isIndeterminate"
+            @change="handleCheckAllChange"
+          >
+            All
+          </ElCheckbox>
+          <ElCheckboxGroup v-model="checkedField" @change="handleCheckedCitiesChange">
+            <ElCheckbox v-for="field in fields" :key="field" :label="field" :value="field">
+              {{ field }}
+            </ElCheckbox>
+          </ElCheckboxGroup>
+        </ElFormItem>
+        <ElFormItem :label="t('export.fileType')">
+          <ElRadioGroup v-model="filetype">
+            <ElRadio value="csv">csv</ElRadio>
+            <ElRadio value="json">json</ElRadio>
+          </ElRadioGroup>
         </ElFormItem>
         <ElFormItem>
           <ElButton

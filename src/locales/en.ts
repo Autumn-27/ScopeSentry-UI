@@ -111,7 +111,9 @@ export default {
     success: 'Success',
     fail: 'Fail',
     type: 'Type',
-    download: 'Download'
+    download: 'Download',
+    field: 'Field',
+    fileType: 'File Type'
   },
   searchHelp: {
     notice: 'Keywords need to be wrapped in double quotes',

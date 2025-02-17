@@ -568,7 +568,7 @@ const openCreateTask = async () => {
     :title="t('asset.export')"
     center
     max-height="300"
-    width="auto"
+    width="70%"
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
     <exportData :index="$props.index" :searchParams="searchParams" :getFilter="$props.getFilter" />
