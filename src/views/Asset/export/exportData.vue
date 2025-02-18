@@ -39,7 +39,9 @@ const create = async () => {
     exportForm.quantity,
     exportForm.type,
     props.searchParams,
-    searchFilter
+    searchFilter,
+    checkedField.value,
+    filetype.value
   )
   createLoading.value = false
 }
@@ -231,6 +233,8 @@ const filetype = ref('csv')
           >
             All
           </ElCheckbox>
+        </ElFormItem>
+        <ElFormItem label=" ">
           <ElCheckboxGroup v-model="checkedField" @change="handleCheckedCitiesChange">
             <ElCheckbox v-for="field in fields" :key="field" :label="field" :value="field">
               {{ field }}

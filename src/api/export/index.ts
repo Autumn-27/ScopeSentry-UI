@@ -6,9 +6,14 @@ export const exportApi = (
   quantity: number,
   type: string,
   search: string,
-  filter: Record<string, any>
+  filter: Record<string, any>,
+  field: string[],
+  filetype: string
 ): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/export', data: { index, quantity, type, search, filter } })
+  return request.post({
+    url: '/api/export',
+    data: { index, quantity, type, search, filter, field, filetype }
+  })
 }
 
 export const getExportRecordApi = () => {
