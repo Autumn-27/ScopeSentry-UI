@@ -18,7 +18,21 @@ const progressColums = reactive<TableColumn[]>([
   {
     field: 'target',
     label: t('task.taskTarget'),
-    minWidth: 40
+    minWidth: 40,
+    formatter: (row: Recordable, __: TableColumn, cellValue: string) => {
+      const tooltipContent = row.node && row.node !== '' ? row.node : null
+      if (tooltipContent) {
+        return h(
+          ElTooltip,
+          { content: tooltipContent, placement: 'top', rawContent: true },
+          {
+            default: () => cellValue // 用 cellValue 作为原始数据显示
+          }
+        )
+      } else {
+        return cellValue // 如果 row.node 是空字符串，则直接显示 cellValue
+      }
+    }
   },
   {
     field: 'TargetHandler',
@@ -406,7 +420,7 @@ getList()
       popperClass: 'test',
       placement: 'top',
       hideAfter: 0,
-      disabled: false
+      disabled: true
     }"
     :style="{
       fontFamily:
