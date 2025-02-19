@@ -177,6 +177,22 @@ export const getSensitiveNamesApi = (
     data: { search, filter }
   })
 }
+
+interface SensitiveInfoResponse {
+  list: string[]
+}
+
+export const getSensitiveInfoApi = (
+  sid: string,
+  search: string,
+  filter: Record<string, any>
+): Promise<IResponse<SensitiveInfoResponse>> => {
+  return request.post({
+    url: '/api/sensitive/result/info',
+    data: { sid, search, filter }
+  })
+}
+
 interface DirScanDataResponse {
   list: DirScanData[]
   total: number

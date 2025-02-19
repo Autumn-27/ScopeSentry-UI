@@ -25,6 +25,7 @@ import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import {
   addTagApi,
   deleteTagApi,
+  getSensitiveInfoApi,
   getSensitiveNamesApi,
   getSensitiveResultApi,
   getSensitiveResultBodyApi,
@@ -454,6 +455,16 @@ const handleClose = (tag: string) => {
 const getFilter = () => {
   return filter
 }
+const ViewInfoDialogVisible = ref(false)
+
+const infoArray = ref<string[]>([])
+const infNmae = ref('')
+const OpenViewInfoDialogVisible = async (sid) => {
+  infNmae.value = sid
+  const res = await getSensitiveInfoApi(sid, searchParams.value, filter)
+  infoArray.value = res.data.list
+  ViewInfoDialogVisible.value = true
+}
 </script>
 
 <template>
@@ -550,14 +561,29 @@ const getFilter = () => {
           </div>
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="color" label="color" width="180">
+      <ElTableColumn prop="color" label="color" width="100">
         <template #default="scope">
           <ElTag :color="scope.row.color" round effect="plain" size="small" style="width: 20px" />
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="count" :label="t('common.quantity')" width="180" />
+      <ElTableColumn prop="count" :label="t('common.quantity')" width="130" />
+      <ElTableColumn :label="t('tableDemo.operate')" width="180">
+        <template #default="scope">
+          <div
+            style="display: flex; align-items: center"
+            @click="OpenViewInfoDialogVisible(scope.row.name)"
+          >
+            <ElButton type="success">info</ElButton>
+          </div>
+        </template>
+      </ElTableColumn>
     </ElTable>
   </ElDrawer>
+  <Dialog v-model="ViewInfoDialogVisible" :title="infNmae">
+    <div v-for="(item, index) in infoArray" :key="index">
+      <p>{{ item }}</p>
+    </div>
+  </Dialog>
 </template>
 
 <style lang="less" scoped>
