@@ -1,5 +1,6 @@
 import request from '@/axios'
 import { NodeData, nodeRespData, nodeLogRespData, pluginInfoData } from './types'
+import { commonRespData } from '../scommon/types'
 
 interface NodeDataResponse {
   list: NodeData[]
@@ -11,6 +12,15 @@ interface NodeDataOnlineResponse {
 
 export const getNodeDataApi = (): Promise<IResponse<NodeDataResponse>> => {
   return request.get({ url: '/api/node/data' })
+}
+
+export const restartNodeApi = (name: string): Promise<IResponse<commonRespData>> => {
+  return request.post({
+    url: '/api/node/restart',
+    data: {
+      name
+    }
+  })
 }
 
 export const getNodeDataOnlineApi = (): Promise<IResponse<NodeDataOnlineResponse>> => {

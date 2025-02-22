@@ -287,7 +287,9 @@ export default {
     updateTime: 'Update Time',
     log: 'Log',
     onlineNodeMsg: 'No scanning node is connected',
-    plugin: 'Plugin'
+    plugin: 'Plugin',
+    restart: 'Restart',
+    restartMsg: 'Only supports Docker'
   },
   task: {
     taskName: 'Task Name',

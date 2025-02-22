@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, watch } from 'vue'
-import { ElCol, ElRow, ElScrollbar, ElTag } from 'element-plus'
+import { ElCol, ElRow, ElScrollbar, ElTag, ElTooltip } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 // import { useIcon } from '@/hooks/web/useIcon'
@@ -11,7 +11,7 @@ import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import Configuration from './components/Configuration.vue'
 import plugin from './components/plugin.vue'
-import { getNodeDataApi, deleteNodeApi, getNodeLogApi } from '@/api/node'
+import { getNodeDataApi, deleteNodeApi, getNodeLogApi, restartNodeApi } from '@/api/node'
 const { t } = useI18n()
 const nodeColums = reactive<TableColumn[]>([
   {
@@ -151,6 +151,11 @@ const nodeColums = reactive<TableColumn[]>([
           <BaseButton type="primary" size="small" onClick={() => openConfig(row)}>
             {t('common.config')}
           </BaseButton>
+          <ElTooltip content={t('node.restartMsg')}>
+            <BaseButton type="danger" size="small" onClick={() => restartNode(row.name)}>
+              {t('node.restart')}
+            </BaseButton>
+          </ElTooltip>
         </>
       )
     }
@@ -185,6 +190,9 @@ const openConfig = async (data) => {
   detailData.ModulesConfig = data.modulesConfig
   detailData.state = data.state
   dialogVisible.value = true
+}
+const restartNode = async (name) => {
+  await restartNodeApi(name)
 }
 const delLoading = ref(false)
 const names = ref<string[]>([])

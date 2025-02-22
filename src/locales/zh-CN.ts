@@ -286,7 +286,9 @@ export default {
     updateTime: '更新时间',
     log: '日志',
     onlineNodeMsg: '没有连接中的扫描节点',
-    plugin: '插件'
+    plugin: '插件',
+    restart: '重启',
+    restartMsg: '仅支持docker'
   },
   task: {
     taskName: '任务名称',
