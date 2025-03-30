@@ -32,10 +32,17 @@ getProjectList()
 <template>
   <ElTabs type="border-card">
     <ElTabPane :label="t('asset.assetName')"><AssetInfo2 :projectList="projectList" /></ElTabPane>
+    <ElTabPane :label="t('rootDomain.rootDomainName')" />
     <ElTabPane :label="t('subdomain.subdomainName')">
       <Subdomain :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('task.subdomainTakeover')">
+      <SubdomainTakeover :projectList="projectList" />
+    </ElTabPane>
+    <ElTabPane :label="t('app.appName')">
+      <SubdomainTakeover :projectList="projectList" />
+    </ElTabPane>
+    <ElTabPane :label="t('miniProgram.miniProgramName')">
       <SubdomainTakeover :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('URL.URLName')"><URL :projectList="projectList" /></ElTabPane>

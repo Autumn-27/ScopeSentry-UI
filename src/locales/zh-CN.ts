@@ -311,7 +311,8 @@ export default {
     taskTarget: '目标',
     subdomainTakeover: '子域名接管',
     assetMapping: '资产测绘',
-    msgTarget: '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com',
+    msgTarget:
+      '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(这种方式会将网段放在一个节点中扫描，快速扫描存活。)',
     ignoreMsg:
       '忽略目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\n域名格式需要加通配符，否则进行全等判断',
     subdomainScan: '子域名扫描',
@@ -397,6 +398,15 @@ export default {
     subdomainName: '子域名',
     recordType: '记录类型',
     recordValue: '记录值'
+  },
+  rootDomain: {
+    rootDomainName: '根域名'
+  },
+  app: {
+    appName: 'APP'
+  },
+  miniProgram: {
+    miniProgramName: '小程序'
   },
   URL: {
     URLName: 'URL',

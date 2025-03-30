@@ -313,7 +313,7 @@ export default {
     subdomainTakeover: 'Subdomain Takeover',
     assetMapping: 'Asset Mapping',
     msgTarget:
-      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com',
+      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(This method put the network segment in one node for scanning, and the fast scanning survives.)',
     ignoreMsg:
       'Ignore the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\nThe domain name format needs to include a wildcard, otherwise it will be judged as identical.',
     subdomainScan: 'Subdomain Scan',
@@ -400,6 +400,15 @@ export default {
     subdomainName: 'Subdomain',
     recordType: 'Record Type',
     recordValue: 'Record Value'
+  },
+  rootDomain: {
+    rootDomainName: 'Root Domain'
+  },
+  app: {
+    appName: 'APP'
+  },
+  miniProgram: {
+    miniProgramName: 'Mini Program'
   },
   URL: {
     URLName: 'URL',
