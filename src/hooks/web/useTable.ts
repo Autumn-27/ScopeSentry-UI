@@ -13,6 +13,7 @@ interface UseTableConfig {
   fetchDataApi: () => Promise<{
     list: any[]
     total?: number
+    flag?: boolean // 修改的flag值 用于在资产查询处 单独进行total的设置 不统一设置total的值
   }>
   fetchDelApi?: () => Promise<boolean>
 }
@@ -83,7 +84,9 @@ export const useTable = (config: UseTableConfig) => {
         console.log('fetchDataApi res', res)
         if (res) {
           dataList.value = res.list
-          total.value = res.total || 0
+          if (!res.flag) {
+            total.value = res.total || 0
+          }
         }
       } catch (err) {
         console.log('fetchDataApi error')

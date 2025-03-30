@@ -50,7 +50,7 @@ const searchKeywordsData = [
     explain: t('searchHelp.project')
   }
 ]
-
+const indexName = 'crawler'
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data
@@ -286,7 +286,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    index="crawler"
+    :index="indexName"
     :dynamicTags="dynamicTags"
     :handleClose="handleClose"
     :getElTableExpose="getElTableExpose"

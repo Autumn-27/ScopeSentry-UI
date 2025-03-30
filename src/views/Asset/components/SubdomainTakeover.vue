@@ -55,7 +55,7 @@ const searchKeywordsData = [
     explain: t('searchHelp.project')
   }
 ]
-
+const indexName = 'SubdoaminTakerResult'
 onMounted(() => {
   setMaxHeight()
   window.addEventListener('resize', setMaxHeight)
@@ -301,7 +301,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    index="SubdoaminTakerResult"
+    :index="indexName"
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"

@@ -31,7 +31,8 @@ import {
   getAssetStatisticsPortApi,
   getAssetStatisticsTypeApi,
   getAssetStatisticsappApi,
-  getAssetStatisticsiconApi
+  getAssetStatisticsiconApi,
+  totalDataApi
 } from '@/api/asset'
 import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
@@ -118,7 +119,7 @@ const searchKeywordsData = [
     explain: t('searchHelp.protocol')
   }
 ]
-
+const indexName = 'asset'
 const staticLoading = ref(true)
 const searchParams = ref('')
 const handleSearch = (data: any) => {
@@ -615,20 +616,33 @@ const { tableRegister, tableState, tableMethods } = useTable({
         total: resCard
       }
     }
-    console.log('dsadwas')
     const { currentPage, pageSize } = tableState
-    getAssetstatistics()
-    console.log('dsadwas2222')
+    const tmpTotal = tableState.total
+    if (currentPage.value === 1 && pageSize.value === 20) {
+      // 如果当前页面等于1 并且 页面大小为20 说明是首次加载 或者是进行了搜索 需要更新total的值
+      getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
+      getAssetstatistics()
+    }
     const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
-      total: res.data.total
+      flag: true
     }
   },
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
+
+const getTotal = async (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+) => {
+  let res = await totalDataApi(search, pageIndex, pageSize, filter, indexName)
+  total.value = res.data.total
+}
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -753,7 +767,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    index="asset"
+    :index="indexName"
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"

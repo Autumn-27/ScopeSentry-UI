@@ -57,6 +57,7 @@ const searchKeywordsData = [
   }
 ]
 const searchParams = ref('')
+const indexName = 'UrlScan'
 const handleSearch = (data: any) => {
   searchParams.value = data
   getList()
@@ -365,7 +366,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    index="UrlScan"
+    :index="indexName"
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"

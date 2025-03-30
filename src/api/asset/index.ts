@@ -278,3 +278,19 @@ export const deleteTagApi = (
 ): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/data/delete/tag', data: { id, tp, tag } })
 }
+
+interface TotalDataResponse {
+  total: number
+}
+export const totalDataApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>,
+  index: string
+): Promise<IResponse<TotalDataResponse>> => {
+  return request.post({
+    url: '/api/data/total',
+    data: { search, pageIndex, pageSize, filter, index }
+  })
+}

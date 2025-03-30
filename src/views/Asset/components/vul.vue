@@ -77,6 +77,7 @@ const searchKeywordsData = [
   }
 ]
 const searchParams = ref('')
+const indexName = 'vulnerability'
 const handleSearch = (data: any) => {
   searchParams.value = data
   getList()
@@ -505,7 +506,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    index="vulnerability"
+    :index="indexName"
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"
