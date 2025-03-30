@@ -53,13 +53,11 @@ const exportColums = reactive<TableColumn[]>([
   },
   {
     field: 'file_name',
-    label: t('export.fileName'),
-    width: '160'
+    label: t('export.fileName')
   },
   {
     field: 'state',
     label: t('export.state'),
-    width: '160',
     formatter: (_: Recordable, __: TableColumn, value: number) => {
       if (value == 0) {
         return <ElTag type="info">{t('export.run')}</ElTag>
@@ -72,13 +70,11 @@ const exportColums = reactive<TableColumn[]>([
   },
   {
     field: 'create_time',
-    label: t('export.createTime'),
-    width: '160'
+    label: t('export.createTime')
   },
   {
     field: 'end_time',
     label: t('export.endTime'),
-    width: '160',
     formatter: (_: Recordable, __: TableColumn, value: string) => {
       if (value == '') {
         return '-'
@@ -89,13 +85,11 @@ const exportColums = reactive<TableColumn[]>([
   },
   {
     field: 'data_type',
-    label: t('export.type'),
-    width: '120'
+    label: t('export.type')
   },
   {
     field: 'file_size',
     label: t('export.fileSize'),
-    width: '100',
     formatter: (_: Recordable, __: TableColumn, value: string) => {
       if (value == '') {
         return '-'
@@ -107,7 +101,7 @@ const exportColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    width: '200',
+    fixed: 'right',
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
@@ -260,22 +254,23 @@ const filetype = ref('csv')
       </ElForm>
     </ElTabPane>
     <ElTabPane :label="t('export.exportRecords')" name="exportRecords">
-      <ElSpace direction="vertical" alignment="flex-start">
+      <ElSpace direction="vertical" alignment="flex-start" :style="{ width: '100%' }">
         <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
           {{ t('common.delete') }}
         </BaseButton>
-        <Table
-          @register="tableRegister"
-          :columns="exportColums"
-          :data="dataList"
-          :loading="loading"
-          max-height="500"
-          :style="{
-            fontFamily:
-              '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-          }"
-        />
       </ElSpace>
+      <Table
+        @register="tableRegister"
+        :columns="exportColums"
+        :data="dataList"
+        :loading="loading"
+        max-height="500"
+        :style="{
+          fontFamily:
+            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+          width: '100%'
+        }"
+      />
     </ElTabPane>
   </ElTabs>
 </template>
