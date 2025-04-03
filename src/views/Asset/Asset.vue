@@ -13,6 +13,7 @@ import vul from './components/vul.vue'
 import SubdomainTakeover from './components/SubdomainTakeover.vue'
 import { reactive } from 'vue'
 import { getProjectAllApi } from '@/api/project'
+import RootDomain from './components/RootDomain.vue'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -32,7 +33,9 @@ getProjectList()
 <template>
   <ElTabs type="border-card">
     <ElTabPane :label="t('asset.assetName')"><AssetInfo2 :projectList="projectList" /></ElTabPane>
-    <ElTabPane :label="t('rootDomain.rootDomainName')" />
+    <ElTabPane :label="t('rootDomain.rootDomainName')">
+      <RootDomain :projectList="projectList" />
+    </ElTabPane>
     <ElTabPane :label="t('subdomain.subdomainName')">
       <Subdomain :projectList="projectList" />
     </ElTabPane>

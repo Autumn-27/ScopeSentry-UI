@@ -161,7 +161,9 @@ export default {
     level: '检索漏洞等级(info、high、medium、critical、low、unknown)',
     sensMd5: '根据响应体MD5检索',
     sensLevel: '根据敏感信息等级搜索（red、green、cyan、yellow、orange、gray、pink）',
-    taskName: '根据任务名称检索，仅支持精确查找'
+    taskName: '根据任务名称检索，仅支持精确查找',
+    icp: '检索ICP',
+    company: '检索公司名称'
   },
   lock: {
     lockScreen: '锁定屏幕',
@@ -400,7 +402,8 @@ export default {
     recordValue: '记录值'
   },
   rootDomain: {
-    rootDomainName: '根域名'
+    rootDomainName: '根域名',
+    company: '公司'
   },
   app: {
     appName: 'APP'

@@ -294,3 +294,15 @@ export const totalDataApi = (
     data: { search, pageIndex, pageSize, filter, index }
   })
 }
+
+export const getRootDomainApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/root/domain/data',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}

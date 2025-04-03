@@ -161,7 +161,9 @@ export default {
     level: 'Retrieve vuln level(info、high、medium、critical、low、unknown)',
     sensMd5: 'Retrieve based on response body MD5',
     sensLevel: 'Search by sensitivity level (red, green, cyan, yellow, orange, gray, pink)',
-    taskName: 'Search by task name, only supports exact search.'
+    taskName: 'Search by task name, only supports exact search.',
+    icp: 'Search by ICP',
+    company: 'Search by company name'
   },
   lock: {
     lockScreen: 'Lock screen',
@@ -402,7 +404,8 @@ export default {
     recordValue: 'Record Value'
   },
   rootDomain: {
-    rootDomainName: 'Root Domain'
+    rootDomainName: 'Root Domain',
+    company: 'Company'
   },
   app: {
     appName: 'APP'
