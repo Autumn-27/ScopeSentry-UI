@@ -15,7 +15,7 @@ import {
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { addTagApi, deleteTagApi, getRootDomainApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getAppApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
@@ -86,7 +86,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'name',
     label: t('app.name'),
-    minWidth: '100'
+    minWidth: '120'
   },
   {
     field: 'category',
@@ -111,7 +111,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'company',
     label: t('rootDomain.company'),
-    minWidth: '230'
+    minWidth: '210'
   },
   {
     field: 'project',
@@ -262,12 +262,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getRootDomainApi(
-      searchParams.value,
-      currentPage.value,
-      pageSize.value,
-      filter
-    )
+    const res = await getAppApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total

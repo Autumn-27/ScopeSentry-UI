@@ -306,3 +306,15 @@ export const getRootDomainApi = (
     data: { search, pageIndex, pageSize, filter }
   })
 }
+
+export const getAppApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/app/data',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}
