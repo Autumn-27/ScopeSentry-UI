@@ -408,7 +408,10 @@ export default {
     company: 'Company'
   },
   app: {
-    appName: 'APP'
+    appName: 'APP',
+    name: 'Name',
+    category: 'Category',
+    description: 'Description'
   },
   miniProgram: {
     miniProgramName: 'Mini Program'

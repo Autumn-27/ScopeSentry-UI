@@ -56,7 +56,6 @@ const searchKeywordsData = [
 ]
 
 const searchParams = ref('')
-const indexName = 'PageMonitoring'
 const handleSearch = (data: any) => {
   searchParams.value = data
   getList()
@@ -360,7 +359,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    :index="indexName"
+    :index="index"
     :dynamicTags="dynamicTags"
     :handleClose="handleClose"
     :getElTableExpose="getElTableExpose"

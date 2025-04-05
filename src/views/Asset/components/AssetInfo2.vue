@@ -119,7 +119,6 @@ const searchKeywordsData = [
     explain: t('searchHelp.protocol')
   }
 ]
-const indexName = 'asset'
 const staticLoading = ref(true)
 const searchParams = ref('')
 const handleSearch = (data: any) => {
@@ -640,7 +639,7 @@ const getTotal = async (
   pageSize: number,
   filter: Record<string, any>
 ) => {
-  let res = await totalDataApi(search, pageIndex, pageSize, filter, indexName)
+  let res = await totalDataApi(search, pageIndex, pageSize, filter, index)
   total.value = res.data.total
 }
 function tableHeaderColor() {
@@ -767,7 +766,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    :index="indexName"
+    :index="index"
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"

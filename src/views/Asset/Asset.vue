@@ -14,6 +14,7 @@ import SubdomainTakeover from './components/SubdomainTakeover.vue'
 import { reactive } from 'vue'
 import { getProjectAllApi } from '@/api/project'
 import RootDomain from './components/RootDomain.vue'
+import APP from './components/APP.vue'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -43,7 +44,7 @@ getProjectList()
       <SubdomainTakeover :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('app.appName')">
-      <SubdomainTakeover :projectList="projectList" />
+      <APP :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('miniProgram.miniProgramName')">
       <SubdomainTakeover :projectList="projectList" />

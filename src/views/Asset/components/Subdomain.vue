@@ -60,7 +60,6 @@ onMounted(() => {
 })
 
 const maxHeight = ref(0)
-const indexName = 'subdomain'
 const setMaxHeight = () => {
   const screenHeight = window.innerHeight || document.documentElement.clientHeight
   maxHeight.value = screenHeight * 0.7
@@ -317,7 +316,7 @@ const getFilter = () => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    :index="indexName"
+    :index="index"
     :getElTableExpose="getElTableExpose"
     :projectList="$props.projectList"
     :handleFilterSearch="handleFilterSearch"

@@ -6,19 +6,17 @@ import { useTable } from '@/hooks/web/useTable'
 import {
   ElCard,
   ElPagination,
-  ElCol,
   ElRow,
-  ElText,
-  ElButton,
-  ElInput,
+  ElCol,
+  InputInstance,
   ElTag,
-  InputInstance
+  ElInput,
+  ElButton
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { addTagApi, deleteTagApi, getURLApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getRootDomainApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
-import { Icon } from '@/components/Icon'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
 interface Project {
@@ -31,24 +29,24 @@ const props = defineProps<{
 }>()
 const searchKeywordsData = [
   {
-    keyword: 'url',
-    example: 'url="http://example.com"',
-    explain: t('searchHelp.url')
+    keyword: 'ip',
+    example: 'ip="192.168.2.1"',
+    explain: t('searchHelp.ip')
   },
   {
-    keyword: 'input',
-    example: 'input="example.com"',
-    explain: t('searchHelp.inpur')
+    keyword: 'domain',
+    example: 'domain="example.com"',
+    explain: t('searchHelp.domain')
   },
   {
-    keyword: 'source',
-    example: 'source="exapmle.com/example.js"',
-    explain: t('searchHelp.source')
+    keyword: 'icp',
+    example: 'icp="xxxxx"',
+    explain: t('searchHelp.icp')
   },
   {
-    keyword: 'type',
-    example: 'type="linkfinder"',
-    explain: t('searchHelp.urlType')
+    keyword: 'company',
+    example: 'company="xxxx"',
+    explain: t('searchHelp.company')
   },
   {
     keyword: 'project',
@@ -56,6 +54,17 @@ const searchKeywordsData = [
     explain: t('searchHelp.project')
   }
 ]
+onMounted(() => {
+  setMaxHeight()
+  window.addEventListener('resize', setMaxHeight)
+})
+
+const maxHeight = ref(0)
+const setMaxHeight = () => {
+  const screenHeight = window.innerHeight || document.documentElement.clientHeight
+  maxHeight.value = screenHeight * 0.7
+}
+
 const searchParams = ref('')
 const handleSearch = (data: any) => {
   searchParams.value = data
@@ -66,89 +75,53 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'selection',
     type: 'selection',
-    minWidth: '55'
+    minWidth: '35'
   },
   {
     field: 'index',
     label: t('tableDemo.index'),
     type: 'index',
-    minWidth: 55
+    minWidth: '30'
   },
   {
-    field: 'url',
-    label: 'URL',
-    minWidth: 250
+    field: 'name',
+    label: t('app.name'),
+    minWidth: '100'
   },
   {
-    field: 'status',
-    label: t('dirScan.status'),
-    columnKey: 'status',
-    minWidth: 120,
-    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
-      if (statusValue == null) {
-        return <div>-</div>
-      }
-      let color = ''
-      if (statusValue < 300) {
-        color = '#2eb98a'
-      } else if (statusValue < 400) {
-        color = '#ff5252'
-      } else {
-        color = '#ff5252'
-      }
-      return (
-        <ElRow gutter={20}>
-          <ElCol span={1}>
-            <Icon
-              icon="clarity:circle-solid"
-              color={color}
-              size={10}
-              style={'transform: translateY(8%)'}
-            />
-          </ElCol>
-          <ElCol span={2}>
-            <ElText>{statusValue}</ElText>
-          </ElCol>
-        </ElRow>
-      )
-    },
-    filters: [
-      { text: '200', value: 200 },
-      { text: '201', value: 201 },
-      { text: '204', value: 204 },
-      { text: '301', value: 301 },
-      { text: '302', value: 302 },
-      { text: '304', value: 304 },
-      { text: '400', value: 400 },
-      { text: '401', value: 401 },
-      { text: '403', value: 403 },
-      { text: '404', value: 404 },
-      { text: '500', value: 500 },
-      { text: '502', value: 502 },
-      { text: '503', value: 503 },
-      { text: '504', value: 504 }
-    ]
+    field: 'category',
+    label: t('app.category'),
+    minWidth: '100'
   },
   {
-    field: 'length',
-    label: 'Length',
-    minWidth: 120,
-    sortable: 'custom'
+    field: 'description',
+    label: t('app.description'),
+    minWidth: '100'
   },
   {
-    field: 'source',
-    label: t('URL.source'),
-    minWidth: 100
+    field: 'bundleID',
+    label: 'BundleID',
+    minWidth: '100'
   },
   {
-    field: 'type',
-    label: t('URL.type'),
-    minWidth: 100
+    field: 'icp',
+    label: 'ICP',
+    minWidth: '180'
   },
   {
-    field: 'input',
-    label: t('URL.input'),
-    minWidth: 200
+    field: 'company',
+    label: t('rootDomain.company'),
+    minWidth: '230'
+  },
+  {
+    field: 'project',
+    label: t('project.project'),
+    minWidth: '150'
+  },
+  {
+    field: 'apk',
+    label: 'APK',
+    minWidth: '80'
   },
   {
     field: 'tags',
@@ -245,10 +218,10 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'time',
     label: t('asset.time'),
-    minWidth: 200
+    minWidth: '180'
   }
 ])
-let index = 'UrlScan'
+let index = 'app'
 crudSchemas.forEach((schema) => {
   schema.hidden = schema.hidden ?? false // 如果没有 hidden 属性，添加并设置为 false
 })
@@ -264,7 +237,6 @@ const loadColumnConfig = () => {
   })
   statisticsHidden.value = savedConfig['statisticsHidden']
 }
-
 // 保存配置到localStorage
 const saveColumnConfig = () => {
   const config = crudSchemas.reduce((acc, col) => {
@@ -290,12 +262,11 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getURLApi(
+    const res = await getRootDomainApi(
       searchParams.value,
       currentPage.value,
       pageSize.value,
-      filter,
-      sortBy
+      filter
     )
     return {
       list: res.data.list,
@@ -306,35 +277,17 @@ const { tableRegister, tableState, tableMethods } = useTable({
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
-pageSize.value = 20
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
-onMounted(() => {
-  setMaxHeight()
-  window.addEventListener('resize', setMaxHeight)
-})
-const sortBy = reactive<{ [key: string]: any }>({})
-const sortChange = async (column: any) => {
-  const key = column.prop
-  const value = column.order
-  sortBy[key] = value
+const filter = reactive<{ [key: string]: any }>({})
+const filterChange = async (newFilters: any) => {
+  Object.assign(filter, newFilters)
   getList()
 }
-const maxHeight = ref(0)
-
-const setMaxHeight = () => {
-  const screenHeight = window.innerHeight || document.documentElement.clientHeight
-  maxHeight.value = screenHeight * 0.7
-}
-const filter = reactive<{ [key: string]: any }>({})
 const handleFilterSearch = (data: any, newFilters: any) => {
   Object.assign(filter, newFilters)
   searchParams.value = data
-  getList()
-}
-const filterChange = async (newFilters: any) => {
-  Object.assign(filter, newFilters)
   getList()
 }
 const dynamicTags = ref<string[]>([])
@@ -378,18 +331,16 @@ const getFilter = () => {
   />
   <ElRow>
     <ElCol>
-      <ElCard>
+      <ElCard style="height: min-content">
         <Table
           v-model:pageSize="pageSize"
           v-model:currentPage="currentPage"
           :columns="allSchemas.tableColumns"
           :data="dataList"
-          :max-height="maxHeight"
           stripe
           :border="true"
           :loading="loading"
           :resizable="true"
-          @sort-change="sortChange"
           @register="tableRegister"
           @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
@@ -405,7 +356,7 @@ const getFilter = () => {
         <ElPagination
           v-model:pageSize="pageSize"
           v-model:currentPage="currentPage"
-          :page-sizes="[20, 50, 100, 200, 500, 1000]"
+          :page-sizes="[10, 20, 50, 100, 200, 500, 1000]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         />
@@ -417,5 +368,8 @@ const getFilter = () => {
 <style lang="less" scoped>
 .el-button {
   margin-top: 10px;
+}
+:deep(.el-table .cell.el-tooltip) {
+  white-space: pre-line;
 }
 </style>

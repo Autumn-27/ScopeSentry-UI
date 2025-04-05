@@ -77,7 +77,6 @@ const searchKeywordsData = [
   }
 ]
 const searchParams = ref('')
-const indexName = 'SensitiveResult'
 const handleSearch = (data: any) => {
   searchParams.value = data
   callFunctionsConcurrently()
@@ -473,7 +472,7 @@ const OpenViewInfoDialogVisible = async (sid) => {
     :getList="getList"
     :handleSearch="handleSearch"
     :searchKeywordsData="searchKeywordsData"
-    :index="indexName"
+    :index="index"
     :getElTableExpose="getElTableExpose"
     :handleFilterSearch="handleFilterSearch"
     :projectList="$props.projectList"

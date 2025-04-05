@@ -406,7 +406,10 @@ export default {
     company: '公司'
   },
   app: {
-    appName: 'APP'
+    appName: 'APP',
+    name: '名称',
+    category: '分类',
+    description: '描述'
   },
   miniProgram: {
     miniProgramName: '小程序'
