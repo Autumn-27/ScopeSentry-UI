@@ -163,7 +163,8 @@ export default {
     sensLevel: '根据敏感信息等级搜索（red、green、cyan、yellow、orange、gray、pink）',
     taskName: '根据任务名称检索，仅支持精确查找',
     icp: '检索ICP',
-    company: '检索公司名称'
+    company: '检索公司名称',
+    name: '检索名称'
   },
   lock: {
     lockScreen: '锁定屏幕',

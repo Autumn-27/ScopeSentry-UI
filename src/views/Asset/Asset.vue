@@ -15,6 +15,7 @@ import { reactive } from 'vue'
 import { getProjectAllApi } from '@/api/project'
 import RootDomain from './components/RootDomain.vue'
 import APP from './components/APP.vue'
+import MP from './components/MP.vue'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -47,7 +48,7 @@ getProjectList()
       <APP :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('miniProgram.miniProgramName')">
-      <SubdomainTakeover :projectList="projectList" />
+      <MP :projectList="projectList" />
     </ElTabPane>
     <ElTabPane :label="t('URL.URLName')"><URL :projectList="projectList" /></ElTabPane>
     <ElTabPane :label="t('crawler.crawlerName')"><Crawler :projectList="projectList" /></ElTabPane>

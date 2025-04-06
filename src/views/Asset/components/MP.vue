@@ -15,7 +15,7 @@ import {
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { addTagApi, deleteTagApi, getAppApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getMpApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
@@ -84,18 +84,8 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '120'
   },
   {
-    field: 'category',
-    label: t('app.category'),
-    minWidth: '100'
-  },
-  {
     field: 'description',
     label: t('app.description'),
-    minWidth: '100'
-  },
-  {
-    field: 'bundleID',
-    label: 'BundleID',
     minWidth: '100'
   },
   {
@@ -112,11 +102,6 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'project',
     label: t('project.project'),
     minWidth: '150'
-  },
-  {
-    field: 'apk',
-    label: 'APK',
-    minWidth: '80'
   },
   {
     field: 'tags',
@@ -257,7 +242,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getAppApi(searchParams.value, currentPage.value, pageSize.value, filter)
+    const res = await getMpApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total

@@ -29,11 +29,6 @@ const props = defineProps<{
 }>()
 const searchKeywordsData = [
   {
-    keyword: 'ip',
-    example: 'ip="192.168.2.1"',
-    explain: t('searchHelp.ip')
-  },
-  {
     keyword: 'domain',
     example: 'domain="example.com"',
     explain: t('searchHelp.domain')

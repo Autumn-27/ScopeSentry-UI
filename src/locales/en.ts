@@ -163,7 +163,8 @@ export default {
     sensLevel: 'Search by sensitivity level (red, green, cyan, yellow, orange, gray, pink)',
     taskName: 'Search by task name, only supports exact search.',
     icp: 'Search by ICP',
-    company: 'Search by company name'
+    company: 'Search by company name',
+    name: 'Search by name'
   },
   lock: {
     lockScreen: 'Lock screen',

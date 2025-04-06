@@ -318,3 +318,15 @@ export const getAppApi = (
     data: { search, pageIndex, pageSize, filter }
   })
 }
+
+export const getMpApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/mp/data',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}
