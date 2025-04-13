@@ -315,7 +315,7 @@ export default {
     subdomainTakeover: '子域名接管',
     assetMapping: '资产测绘',
     msgTarget:
-      '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(这种方式会将网段放在一个节点中扫描，快速扫描存活。)',
+      '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(这种方式会将网段放在一个节点中扫描，快速扫描存活。)\nCMP:xxx公司（公司名称）\nICP:京ICP证xxxx号(ICP备案号)\nAPP:xxx（APP名称）\nAPP-ID:com.xx.xx（app包名）\n',
     ignoreMsg:
       '忽略目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\n域名格式需要加通配符，否则进行全等判断',
     subdomainScan: '子域名扫描',
@@ -355,7 +355,12 @@ export default {
     finish: '完成',
     result: '结果',
     select: '选中数据',
-    targetNumber: '目标数量'
+    targetNumber: '目标数量',
+    targetSource: '目标来源',
+    general: '普通',
+    fromAsset: '从资产',
+    fromSubdomain: '从子域名',
+    fromRootDomain: '从根域名'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

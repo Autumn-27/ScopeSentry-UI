@@ -175,7 +175,8 @@ const taskData = reactive({
   scheduledTasks: false,
   hour: 24,
   duplicates: 'None',
-  template: ''
+  template: '',
+  cycleType: ''
 })
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
@@ -256,7 +257,26 @@ watch(
   { immediate: true } // 确保组件挂载时立即触发
 )
 const targetTp = ref('select')
+const tagertSource = ref('general')
 const targetNumber = ref(0)
+const tagertSourceOptions = [
+  {
+    label: t('task.general'),
+    value: 'general'
+  },
+  {
+    label: t('task.fromAsset'),
+    value: 'asset'
+  },
+  {
+    label: t('task.fromRootDomain'),
+    value: 'RootDomain'
+  },
+  {
+    label: t('task.fromSubdomain'),
+    value: 'Subdomain'
+  }
+]
 </script>
 <template>
   <ElForm
@@ -269,6 +289,9 @@ const targetNumber = ref(0)
   >
     <ElFormItem :label="t('task.taskName')" prop="name">
       <ElInput v-model="taskData.name" :placeholder="t('task.msgTaskName')" />
+    </ElFormItem>
+    <ElFormItem :label="t('task.targetSource')" v-if="!sourceTp">
+      <ElSelectV2 style="width: 50%" v-model="tagertSource" :options="tagertSourceOptions" />
     </ElFormItem>
     <ElFormItem :label="t('task.taskTarget')" prop="target">
       <ElInput
@@ -291,7 +314,7 @@ const targetNumber = ref(0)
         v-model="taskData.ignore"
         :placeholder="t('task.ignoreMsg')"
         type="textarea"
-        rows="10"
+        rows="5"
       />
     </ElFormItem>
     <ElRow>

@@ -316,7 +316,7 @@ export default {
     subdomainTakeover: 'Subdomain Takeover',
     assetMapping: 'Asset Mapping',
     msgTarget:
-      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(This method put the network segment in one node for scanning, and the fast scanning survives.)',
+      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18 (This method will scan the network segment in one node, and the fast scan will survive.)\nCMP:xxx Company (Company Name)\nICP: Beijing ICP Certificate xxxx No. (ICP Registration No.)\nAPP:xxx (APP Name)\nAPP-ID:com.xx.xx (app package name)\n',
     ignoreMsg:
       'Ignore the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\nThe domain name format needs to include a wildcard, otherwise it will be judged as identical.',
     subdomainScan: 'Subdomain Scan',
@@ -357,7 +357,12 @@ export default {
     finish: 'Finish',
     result: 'Result',
     select: 'Select data',
-    targetNumber: 'Target number'
+    targetNumber: 'Target number',
+    targetSource: 'Target Source',
+    general: 'General',
+    fromAsset: 'From Asset',
+    fromSubdomain: 'From Subdomain',
+    fromRootDomain: 'From Root Domain'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',
