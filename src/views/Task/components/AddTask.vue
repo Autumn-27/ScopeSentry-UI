@@ -20,7 +20,8 @@ import {
   ElMessage,
   ElInputNumber,
   CheckboxValueType,
-  ElText
+  ElText,
+  ElTreeSelect
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
@@ -34,6 +35,7 @@ import {
 } from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import DetailTemplate from './DetailTemplate.vue'
+import { getProjectAllApi } from '@/api/project'
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -265,6 +267,10 @@ const tagertSourceOptions = [
     value: 'general'
   },
   {
+    label: t('task.fromProject'),
+    value: 'project'
+  },
+  {
     label: t('task.fromAsset'),
     value: 'asset'
   },
@@ -277,6 +283,21 @@ const tagertSourceOptions = [
     value: 'Subdomain'
   }
 ]
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const projectList = reactive<Project[]>([])
+const getProjectList = async () => {
+  const res = await getProjectAllApi()
+  res.data.list.forEach((item: Project) => {
+    projectList.push(item)
+  })
+}
+getProjectList()
+const projectValue = ref([])
+const search = ref('')
 </script>
 <template>
   <ElForm
@@ -293,7 +314,40 @@ const tagertSourceOptions = [
     <ElFormItem :label="t('task.targetSource')" v-if="!sourceTp">
       <ElSelectV2 style="width: 50%" v-model="tagertSource" :options="tagertSourceOptions" />
     </ElFormItem>
-    <ElFormItem :label="t('task.taskTarget')" prop="target">
+    <ElRow v-if="tagertSource != 'project' && tagertSource != 'general' && !sourceTp">
+      <ElCol :span="12">
+        <ElFormItem :label="t('task.search')">
+          <ElInput v-model="search" :placeholder="t('form.input')" v-if="!sourceTp" />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12">
+        <ElFormItem :label="t('task.targetProject')">
+          <ElTreeSelect
+            v-model="projectValue"
+            :data="projectList"
+            :placeholder="t('project.project')"
+            multiple
+            filterable
+            show-checkbox
+            collapse-tags
+            :max-collapse-tags="1"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElFormItem :label="t('task.targetProject')" v-if="tagertSource == 'project'">
+      <ElTreeSelect
+        v-model="projectValue"
+        :data="projectList"
+        :placeholder="t('project.project')"
+        multiple
+        filterable
+        show-checkbox
+        collapse-tags
+        :max-collapse-tags="1"
+      />
+    </ElFormItem>
+    <ElFormItem :label="t('task.taskTarget')" prop="target" v-if="tagertSource == 'general'">
       <ElInput
         v-model="taskData.target"
         :placeholder="t('task.msgTarget')"
@@ -309,7 +363,7 @@ const tagertSourceOptions = [
     <ElFormItem :label="t('task.targetNumber')" v-if="targetTp == 'search' && sourceTp">
       <ElInput v-model="targetNumber" />
     </ElFormItem>
-    <ElFormItem :label="t('task.ignore')" prop="ignore">
+    <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="tagertSource != 'project'">
       <ElInput
         v-model="taskData.ignore"
         :placeholder="t('task.ignoreMsg')"

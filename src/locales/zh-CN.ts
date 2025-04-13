@@ -360,7 +360,10 @@ export default {
     general: '普通',
     fromAsset: '从资产',
     fromSubdomain: '从子域名',
-    fromRootDomain: '从根域名'
+    fromRootDomain: '从根域名',
+    fromProject: '从项目',
+    targetProject: '筛选项目',
+    search: '搜索语句'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

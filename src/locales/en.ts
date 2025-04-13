@@ -362,7 +362,10 @@ export default {
     general: 'General',
     fromAsset: 'From Asset',
     fromSubdomain: 'From Subdomain',
-    fromRootDomain: 'From Root Domain'
+    fromRootDomain: 'From Root Domain',
+    fromProject: 'From Project',
+    targetProject: 'Select Project',
+    search: 'Search Statement'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',
