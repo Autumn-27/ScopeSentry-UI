@@ -76,7 +76,7 @@ const rules = reactive<FormRules<RuleForm>>({
     {
       message: '1-31',
       trigger: 'change',
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         console.log(value)
         if (!value) {
           callback(new Error('1-31'))
