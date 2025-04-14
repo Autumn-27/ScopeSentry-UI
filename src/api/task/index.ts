@@ -45,7 +45,10 @@ export const addTaskApi = (
   search: string,
   filter: Record<string, any>,
   targetNumber: number,
-  targetIds: string[]
+  targetIds: string[],
+  project: string[],
+  tagertSource: string,
+  day: number
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -64,7 +67,10 @@ export const addTaskApi = (
       search,
       filter,
       targetNumber,
-      targetIds
+      targetIds,
+      project,
+      tagertSource,
+      day
     }
   })
 }

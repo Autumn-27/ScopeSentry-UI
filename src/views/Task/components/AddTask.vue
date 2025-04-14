@@ -55,6 +55,9 @@ interface RuleForm {
   target: string
   node: []
   template: string
+  day: number
+  hour: number
+  minute: number
 }
 const sourceTp = props.tp.includes('Source') ? true : false
 
@@ -68,7 +71,61 @@ const rules = reactive<FormRules<RuleForm>>({
     }
   ],
   node: [{ required: true, message: t('task.nodeMsg'), trigger: 'blur' }],
-  template: [{ required: true, message: 'Please select template', trigger: 'blur' }]
+  template: [{ required: true, message: 'Please select template', trigger: 'blur' }],
+  day: [
+    {
+      message: '1-31',
+      trigger: 'change',
+      validator: (rule, value, callback) => {
+        console.log(value)
+        if (!value) {
+          callback(new Error('1-31'))
+        } else if (!/^\d+$/.test(value)) {
+          callback(new Error('1-31'))
+        } else if (value < 1 || value > 31) {
+          callback(new Error('1-31'))
+        } else {
+          callback() // 验证通过
+        }
+      }
+    }
+  ],
+  hour: [
+    {
+      message: '1-24',
+      trigger: 'change',
+      validator: (rule, value, callback) => {
+        console.log(value)
+        if (!value) {
+          callback(new Error('1-24'))
+        } else if (!/^\d+$/.test(value)) {
+          callback(new Error('1-24'))
+        } else if (value < 1 || value > 24) {
+          callback(new Error('1-24'))
+        } else {
+          callback() // 验证通过
+        }
+      }
+    }
+  ],
+  minute: [
+    {
+      message: '1-60',
+      trigger: 'change',
+      validator: (rule, value, callback) => {
+        console.log(value)
+        if (!value) {
+          callback(new Error('1-60'))
+        } else if (!/^\d+$/.test(value)) {
+          callback(new Error('1-60'))
+        } else if (value < 1 || value > 60) {
+          callback(new Error('1-60'))
+        } else {
+          callback() // 验证通过
+        }
+      }
+    }
+  ]
 })
 
 const saveLoading = ref(false)
@@ -98,13 +155,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       } else {
         // 创建新任务
         let searchFilter = reactive<{ [key: string]: any }>({})
-        let search = ''
         if (targetTp.value == 'search') {
           if (props.getFilter) {
             searchFilter = props.getFilter()
           }
           if (props.searchParams) {
-            search = props.searchParams
+            taskData.search = props.searchParams
           }
         }
         res = await addTaskApi(
@@ -119,10 +175,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.template,
           props.tp,
           targetTp.value,
-          search,
+          taskData.search,
           searchFilter,
           targetNumber.value,
-          props.targetIds
+          props.targetIds,
+          taskData.project,
+          taskData.tagertSource,
+          taskData.day
         )
       }
       if (res.code === 200) {
@@ -175,10 +234,16 @@ const taskData = reactive({
   node: [] as string[],
   allNode: true,
   scheduledTasks: false,
-  hour: 24,
   duplicates: 'None',
   template: '',
-  cycleType: ''
+  cycleType: 'daily',
+  search: '',
+  project: [] as string[],
+  tagertSource: 'general',
+  day: 1,
+  hour: 1,
+  minute: 30,
+  week: 1
 })
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
@@ -251,7 +316,6 @@ watch(
       taskData.node = []
       taskData.allNode = true
       taskData.scheduledTasks = false
-      taskData.hour = 24
       taskData.duplicates = 'None'
       taskData.template = ''
     }
@@ -259,7 +323,6 @@ watch(
   { immediate: true } // 确保组件挂载时立即触发
 )
 const targetTp = ref('select')
-const tagertSource = ref('general')
 const targetNumber = ref(0)
 const tagertSourceOptions = [
   {
@@ -296,8 +359,6 @@ const getProjectList = async () => {
   })
 }
 getProjectList()
-const projectValue = ref([])
-const search = ref('')
 </script>
 <template>
   <ElForm
@@ -312,18 +373,24 @@ const search = ref('')
       <ElInput v-model="taskData.name" :placeholder="t('task.msgTaskName')" />
     </ElFormItem>
     <ElFormItem :label="t('task.targetSource')" v-if="!sourceTp">
-      <ElSelectV2 style="width: 50%" v-model="tagertSource" :options="tagertSourceOptions" />
+      <ElSelectV2
+        style="width: 50%"
+        v-model="taskData.tagertSource"
+        :options="tagertSourceOptions"
+      />
     </ElFormItem>
-    <ElRow v-if="tagertSource != 'project' && tagertSource != 'general' && !sourceTp">
+    <ElRow
+      v-if="taskData.tagertSource != 'project' && taskData.tagertSource != 'general' && !sourceTp"
+    >
       <ElCol :span="12">
         <ElFormItem :label="t('task.search')">
-          <ElInput v-model="search" :placeholder="t('form.input')" v-if="!sourceTp" />
+          <ElInput v-model="taskData.search" :placeholder="t('form.input')" v-if="!sourceTp" />
         </ElFormItem>
       </ElCol>
       <ElCol :span="12">
         <ElFormItem :label="t('task.targetProject')">
           <ElTreeSelect
-            v-model="projectValue"
+            v-model="taskData.project"
             :data="projectList"
             :placeholder="t('project.project')"
             multiple
@@ -335,9 +402,9 @@ const search = ref('')
         </ElFormItem>
       </ElCol>
     </ElRow>
-    <ElFormItem :label="t('task.targetProject')" v-if="tagertSource == 'project'">
+    <ElFormItem :label="t('task.targetProject')" v-if="taskData.tagertSource == 'project'">
       <ElTreeSelect
-        v-model="projectValue"
+        v-model="taskData.project"
         :data="projectList"
         :placeholder="t('project.project')"
         multiple
@@ -347,7 +414,11 @@ const search = ref('')
         :max-collapse-tags="1"
       />
     </ElFormItem>
-    <ElFormItem :label="t('task.taskTarget')" prop="target" v-if="tagertSource == 'general'">
+    <ElFormItem
+      :label="t('task.taskTarget')"
+      prop="target"
+      v-if="taskData.tagertSource == 'general'"
+    >
       <ElInput
         v-model="taskData.target"
         :placeholder="t('task.msgTarget')"
@@ -363,7 +434,7 @@ const search = ref('')
     <ElFormItem :label="t('task.targetNumber')" v-if="targetTp == 'search' && sourceTp">
       <ElInput v-model="targetNumber" />
     </ElFormItem>
-    <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="tagertSource != 'project'">
+    <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="taskData.tagertSource != 'project'">
       <ElInput
         v-model="taskData.ignore"
         :placeholder="t('task.ignoreMsg')"
@@ -412,30 +483,79 @@ const search = ref('')
       </ElCol>
     </ElRow>
 
-    <ElRow>
-      <ElCol :span="12">
-        <ElFormItem :label="t('project.scheduledTasks')">
-          <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
-            <ElSwitch
-              v-model="taskData.scheduledTasks"
-              inline-prompt
-              :active-text="t('common.switchAction')"
-              :inactive-text="t('common.switchInactive')"
-            />
-          </ElTooltip>
-        </ElFormItem>
-      </ElCol>
-      <ElCol :span="12" v-if="taskData.scheduledTasks">
-        <ElFormItem :label="t('project.cycle')" prop="type">
-          <ElInputNumber
-            v-model="taskData.hour"
-            :min="1"
-            controls-position="right"
-            size="small"
-          /><ElText style="position: relative; left: 16px">Hour</ElText>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+    <ElFormItem :label="t('project.scheduledTasks')">
+      <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
+        <ElSwitch
+          v-model="taskData.scheduledTasks"
+          inline-prompt
+          :active-text="t('common.switchAction')"
+          :inactive-text="t('common.switchInactive')"
+        />
+      </ElTooltip>
+    </ElFormItem>
+    <ElFormItem :label="t('project.cycle')" prop="type" v-if="taskData.scheduledTasks">
+      <ElRow :gutter="10" style="width: 100%">
+        <ElCol :span="5">
+          <ElSelect v-model="taskData.cycleType" style="width: 100%">
+            <ElOption :label="t('task.daily')" value="daily" />
+            <ElOption :label="t('task.ndays')" value="ndays" />
+            <ElOption :label="t('task.nhours')" value="nhours" />
+            <ElOption :label="t('task.weekly')" value="weekly" />
+            <ElOption :label="t('task.monthly')" value="monthly" />
+          </ElSelect>
+        </ElCol>
+        <ElCol :span="5" v-if="taskData.cycleType == 'weekly'">
+          <ElSelect v-model="taskData.week" style="width: 100%">
+            <ElOption :label="t('task.monday')" value="1" />
+            <ElOption :label="t('task.tuesday')" value="2" />
+            <ElOption :label="t('task.wednesday')" value="3" />
+            <ElOption :label="t('task.thursday')" value="4" />
+            <ElOption :label="t('task.friday')" value="5" />
+            <ElOption :label="t('task.saturday')" value="5" />
+            <ElOption :label="t('task.sunday')" value="7" />
+          </ElSelect>
+        </ElCol>
+        <ElCol :span="5" v-if="taskData.cycleType === 'ndays' || taskData.cycleType == 'monthly'">
+          <ElFormItem prop="day">
+            <ElInput style="width: 100%" v-model="taskData.day">
+              <template #append>{{ t('task.day') }}</template>
+            </ElInput>
+          </ElFormItem>
+        </ElCol>
+        <ElCol
+          :span="5"
+          v-if="
+            taskData.cycleType === 'daily' ||
+            taskData.cycleType === 'ndays' ||
+            taskData.cycleType == 'nhours' ||
+            taskData.cycleType == 'weekly' ||
+            taskData.cycleType == 'monthly'
+          "
+        >
+          <ElFormItem prop="hour">
+            <ElInput style="width: 100%" v-model="taskData.hour">
+              <template #append>{{ t('task.hour') }}</template>
+            </ElInput>
+          </ElFormItem>
+        </ElCol>
+        <ElCol
+          :span="5"
+          v-if="
+            taskData.cycleType === 'daily' ||
+            taskData.cycleType === 'ndays' ||
+            taskData.cycleType == 'nhours' ||
+            taskData.cycleType == 'weekly' ||
+            taskData.cycleType == 'monthly'
+          "
+        >
+          <ElFormItem prop="minute">
+            <ElInput style="width: 100%" v-model="taskData.minute">
+              <template #append>{{ t('task.minute') }}</template>
+            </ElInput>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+    </ElFormItem>
     <ElDivider content-position="center" style="width: 60%; left: 20%">{{
       t('task.duplicates')
     }}</ElDivider>
