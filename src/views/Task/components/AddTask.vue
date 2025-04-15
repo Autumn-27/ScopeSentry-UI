@@ -163,6 +163,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             taskData.search = props.searchParams
           }
         }
+        if (sourceTp) {
+          taskData.tagertSource = props.tp
+        }
         res = await addTaskApi(
           taskData.name,
           taskData.target,
@@ -173,7 +176,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.scheduledTasks,
           taskData.hour,
           taskData.template,
-          props.tp,
           targetTp.value,
           taskData.search,
           searchFilter,
@@ -183,7 +185,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.tagertSource,
           taskData.day,
           taskData.minute,
-          taskData.week
+          taskData.week,
+          taskData.bindProject
         )
       }
       if (res.code === 200) {
@@ -245,7 +248,8 @@ const taskData = reactive({
   day: 1,
   hour: 1,
   minute: 30,
-  week: 1
+  week: 1,
+  bindProject: null
 })
 const handleCheckAll = (val: CheckboxValueType) => {
   indeterminate.value = false
@@ -345,7 +349,7 @@ const tagertSourceOptions = [
   },
   {
     label: t('task.fromSubdomain'),
-    value: 'Subdomain'
+    value: 'subdomain'
   }
 ]
 interface Project {
@@ -442,6 +446,15 @@ getProjectList()
         :placeholder="t('task.ignoreMsg')"
         type="textarea"
         rows="5"
+      />
+    </ElFormItem>
+    <ElFormItem :label="t('task.bindProject')" v-if="taskData.tagertSource != 'project'">
+      <ElTreeSelect
+        v-model="taskData.bindProject"
+        :data="projectList"
+        :placeholder="t('project.project')"
+        filterable
+        show-checkbox
       />
     </ElFormItem>
     <ElRow>

@@ -380,7 +380,8 @@ export default {
     thursday: '周四',
     friday: '周五',
     saturday: '周六',
-    sunday: '周日'
+    sunday: '周日',
+    bindProject: '绑定项目'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

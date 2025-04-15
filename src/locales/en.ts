@@ -382,7 +382,8 @@ export default {
     thursday: 'thursday',
     friday: 'friday',
     saturday: 'saturday',
-    sunday: 'sunday'
+    sunday: 'sunday',
+    bindProject: 'Bind Project'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',
