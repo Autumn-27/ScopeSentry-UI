@@ -126,16 +126,6 @@ const qrCodes = ref([
                   <span class="text-gray-600 text-lg">{{ qr.name }}</span>
                 </div>
               </div>
-              <!-- PayPal 链接的简化版本 -->
-              <div class="mt-8 text-center">
-                <a
-                  href="https://paypal.me/autumn5520"
-                  target="_blank"
-                  class="px-6 py-3 bg-[#0070BA] text-white rounded-lg hover:bg-[#005ea6] transition-colors duration-300"
-                >
-                  通过 PayPal 赞助
-                </a>
-              </div>
             </div>
           </el-card>
 

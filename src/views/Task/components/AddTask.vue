@@ -181,7 +181,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           props.targetIds,
           taskData.project,
           taskData.tagertSource,
-          taskData.day
+          taskData.day,
+          taskData.minute,
+          taskData.week
         )
       }
       if (res.code === 200) {
