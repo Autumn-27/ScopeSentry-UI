@@ -153,6 +153,9 @@ const crudSchemas = reactive<CrudSchema[]>([
       if (row.id.includes('//')) {
         return
       }
+      if (row.id.includes('APP')) {
+        return
+      }
       if (row.status == null) {
         row.status = 1
       }
@@ -195,6 +198,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     fit: 'true',
     formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
       if (row.id.includes('//')) {
+        return
+      }
+      if (row.id.includes('APP')) {
         return
       }
       if (tags == null) {
