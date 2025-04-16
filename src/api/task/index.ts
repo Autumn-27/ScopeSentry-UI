@@ -50,7 +50,8 @@ export const addTaskApi = (
   day: number,
   minute: number,
   week: number,
-  bindProject: string | null
+  bindProject: string | null,
+  cycleType: string
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/add',
@@ -74,7 +75,8 @@ export const addTaskApi = (
       day,
       minute,
       week,
-      bindProject
+      bindProject,
+      cycleType
     }
   })
 }

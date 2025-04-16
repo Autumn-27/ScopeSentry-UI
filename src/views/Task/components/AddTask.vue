@@ -186,7 +186,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.day,
           taskData.minute,
           taskData.week,
-          taskData.bindProject
+          taskData.bindProject,
+          taskData.cycleType
         )
       }
       if (res.code === 200) {
@@ -448,7 +449,7 @@ getProjectList()
         rows="5"
       />
     </ElFormItem>
-    <ElFormItem :label="t('task.bindProject')" v-if="taskData.tagertSource != 'project'">
+    <!-- <ElFormItem :label="t('task.bindProject')" v-if="taskData.tagertSource != 'project'">
       <ElTreeSelect
         v-model="taskData.bindProject"
         :data="projectList"
@@ -456,7 +457,7 @@ getProjectList()
         filterable
         show-checkbox
       />
-    </ElFormItem>
+    </ElFormItem> -->
     <ElRow>
       <ElCol :span="12">
         <ElFormItem :label="t('task.nodeSelect')" prop="node">
