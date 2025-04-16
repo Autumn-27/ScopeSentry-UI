@@ -522,13 +522,13 @@ getProjectList()
         </ElCol>
         <ElCol :span="5" v-if="taskData.cycleType == 'weekly'">
           <ElSelect v-model="taskData.week" style="width: 100%">
-            <ElOption :label="t('task.monday')" value="1" />
-            <ElOption :label="t('task.tuesday')" value="2" />
-            <ElOption :label="t('task.wednesday')" value="3" />
-            <ElOption :label="t('task.thursday')" value="4" />
-            <ElOption :label="t('task.friday')" value="5" />
+            <ElOption :label="t('task.monday')" value="0" />
+            <ElOption :label="t('task.tuesday')" value="1" />
+            <ElOption :label="t('task.wednesday')" value="2" />
+            <ElOption :label="t('task.thursday')" value="3" />
+            <ElOption :label="t('task.friday')" value="4" />
             <ElOption :label="t('task.saturday')" value="5" />
-            <ElOption :label="t('task.sunday')" value="7" />
+            <ElOption :label="t('task.sunday')" value="6" />
           </ElSelect>
         </ElCol>
         <ElCol :span="5" v-if="taskData.cycleType === 'ndays' || taskData.cycleType == 'monthly'">
