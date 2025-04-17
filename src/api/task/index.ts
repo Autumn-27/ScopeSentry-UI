@@ -90,7 +90,19 @@ export const updateScheduleApi = (
   duplicates: string,
   scheduledTasks: boolean,
   hour: number,
-  template: string
+  template: string,
+  targetTp: string,
+  search: string,
+  filter: Record<string, any>,
+  targetNumber: number,
+  targetIds: string[],
+  project: string[],
+  targetSource: string,
+  day: number,
+  minute: number,
+  week: number,
+  bindProject: string | null,
+  cycleType: string
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/scheduled/update',
@@ -104,7 +116,19 @@ export const updateScheduleApi = (
       duplicates,
       scheduledTasks,
       hour,
-      template
+      template,
+      targetTp,
+      search,
+      filter,
+      targetNumber,
+      targetIds,
+      project,
+      targetSource,
+      day,
+      minute,
+      week,
+      bindProject,
+      cycleType
     }
   })
 }

@@ -138,6 +138,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     const valid = await formEl.validate() // 使用 Promise 风格的 validate
     if (valid) {
       let res
+      let searchFilter = reactive<{ [key: string]: any }>({})
+      if (targetTp.value == 'search') {
+        if (props.getFilter) {
+          searchFilter = props.getFilter()
+        }
+        if (props.searchParams) {
+          taskData.search = props.searchParams
+        }
+      }
+      if (sourceTp) {
+        taskData.targetSource = props.tp
+      }
       if (props.taskid) {
         // 修改计划任务
         res = await updateScheduleApi(
@@ -150,22 +162,22 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           taskData.duplicates,
           taskData.scheduledTasks,
           taskData.hour,
-          taskData.template
+          taskData.template,
+          targetTp.value,
+          taskData.search,
+          searchFilter,
+          targetNumber.value,
+          props.targetIds,
+          taskData.project,
+          taskData.targetSource,
+          taskData.day,
+          taskData.minute,
+          taskData.week,
+          taskData.bindProject,
+          taskData.cycleType
         )
       } else {
         // 创建新任务
-        let searchFilter = reactive<{ [key: string]: any }>({})
-        if (targetTp.value == 'search') {
-          if (props.getFilter) {
-            searchFilter = props.getFilter()
-          }
-          if (props.searchParams) {
-            taskData.search = props.searchParams
-          }
-        }
-        if (sourceTp) {
-          taskData.targetSource = props.tp
-        }
         res = await addTaskApi(
           taskData.name,
           taskData.target,

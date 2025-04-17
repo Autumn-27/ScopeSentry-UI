@@ -56,7 +56,7 @@ const taskColums = reactive<TableColumn[]>([
   },
   {
     field: 'cycle',
-    label: t('task.taskCycle') + '(h)',
+    label: t('task.taskCycle'),
     minWidth: 20
   },
   {
@@ -296,6 +296,11 @@ const getNodeList = async () => {
   }
 }
 getNodeList()
+const addTask = async () => {
+  DialogTitle = t('task.addScheduled')
+  Create.value = true
+  dialogVisible.value = true
+}
 </script>
 
 <template>
@@ -316,6 +321,7 @@ getNodeList()
     <ElRow>
       <ElCol style="position: relative; top: 16px">
         <div class="mb-10px">
+          <BaseButton type="primary" @click="addTask">{{ t('task.addScheduled') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('task.delTask') }}
           </BaseButton>
