@@ -27,6 +27,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import {
+  addScheduledTaskApi,
   addTaskApi,
   getScheduleDetailApi,
   getTaskDetailApi,
@@ -92,16 +93,16 @@ const rules = reactive<FormRules<RuleForm>>({
   ],
   hour: [
     {
-      message: '1-24',
+      message: '0-24',
       trigger: 'change',
       validator: (rule, value, callback) => {
         console.log(value)
         if (!value) {
-          callback(new Error('1-24'))
+          callback(new Error('0-24'))
         } else if (!/^\d+$/.test(value)) {
-          callback(new Error('1-24'))
-        } else if (value < 1 || value > 24) {
-          callback(new Error('1-24'))
+          callback(new Error('0-24'))
+        } else if (value < 0 || value > 24) {
+          callback(new Error('0-24'))
         } else {
           callback() // 验证通过
         }
@@ -110,16 +111,16 @@ const rules = reactive<FormRules<RuleForm>>({
   ],
   minute: [
     {
-      message: '1-60',
+      message: '0-60',
       trigger: 'change',
       validator: (rule, value, callback) => {
         console.log(value)
         if (!value) {
-          callback(new Error('1-60'))
+          callback(new Error('0-60'))
         } else if (!/^\d+$/.test(value)) {
-          callback(new Error('1-60'))
-        } else if (value < 1 || value > 60) {
-          callback(new Error('1-60'))
+          callback(new Error('0-60'))
+        } else if (value < 0 || value > 60) {
+          callback(new Error('0-60'))
         } else {
           callback() // 验证通过
         }
@@ -178,29 +179,55 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         )
       } else {
         // 创建新任务
-        res = await addTaskApi(
-          taskData.name,
-          taskData.target,
-          taskData.ignore,
-          taskData.node,
-          taskData.allNode,
-          taskData.duplicates,
-          taskData.scheduledTasks,
-          taskData.hour,
-          taskData.template,
-          targetTp.value,
-          taskData.search,
-          searchFilter,
-          targetNumber.value,
-          props.targetIds,
-          taskData.project,
-          taskData.targetSource,
-          taskData.day,
-          taskData.minute,
-          taskData.week,
-          taskData.bindProject,
-          taskData.cycleType
-        )
+        if (props.schedule) {
+          res = await addScheduledTaskApi(
+            taskData.name,
+            taskData.target,
+            taskData.ignore,
+            taskData.node,
+            taskData.allNode,
+            taskData.duplicates,
+            taskData.scheduledTasks,
+            taskData.hour,
+            taskData.template,
+            targetTp.value,
+            taskData.search,
+            searchFilter,
+            targetNumber.value,
+            props.targetIds,
+            taskData.project,
+            taskData.targetSource,
+            taskData.day,
+            taskData.minute,
+            taskData.week,
+            taskData.bindProject,
+            taskData.cycleType
+          )
+        } else {
+          res = await addTaskApi(
+            taskData.name,
+            taskData.target,
+            taskData.ignore,
+            taskData.node,
+            taskData.allNode,
+            taskData.duplicates,
+            taskData.scheduledTasks,
+            taskData.hour,
+            taskData.template,
+            targetTp.value,
+            taskData.search,
+            searchFilter,
+            targetNumber.value,
+            props.targetIds,
+            taskData.project,
+            taskData.targetSource,
+            taskData.day,
+            taskData.minute,
+            taskData.week,
+            taskData.bindProject,
+            taskData.cycleType
+          )
+        }
       }
       if (res.code === 200) {
         props.closeDialog()
@@ -301,6 +328,10 @@ const loadTaskData = async (id) => {
   taskData.hour = res.data.hour
   taskData.duplicates = res.data.duplicates
   taskData.template = res.data.template
+  taskData.day = res.data.day
+  taskData.minute = res.data.minute
+  taskData.week = res.data.week
+  taskData.cycleType = res.data.cycleType
 }
 
 const loadScheduleData = async (id) => {
@@ -335,12 +366,16 @@ watch(
         await loadTaskData(newId)
       }
     } else {
+      if (props.schedule) {
+        taskData.scheduledTasks = true
+      } else {
+        taskData.scheduledTasks = false
+      }
       taskData.name = ''
       taskData.target = ''
       taskData.ignore = ''
       taskData.node = []
       taskData.allNode = true
-      taskData.scheduledTasks = false
       taskData.duplicates = 'None'
       taskData.template = ''
     }
