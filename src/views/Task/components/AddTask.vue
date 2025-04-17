@@ -164,7 +164,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           }
         }
         if (sourceTp) {
-          taskData.tagertSource = props.tp
+          taskData.targetSource = props.tp
         }
         res = await addTaskApi(
           taskData.name,
@@ -182,7 +182,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           targetNumber.value,
           props.targetIds,
           taskData.project,
-          taskData.tagertSource,
+          taskData.targetSource,
           taskData.day,
           taskData.minute,
           taskData.week,
@@ -245,7 +245,7 @@ const taskData = reactive({
   cycleType: 'daily',
   search: '',
   project: [] as string[],
-  tagertSource: 'general',
+  targetSource: 'general',
   day: 1,
   hour: 1,
   minute: 30,
@@ -302,6 +302,12 @@ const loadScheduleData = async (id) => {
   taskData.hour = res.data.hour
   taskData.duplicates = res.data.duplicates
   taskData.template = res.data.template
+  taskData.project = res.data.project
+  taskData.targetSource = res.data.targetSource
+  taskData.day = res.data.day
+  taskData.minute = res.data.minute
+  taskData.week = res.data.week
+  taskData.cycleType = res.data.cycleType
 }
 
 watch(
@@ -331,7 +337,7 @@ watch(
 )
 const targetTp = ref('select')
 const targetNumber = ref(0)
-const tagertSourceOptions = [
+const targetSourceOptions = [
   {
     label: t('task.general'),
     value: 'general'
@@ -382,12 +388,12 @@ getProjectList()
     <ElFormItem :label="t('task.targetSource')" v-if="!sourceTp">
       <ElSelectV2
         style="width: 50%"
-        v-model="taskData.tagertSource"
-        :options="tagertSourceOptions"
+        v-model="taskData.targetSource"
+        :options="targetSourceOptions"
       />
     </ElFormItem>
     <ElRow
-      v-if="taskData.tagertSource != 'project' && taskData.tagertSource != 'general' && !sourceTp"
+      v-if="taskData.targetSource != 'project' && taskData.targetSource != 'general' && !sourceTp"
     >
       <ElCol :span="12">
         <ElFormItem :label="t('task.search')">
@@ -409,7 +415,7 @@ getProjectList()
         </ElFormItem>
       </ElCol>
     </ElRow>
-    <ElFormItem :label="t('task.targetProject')" v-if="taskData.tagertSource == 'project'">
+    <ElFormItem :label="t('task.targetProject')" v-if="taskData.targetSource == 'project'">
       <ElTreeSelect
         v-model="taskData.project"
         :data="projectList"
@@ -424,7 +430,7 @@ getProjectList()
     <ElFormItem
       :label="t('task.taskTarget')"
       prop="target"
-      v-if="taskData.tagertSource == 'general'"
+      v-if="taskData.targetSource == 'general'"
     >
       <ElInput
         v-model="taskData.target"
@@ -441,7 +447,7 @@ getProjectList()
     <ElFormItem :label="t('task.targetNumber')" v-if="targetTp == 'search' && sourceTp">
       <ElInput v-model="targetNumber" />
     </ElFormItem>
-    <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="taskData.tagertSource != 'project'">
+    <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="taskData.targetSource != 'project'">
       <ElInput
         v-model="taskData.ignore"
         :placeholder="t('task.ignoreMsg')"
@@ -449,7 +455,7 @@ getProjectList()
         rows="5"
       />
     </ElFormItem>
-    <!-- <ElFormItem :label="t('task.bindProject')" v-if="taskData.tagertSource != 'project'">
+    <!-- <ElFormItem :label="t('task.bindProject')" v-if="taskData.targetSource != 'project'">
       <ElTreeSelect
         v-model="taskData.bindProject"
         :data="projectList"

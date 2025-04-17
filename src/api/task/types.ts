@@ -22,6 +22,17 @@ export type TaskDetail = {
   hour: number
   duplicates: string
   template: string
+  search: string
+  filter: Record<string, any>
+  targetNumber: number
+  targetIds: string[]
+  project: string[]
+  targetSource: string
+  day: number
+  minute: number
+  week: number
+  bindProject: string | null
+  cycleType: string
 }
 
 export type TaskProgessInfo = {
