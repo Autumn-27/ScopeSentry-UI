@@ -171,9 +171,7 @@ const action = (id: string) => {
                 <ElAvatar :src="row.logo" class="avatar" fit="cover" />
               </template>
               <template v-else>
-                <ElAvatar class="avatar avatar-placeholder">
-                  {{ row.name.charAt(0) }}
-                </ElAvatar>
+                <ElAvatar class="avatar avatar-placeholder"> {{ row.name.charAt(0) }} </ElAvatar>
               </template>
             </div>
             <div>

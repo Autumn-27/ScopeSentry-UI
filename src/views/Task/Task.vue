@@ -26,7 +26,14 @@ import {
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
-import { getTaskDataApi, deleteTaskApi, retestTaskApi, stopTaskApi, starTaskApi } from '@/api/task'
+import {
+  getTaskDataApi,
+  deleteTaskApi,
+  retestTaskApi,
+  stopTaskApi,
+  starTaskApi,
+  syancProjectApi
+} from '@/api/task'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
@@ -360,7 +367,7 @@ const getProjectList = async () => {
 
 const confirmSyncToProjectSelect = async () => {
   const option = ref<'existing' | 'new'>('existing') // 选项：已有 or 新建
-  const selectedProjectId = ref<string | number>('')
+  const selectedProjectId = ref<string>('')
   const newProjectName = ref('')
   const newProjectTag = ref('')
   await getProjectList()
@@ -393,7 +400,7 @@ const confirmSyncToProjectSelect = async () => {
         option.value === 'existing'
           ? h(ElTreeSelect, {
               modelValue: selectedProjectId.value,
-              'onUpdate:modelValue': (val: string | number) => {
+              'onUpdate:modelValue': (val: string) => {
                 selectedProjectId.value = val
               },
               data: projectList,
@@ -426,6 +433,16 @@ const confirmSyncToProjectSelect = async () => {
     } else {
       console.log('创建新项目:', newProjectName.value, newProjectTag.value)
     }
+    const elTableExpose = await getElTableExpose()
+    const selectedRows = elTableExpose?.getSelectionRows() || []
+    ids.value = selectedRows.map((row) => row.id)
+    await syancProjectApi(
+      ids.value,
+      option.value,
+      selectedProjectId.value,
+      newProjectTag.value,
+      newProjectName.value
+    )
   })
 }
 

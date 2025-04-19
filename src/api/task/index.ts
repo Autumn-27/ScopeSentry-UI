@@ -303,3 +303,13 @@ export const saveTemplateDetailApi = (
 export const deleteTemplateDetailApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
   return request.post({ url: '/api/task/template/delete', data: { ids } })
 }
+
+export const syancProjectApi = (
+  ids: string[],
+  option: string,
+  project: string,
+  tag: string,
+  name: string
+): Promise<IResponse<commonRespData>> => {
+  return request.post({ url: '/api/task/sync', data: { ids, option, project, tag, name } })
+}
