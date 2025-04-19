@@ -12,7 +12,8 @@ import {
   ElButton,
   ElInput,
   ElTag,
-  InputInstance
+  InputInstance,
+  ElLink
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
@@ -77,7 +78,14 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'url',
     label: 'URL',
-    minWidth: 250
+    minWidth: 250,
+    formatter: (_, __: TableColumn, url: string) => {
+      return (
+        <ElLink href={url} underline={false} target="_blank">
+          {url}
+        </ElLink>
+      )
+    }
   },
   {
     field: 'status',
