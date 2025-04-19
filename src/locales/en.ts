@@ -384,7 +384,11 @@ export default {
     saturday: 'saturday',
     sunday: 'sunday',
     bindProject: 'Bind Project',
-    addScheduled: 'Create scheduled task'
+    addScheduled: 'Create scheduled task',
+    syncToProject: 'Sync To Project',
+    syncToExisting: 'Existing projects',
+    createNewProject: 'Create New Project',
+    selectProject: 'Select Project'
   },
   scanTemplate: {
     TargetHandler: 'Target Processing',

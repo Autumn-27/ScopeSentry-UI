@@ -382,7 +382,11 @@ export default {
     saturday: '周六',
     sunday: '周日',
     bindProject: '绑定项目',
-    addScheduled: '新建计划任务'
+    addScheduled: '新建计划任务',
+    syncToProject: '同步到项目',
+    syncToExisting: '已有项目',
+    createNewProject: '创建项目',
+    selectProject: '选择项目'
   },
   scanTemplate: {
     TargetHandler: '目标处理',

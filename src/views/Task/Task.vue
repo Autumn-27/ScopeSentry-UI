@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, onMounted } from 'vue'
+import { ref, reactive, h, onMounted, resolveComponent } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -16,7 +16,12 @@ import {
   ElDropdown,
   ElDropdownMenu,
   ElDropdownItem,
-  ElIcon
+  ElIcon,
+  ElRadioGroup,
+  ElRadioButton,
+  ElSelect,
+  ElOption,
+  ElTreeSelect
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -27,6 +32,7 @@ import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
 import ProgressInfo from './components/ProgressInfo.vue'
 import { useRouter } from 'vue-router'
+import { getProjectAllApi } from '@/api/project'
 const { push } = useRouter()
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
@@ -131,10 +137,12 @@ const taskColums = reactive<TableColumn[]>([
             confirmDelete(row)
             break
           case 'stop':
-            stopTask(row.id)
+            ids.value.push(row.id)
+            stopTask(ids.value)
             break
           case 'start':
-            startTask(row.id)
+            ids.value.push(row.id)
+            startTask(ids.value)
             break
         }
       }
@@ -215,14 +223,14 @@ const getTaskResult = async (id) => {
   push(`/asset-information/index?task=${id}`)
 }
 
-const stopTask = async (id) => {
+const stopTask = async (ids) => {
   console.log('begin stop')
-  await stopTaskApi(id)
+  await stopTaskApi(ids)
 }
 
-const startTask = async (id) => {
+const startTask = async (ids) => {
   console.log('begin start')
-  await starTaskApi(id)
+  await starTaskApi(ids)
 }
 
 const progresscloseDialog = () => {
@@ -287,6 +295,140 @@ const confirmDeleteSelect = async () => {
   })
 }
 
+const confirmStopSelect = async () => {
+  ElMessageBox({
+    title: 'Stop Task',
+    draggable: true
+  }).then(async () => {
+    await stopTaskSelect()
+  })
+}
+const stopTaskSelect = async () => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.id)
+  delLoading.value = true
+  try {
+    await stopTask(ids.value)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error Stop data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+const confirmStartSelect = async () => {
+  ElMessageBox({
+    title: 'Start Task',
+    draggable: true
+  }).then(async () => {
+    await startTaskSelect()
+  })
+}
+const startTaskSelect = async () => {
+  const elTableExpose = await getElTableExpose()
+  const selectedRows = elTableExpose?.getSelectionRows() || []
+  ids.value = selectedRows.map((row) => row.id)
+  delLoading.value = true
+  try {
+    await startTask(ids.value)
+    delLoading.value = false
+    getList()
+  } catch (error) {
+    console.error('Error Stop data:', error)
+    delLoading.value = false
+    getList()
+  }
+}
+interface Project {
+  value: string
+  label: string
+  children?: Project[]
+}
+const projectList = reactive<Project[]>([])
+const getProjectList = async () => {
+  const res = await getProjectAllApi()
+  res.data.list.forEach((item: Project) => {
+    projectList.push({
+      label: item.label,
+      value: item.value || `parent-${item.label}`, // 避免空字符串
+      children: item.children || []
+    })
+  })
+}
+
+const confirmSyncToProjectSelect = async () => {
+  const option = ref<'existing' | 'new'>('existing') // 选项：已有 or 新建
+  const selectedProjectId = ref<string | number>('')
+  const newProjectName = ref('')
+  const newProjectTag = ref('')
+  await getProjectList()
+  ElMessageBox({
+    title: t('task.syncToProject'),
+    draggable: true,
+    message: () =>
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } }, [
+        // 选择类型
+        h('div', [
+          h('label', { style: { marginRight: '8px' } }),
+          h(
+            ElRadioGroup,
+            {
+              modelValue: option.value,
+              'onUpdate:modelValue': (val: 'existing' | 'new') => {
+                option.value = val
+              }
+            },
+            {
+              default: () => [
+                h(ElRadioButton, { label: 'existing' }, () => t('task.syncToExisting')),
+                h(ElRadioButton, { label: 'new' }, () => t('task.createNewProject'))
+              ]
+            }
+          )
+        ]),
+
+        // 如果是同步到已有项目，显示下拉框
+        option.value === 'existing'
+          ? h(ElTreeSelect, {
+              modelValue: selectedProjectId.value,
+              'onUpdate:modelValue': (val: string | number) => {
+                selectedProjectId.value = val
+              },
+              data: projectList,
+              showCheckbox: true,
+              placeholder: t('project.project'),
+              filterable: true,
+              style: { width: '100%' }
+            })
+          : null,
+
+        // 如果是创建新项目，显示输入框
+        option.value === 'new'
+          ? h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } }, [
+              h(ElInput, {
+                modelValue: newProjectName.value,
+                placeholder: t('project.msgProject'),
+                'onUpdate:modelValue': (val: string) => (newProjectName.value = val)
+              }),
+              h(ElInput, {
+                modelValue: newProjectTag.value,
+                placeholder: t('project.msgProjectTag'),
+                'onUpdate:modelValue': (val: string) => (newProjectTag.value = val)
+              })
+            ])
+          : null
+      ])
+  }).then(async () => {
+    if (option.value === 'existing') {
+      console.log('同步到已有项目ID:', selectedProjectId.value)
+    } else {
+      console.log('创建新项目:', newProjectName.value, newProjectTag.value)
+    }
+  })
+}
+
 const confirmDelete = async (data) => {
   const deleteAsset = ref<boolean | string | number>(false)
   ElMessageBox({
@@ -306,10 +448,6 @@ const confirmDelete = async (data) => {
   }).then(async () => {
     await del(data, deleteAsset.value)
   })
-  // const confirmed = window.confirm('Are you sure you want to delete the selected data?')
-  // if (confirmed) {
-  //   await del(data)
-  // }
 }
 const delLoading = ref(false)
 const del = async (data, delA) => {
@@ -390,6 +528,15 @@ const setMaxHeight = () => {
           <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
           <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
             {{ t('task.delTask') }}
+          </BaseButton>
+          <BaseButton type="warning" :loading="delLoading" @click="confirmStopSelect">
+            {{ t('task.stop') }}
+          </BaseButton>
+          <BaseButton type="success" :loading="delLoading" @click="confirmStartSelect">
+            {{ t('task.start') }}
+          </BaseButton>
+          <BaseButton type="info" :loading="delLoading" @click="confirmSyncToProjectSelect">
+            {{ t('task.syncToProject') }}
           </BaseButton>
         </div>
       </ElCol>

@@ -22,12 +22,12 @@ export const getTaskDataApi = (
   return request.post({ url: '/api/task/data', data: { search, pageIndex, pageSize } })
 }
 
-export const stopTaskApi = (id: string): Promise<IResponse<TaskDataResponse>> => {
-  return request.post({ url: '/api/task/stop', data: { id } })
+export const stopTaskApi = (ids: string[]): Promise<IResponse<TaskDataResponse>> => {
+  return request.post({ url: '/api/task/stop', data: { ids } })
 }
 
-export const starTaskApi = (id: string): Promise<IResponse<TaskDataResponse>> => {
-  return request.post({ url: '/api/task/start', data: { id } })
+export const starTaskApi = (ids: string[]): Promise<IResponse<TaskDataResponse>> => {
+  return request.post({ url: '/api/task/start', data: { ids } })
 }
 
 export const addTaskApi = (
