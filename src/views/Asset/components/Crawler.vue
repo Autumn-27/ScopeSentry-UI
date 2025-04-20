@@ -323,7 +323,7 @@ const getFilter = () => {
             offset: 1,
             showArrow: false,
             effect: 'dark',
-            enterable: false,
+            enterable: true,
             showAfter: 0,
             popperOptions: {},
             popperClass: 'test',
