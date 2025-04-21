@@ -1,30 +1,18 @@
 <script setup lang="ts">
 import {
-  ElCheckbox,
   ElDivider,
   ElForm,
   ElFormItem,
   ElInput,
   ElRow,
   ElCol,
-  ElSwitch,
-  ElTooltip,
-  ElRadioGroup,
-  ElRadio,
-  ElSelectV2,
   ElButton,
   FormInstance,
-  ElInputNumber,
-  ElText,
-  ElSelect,
-  ElOption,
-  ElMessage,
   CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi, updateProjectDataApi } from '@/api/project'
-import { getNodeDataOnlineApi } from '@/api/node'
 import { Dialog } from '@/components/Dialog'
 import { getTemplateDataApi } from '@/api/task'
 import DetailTemplate from '../../Task/components/DetailTemplate.vue'
@@ -144,18 +132,18 @@ const indeterminate = ref(false)
 const isCheckboxDisabledNode = ref(false)
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
 const getNodeList = async () => {
-  const res = await getNodeDataOnlineApi()
-  console.log(res.data.list)
-  if (res.data.list.length > 0) {
-    isCheckboxDisabledNode.value = false
-    res.data.list.forEach((item) => {
-      nodeOptions.push({ value: item, label: item })
-    })
-  } else {
-    isCheckboxDisabledNode.value = true
-    ElMessage.warning(t('node.onlineNodeMsg'))
-  }
-  console.log(nodeOptions)
+  // const res = await getNodeDataOnlineApi()
+  // console.log(res.data.list)
+  // if (res.data.list.length > 0) {
+  //   isCheckboxDisabledNode.value = false
+  //   res.data.list.forEach((item) => {
+  //     nodeOptions.push({ value: item, label: item })
+  //   })
+  // } else {
+  //   isCheckboxDisabledNode.value = true
+  //   ElMessage.warning(t('node.onlineNodeMsg'))
+  // }
+  // console.log(nodeOptions)
 }
 
 const handleCheckAll = (val: CheckboxValueType) => {
@@ -232,151 +220,6 @@ const closeTemplateDialog = () => {
     <ElFormItem label="Logo" prop="logo">
       <ElInput v-model="projectForm.logo" placeholder="http(s)://xxxxx.xx" />
     </ElFormItem>
-
-    <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
-    <ElRow>
-      <ElCol :span="6">
-        <ElFormItem :label="t('project.scheduledTasks')">
-          <ElTooltip effect="dark" :content="t('project.msgScheduledTasks')" placement="top">
-            <ElSwitch
-              v-model="projectForm.scheduledTasks"
-              inline-prompt
-              :active-text="t('common.switchAction')"
-              :inactive-text="t('common.switchInactive')"
-            />
-          </ElTooltip>
-        </ElFormItem>
-      </ElCol>
-      <ElCol :span="12" v-if="projectForm.scheduledTasks">
-        <ElFormItem :label="t('project.cycle')" prop="type">
-          <ElInputNumber
-            v-model="projectForm.hour"
-            :min="1"
-            controls-position="right"
-            size="small"
-          /><ElText style="position: relative; left: 16px">Hour</ElText>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="t('configuration.runNowOne')">
-          <ElSwitch
-            v-model="runNow"
-            inline-prompt
-            :active-text="t('common.switchAction')"
-            :inactive-text="t('common.switchInactive')"
-          />
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
-
-    <div v-if="projectForm.scheduledTasks || runNow">
-      <ElRow>
-        <ElCol :span="12">
-          <ElFormItem :label="t('task.nodeSelect')" prop="node">
-            <ElSelectV2
-              v-model="projectForm.node"
-              filterable
-              :options="nodeOptions"
-              placeholder="Please select node"
-              style="width: 80%"
-              multiple
-              tag-type="success"
-              collapse-tags
-              collapse-tags-tooltip
-              :max-collapse-tags="7"
-            >
-              <template #header>
-                <ElCheckbox
-                  :disabled="isCheckboxDisabledNode"
-                  :indeterminate="indeterminate"
-                  @change="handleCheckAll"
-                >
-                  All
-                </ElCheckbox>
-              </template>
-            </ElSelectV2>
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem :label="t('task.autoNode')">
-            <ElTooltip effect="dark" :content="t('task.selectNodeMsg')" placement="top">
-              <ElSwitch
-                v-model="projectForm.allNode"
-                inline-prompt
-                :active-text="t('common.switchAction')"
-                :inactive-text="t('common.switchInactive')"
-              />
-            </ElTooltip>
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
-      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
-        t('task.duplicates')
-      }}</ElDivider>
-      <ElRow>
-        <ElCol :span="24">
-          <ElFormItem :label="t('task.duplicates')" prop="type">
-            <ElRadioGroup v-model="projectForm.duplicates">
-              <ElRadio label="None" name="duplicates" :checked="true" value="None" />
-              <ElTooltip effect="dark" :content="t('task.duplicatesMsg')" placement="top">
-                <ElRadio
-                  :label="t('task.duplicatesSubdomain')"
-                  name="duplicates"
-                  value="subdomain"
-                />
-              </ElTooltip>
-            </ElRadioGroup>
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
-      <ElDivider content-position="center" style="width: 60%; left: 20%">{{
-        t('router.scanTemplate')
-      }}</ElDivider>
-      <ElFormItem :label="t('router.scanTemplate')" prop="template">
-        <!-- <ElSelectV2 v-model="taskData.template" placeholder="Please select node" style="width: 50%" /> -->
-        <ElSelect
-          v-model="projectForm.template"
-          placeholder="Please select template"
-          style="width: 30%"
-        >
-          <ElOption
-            v-for="item in templateOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-            <ElRow>
-              <ElCol :span="16">
-                <span style="float: left">{{ item.label }}</span>
-              </ElCol>
-              <ElCol :span="8">
-                <ElButton
-                  type="primary"
-                  size="small"
-                  style="margin-left: 15px"
-                  @click.stop="editTemplate(item.value)"
-                >
-                  {{ t('common.edit') }}
-                </ElButton>
-              </ElCol>
-            </ElRow>
-          </ElOption>
-          <template #footer>
-            <ElButton
-              type="success"
-              size="small"
-              plain
-              style="margin-left: 15px"
-              @click.stop="editTemplate('')"
-            >
-              {{ t('common.new') }}
-            </ElButton>
-          </template>
-        </ElSelect>
-      </ElFormItem>
-    </div>
     <ElDivider />
     <ElRow>
       <ElCol :span="2" :offset="12">
