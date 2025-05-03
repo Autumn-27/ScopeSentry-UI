@@ -86,7 +86,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Asset/Asset.vue'),
-        name: 'AssetInformation',
+        name: 'Asset-Information',
         meta: {
           title: t('router.assetinfo'),
           icon: 'carbon:view',
@@ -165,7 +165,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Node/Node.vue'),
-        name: 'NodeManagement',
+        name: 'Node-Management',
         meta: {
           title: t('router.nodeManagement'),
           icon: 'material-symbols:network-node',
@@ -184,7 +184,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Project/Project.vue'),
-        name: 'ProjectManagement',
+        name: 'Project-Management',
         meta: {
           title: t('router.projectManagement'),
           icon: 'eos-icons:project-outlined',
@@ -216,7 +216,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Poc/Poc.vue'),
-        name: 'POCManagement',
+        name: 'POC-Management',
         meta: {
           title: t('router.pocManagement'),
           icon: 'ant-design:bug-filled',
@@ -235,7 +235,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Fingerprint/Fingerprint.vue'),
-        name: 'FingerprintManagement',
+        name: 'Fingerprint-Management',
         meta: {
           title: t('router.fingerprintManagement'),
           icon: 'material-symbols:fingerprint',
@@ -254,7 +254,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/Sensitive/Sensitive.vue'),
-        name: 'Sensitive information rules',
+        name: 'Sensitive-information-rules',
         meta: {
           title: t('router.sensitiveInformationRules'),
           icon: 'carbon:deploy-rules',
@@ -275,7 +275,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'manage',
         component: () => import('@/views/DictionaryManagement/manage.vue'),
-        name: 'Dictionary management',
+        name: 'Dictionary-management',
         meta: {
           title: t('router.dictionaryManagement'),
           icon: 'arcticons:dictionaryformids',
@@ -364,7 +364,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'index',
         component: () => import('@/views/about.vue'),
-        name: 'about',
+        name: 'About ScopeSentry',
         meta: {
           title: 'About',
           icon: 'carbon:deploy-rules',

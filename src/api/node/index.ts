@@ -11,7 +11,7 @@ interface NodeDataOnlineResponse {
 }
 
 export const getNodeDataApi = (): Promise<IResponse<NodeDataResponse>> => {
-  return request.get({ url: '/api/node/data' })
+  return request.get({ url: '/api/node' })
 }
 
 export const restartNodeApi = (name: string): Promise<IResponse<commonRespData>> => {

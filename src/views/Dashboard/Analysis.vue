@@ -29,7 +29,7 @@ const loading = ref(true)
 
 const nodeColumns = reactive<TableColumn[]>([
   {
-    field: 'nodeName',
+    field: 'name',
     label: t('node.nodeName')
   },
   {
@@ -47,7 +47,7 @@ const nodeColumns = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'nodeStatus',
+    field: 'state',
     label: t('node.nodeStatus'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
@@ -73,7 +73,7 @@ const taskColums = reactive<TableColumn[]>([
     label: t('task.taskName')
   },
   {
-    field: 'taskNum',
+    field: 'running',
     label: t('task.taskCount'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
@@ -107,11 +107,11 @@ const taskColums = reactive<TableColumn[]>([
 
 const nodeUsageColumns = reactive<TableColumn[]>([
   {
-    field: 'nodeName',
+    field: 'name',
     label: t('node.nodeName')
   },
   {
-    field: 'nodeUsageCpu',
+    field: 'cpuNum',
     label: t('node.nodeUsageCpu'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
@@ -124,7 +124,7 @@ const nodeUsageColumns = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'nodeUsageMemory',
+    field: 'memNum',
     label: t('node.nodeUsageMemory'),
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
@@ -182,17 +182,15 @@ const versionColumns = reactive<TableColumn[]>([
   }
 ])
 
-let nodeUsageData: Ref<{ nodeName: string; nodeUsageCpu: number; nodeUsageMemory: number }[]> = ref(
-  []
-)
+let nodeUsageData: Ref<{ name: string; cpuNum: number; memNum: number }[]> = ref([])
 
 const nodeData = ref<
   {
-    nodeName: string
-    taskCount: number
-    nodeStatus: number
-    nodeUsageCpu: number
-    nodeUsageMemory: number
+    name: string
+    running: number
+    state: number
+    cpuNum: number
+    memNum: number
   }[]
 >([])
 
@@ -201,17 +199,17 @@ const getNodeState = async () => {
     const res = await getNodeDataApi()
     if (res && res.data && Array.isArray(res.data.list)) {
       nodeData.value = res.data.list.map((node) => ({
-        nodeName: node.name,
-        taskCount: node.running,
-        nodeStatus: node.state,
-        nodeUsageCpu: node.cpuNum,
-        nodeUsageMemory: node.memNum
+        name: node.name,
+        running: node.running,
+        state: node.state,
+        cpuNum: node.cpuNum,
+        memNum: node.memNum
       }))
       nodeUsageData.value = reactive(
         res.data.list.map((node) => ({
-          nodeName: node.name,
-          nodeUsageCpu: node.cpuNum,
-          nodeUsageMemory: node.memNum
+          name: node.name,
+          cpuNum: node.cpuNum,
+          memNum: node.memNum
         }))
       )
     }

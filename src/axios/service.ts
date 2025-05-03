@@ -4,6 +4,7 @@ import { defaultRequestInterceptors, defaultResponseInterceptors } from './confi
 import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
+import { useUserStoreWithOut } from '@/store/modules/user'
 
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
@@ -31,7 +32,18 @@ axiosInstance.interceptors.response.use(
   },
   (error: AxiosError) => {
     console.log('err： ' + error) // for debug
-    ElMessage.error(error.message)
+    if (error.response?.data) {
+      const responseData = error.response.data as { message: string }
+      // 显示后端返回的具体错误消息
+      ElMessage.error(responseData.message || 'Request failed')
+      if (error.response?.status === 401) {
+        const userStore = useUserStoreWithOut()
+        userStore.logout()
+      }
+    } else {
+      // 如果没有响应数据，显示网络错误或其他错误
+      ElMessage.error(error.message || 'NetworkError')
+    }
     return Promise.reject(error)
   }
 )
