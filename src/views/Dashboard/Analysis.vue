@@ -33,8 +33,22 @@ const nodeColumns = reactive<TableColumn[]>([
     label: t('node.nodeName')
   },
   {
-    field: 'taskCount',
+    field: 'running',
     label: t('node.taskCount'),
+    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
+      return h(
+        ElTag,
+        {
+          round: true,
+          effect: 'dark'
+        },
+        () => cellValue
+      )
+    }
+  },
+  {
+    field: 'finished',
+    label: t('node.finished'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
@@ -73,7 +87,7 @@ const taskColums = reactive<TableColumn[]>([
     label: t('task.taskName')
   },
   {
-    field: 'running',
+    field: 'taskNum',
     label: t('task.taskCount'),
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
@@ -188,6 +202,7 @@ const nodeData = ref<
   {
     name: string
     running: number
+    finished: number
     state: number
     cpuNum: number
     memNum: number
@@ -202,6 +217,7 @@ const getNodeState = async () => {
         name: node.name,
         running: node.running,
         state: node.state,
+        finished: node.finished,
         cpuNum: node.cpuNum,
         memNum: node.memNum
       }))

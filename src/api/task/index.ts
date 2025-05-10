@@ -19,7 +19,7 @@ export const getTaskDataApi = (
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<TaskDataResponse>> => {
-  return request.post({ url: '/api/task/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/task', data: { search, pageIndex, pageSize } })
 }
 
 export const stopTaskApi = (ids: string[]): Promise<IResponse<TaskDataResponse>> => {

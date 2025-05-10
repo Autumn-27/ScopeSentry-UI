@@ -492,7 +492,7 @@ getProjectList()
       </ElRadioGroup>
     </ElFormItem>
     <ElFormItem :label="t('task.targetNumber')" v-if="targetTp == 'search' && sourceTp">
-      <ElInput v-model="targetNumber" />
+      <ElInput v-model.number="targetNumber" />
     </ElFormItem>
     <ElFormItem :label="t('task.ignore')" prop="ignore" v-if="taskData.targetSource != 'project'">
       <ElInput
@@ -574,19 +574,19 @@ getProjectList()
           </ElSelect>
         </ElCol>
         <ElCol :span="5" v-if="taskData.cycleType == 'weekly'">
-          <ElSelect v-model="taskData.week" style="width: 100%">
-            <ElOption :label="t('task.monday')" value="0" />
-            <ElOption :label="t('task.tuesday')" value="1" />
-            <ElOption :label="t('task.wednesday')" value="2" />
-            <ElOption :label="t('task.thursday')" value="3" />
-            <ElOption :label="t('task.friday')" value="4" />
-            <ElOption :label="t('task.saturday')" value="5" />
-            <ElOption :label="t('task.sunday')" value="6" />
+          <ElSelect v-model.number="taskData.week" style="width: 100%">
+            <ElOption :label="t('task.monday')" :value="0" />
+            <ElOption :label="t('task.tuesday')" :value="1" />
+            <ElOption :label="t('task.wednesday')" :value="2" />
+            <ElOption :label="t('task.thursday')" :value="3" />
+            <ElOption :label="t('task.friday')" :value="4" />
+            <ElOption :label="t('task.saturday')" :value="5" />
+            <ElOption :label="t('task.sunday')" :value="6" />
           </ElSelect>
         </ElCol>
         <ElCol :span="5" v-if="taskData.cycleType === 'ndays' || taskData.cycleType == 'monthly'">
           <ElFormItem prop="day">
-            <ElInput style="width: 100%" v-model="taskData.day">
+            <ElInput style="width: 100%" v-model.number="taskData.day">
               <template #append>{{ t('task.day') }}</template>
             </ElInput>
           </ElFormItem>
@@ -602,7 +602,7 @@ getProjectList()
           "
         >
           <ElFormItem prop="hour">
-            <ElInput style="width: 100%" v-model="taskData.hour">
+            <ElInput style="width: 100%" v-model.number="taskData.hour">
               <template #append>{{ t('task.hour') }}</template>
             </ElInput>
           </ElFormItem>
@@ -618,7 +618,7 @@ getProjectList()
           "
         >
           <ElFormItem prop="minute">
-            <ElInput style="width: 100%" v-model="taskData.minute">
+            <ElInput style="width: 100%" v-model.number="taskData.minute">
               <template #append>{{ t('task.minute') }}</template>
             </ElInput>
           </ElFormItem>

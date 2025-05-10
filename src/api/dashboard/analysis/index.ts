@@ -12,7 +12,7 @@ interface DashboardTotalTypesResponse {
 }
 
 export const getAssetStatisticsApi = (): Promise<IResponse<DashboardTotalTypesResponse[]>> => {
-  return request.get({ url: '/api/asset/statistics/data' })
+  return request.get({ url: '/api/assets/statistics' })
 }
 
 export const getUserAccessSourceApi = (): Promise<IResponse<UserAccessSource[]>> => {
