@@ -29,7 +29,7 @@ export const getAssetApi = (
   pageSize: number,
   filter: Record<string, any>
 ): Promise<IResponse<AssetDataResponse>> => {
-  return request.post({ url: '/api/asset/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({ url: '/api/assets/asset', data: { search, pageIndex, pageSize, filter } })
 }
 
 export const getAssetCardApi = (

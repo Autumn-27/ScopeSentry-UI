@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { Ref, h, nextTick, onMounted, reactive, ref } from 'vue'
+import { Ref, h, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import { Dialog } from '@/components/Dialog'
 import {
@@ -341,7 +341,10 @@ let crudSchemas = reactive<CrudSchema[]>([
     field: 'tags',
     label: 'TAG',
     fit: 'true',
-    formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
+    formatter: (row: Recordable, __: TableColumn, tags: string[] | null) => {
+      if (!tags) {
+        tags = []
+      }
       // 初始化状态
       if (!rowStateMap[row.id]) {
         rowStateMap[row.id] = {
@@ -445,7 +448,8 @@ let crudSchemas = reactive<CrudSchema[]>([
     field: 'products',
     label: t('asset.products'),
     minWidth: '110',
-    formatter: (_: Recordable, __: TableColumn, ProductsValue: string[]) => {
+    formatter: (_: Recordable, __: TableColumn, ProductsValue: string[] | null) => {
+      if (!ProductsValue || ProductsValue.length === 0) return
       if (ProductsValue.length != 0) {
         return (
           <ElRow style={{ flexWrap: 'wrap' }}>
@@ -604,6 +608,11 @@ const handleColumnVisibilityChange = ({ field, hidden }) => {
 }
 loadColumnConfig()
 
+const filter = reactive<{ [key: string]: any }>({})
+
+const lastSearchParams = ref('')
+let lastFilter = reactive<{ [key: string]: any }>({})
+
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
@@ -615,12 +624,20 @@ const { tableRegister, tableState, tableMethods } = useTable({
         total: resCard
       }
     }
+    const searchParamsChanged = searchParams.value !== lastSearchParams.value
+    const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
+
     const { currentPage, pageSize } = tableState
-    const tmpTotal = tableState.total
-    if (currentPage.value === 1 && pageSize.value === 20) {
+    if (
+      (currentPage.value === 1 && pageSize.value === 20) ||
+      searchParamsChanged ||
+      filterChanged
+    ) {
       // 如果当前页面等于1 并且 页面大小为20 说明是首次加载 或者是进行了搜索 需要更新total的值
       getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
       getAssetstatistics()
+      lastSearchParams.value = searchParams.value
+      lastFilter = { ...filter }
     }
     const res = await getAssetApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
@@ -649,7 +666,6 @@ function rowstyle() {
   return { maxheight: '10px' }
 }
 const activeNames = ref(['1', '2', '3', '4', '5'])
-const filter = reactive<{ [key: string]: any }>({})
 const handleFilterSearch = (data: any, newFilters: any) => {
   Object.assign(filter, newFilters)
   searchParams.value = data
