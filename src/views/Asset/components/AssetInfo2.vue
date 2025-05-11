@@ -616,25 +616,22 @@ let lastFilter = reactive<{ [key: string]: any }>({})
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    console.log(activeSegment.value)
     if (activeSegment.value == 'cardSegment') {
-      const resCard = await getAssetCardData()
+      await getAssetCardData()
       return {
         list: [],
-        total: resCard
+        flag: true
       }
     }
     const searchParamsChanged = searchParams.value !== lastSearchParams.value
     const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
-    console.log(searchParamsChanged)
-    console.log(filterChanged)
     const { currentPage, pageSize } = tableState
+
     if (
       (currentPage.value === 1 && pageSize.value === 20) ||
       searchParamsChanged ||
       filterChanged
     ) {
-      // 如果当前页面等于1 并且 页面大小为20 说明是首次加载 或者是进行了搜索 需要更新total的值
       getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
       getAssetstatistics()
       lastSearchParams.value = searchParams.value
@@ -758,11 +755,9 @@ const setActiveSegment = (segment: 'tableSegment' | 'cardSegment', flag: boolean
 const websites = ref<AssetData[]>([])
 const getAssetCardData = async () => {
   websites.value = []
+  getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
   const res = await getAssetCardApi(searchParams.value, currentPage.value, pageSize.value, filter)
   websites.value = res.data.list
-  total.value = 0
-  total.value = res.data.total
-  return res.data.total
 }
 const getStatusColor = (statusValue) => {
   if (statusValue < 300) {
