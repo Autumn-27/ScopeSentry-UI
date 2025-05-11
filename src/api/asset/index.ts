@@ -52,30 +52,33 @@ export const getAssetStatisticsPortApi = (
   search: string,
   filter: Record<string, any>
 ): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/port', data: { search, filter } })
+  return request.post({ url: '/api/assets/statistics/port', data: { search, filter } })
 }
 
 export const getAssetStatisticsTypeApi = (
   search: string,
   filter: Record<string, any>
 ): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/type', data: { search, filter } })
+  return request.post({ url: '/api/assets/statistics/service', data: { search, filter } })
 }
 
 export const getAssetStatisticsiconApi = (
   search: string,
   filter: Record<string, any>,
-  page: number,
-  size: number
+  pageIndex: number,
+  pageSize: number
 ): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/icon', data: { search, filter, page, size } })
+  return request.post({
+    url: '/api/assets/statistics/icon',
+    data: { search, filter, pageIndex, pageSize }
+  })
 }
 
 export const getAssetStatisticsappApi = (
   search: string,
   filter: Record<string, any>
 ): Promise<IResponse<AssetStatistics>> => {
-  return request.post({ url: '/api/asset/statistics/app', data: { search, filter } })
+  return request.post({ url: '/api/assets/statistics/app', data: { search, filter } })
 }
 
 export const getAssetStatisticsTitleApi = (
@@ -86,11 +89,11 @@ export const getAssetStatisticsTitleApi = (
 }
 
 export const getAssetDetailApi = (id: string): Promise<IResponse<AssetDetail>> => {
-  return request.post({ url: '/api/asset/detail', data: { id } })
+  return request.post({ url: '/api/assets/asset/detail', data: { id } })
 }
 
 export const getAssetChangeLogApi = (id: string): Promise<IResponse<AssetChangeLog[]>> => {
-  return request.post({ url: '/api/asset/changelog', data: { id } })
+  return request.post({ url: '/api/assets/asset/changelog', data: { id } })
 }
 
 export const updateStatusApi = (
@@ -290,7 +293,7 @@ export const totalDataApi = (
   index: string
 ): Promise<IResponse<TotalDataResponse>> => {
   return request.post({
-    url: '/api/data/total',
+    url: '/api/assets/common/total',
     data: { search, pageIndex, pageSize, filter, index }
   })
 }

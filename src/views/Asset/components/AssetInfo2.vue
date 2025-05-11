@@ -626,7 +626,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
     }
     const searchParamsChanged = searchParams.value !== lastSearchParams.value
     const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
-
+    console.log(searchParamsChanged)
+    console.log(filterChanged)
     const { currentPage, pageSize } = tableState
     if (
       (currentPage.value === 1 && pageSize.value === 20) ||

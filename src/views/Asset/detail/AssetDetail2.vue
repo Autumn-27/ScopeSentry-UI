@@ -33,7 +33,7 @@ const getAssetDetail = async () => {
   const res = await getAssetDetailApi(props.id)
   if (res.code == 200) {
     // 格式化 JSON，使用 2 个空格缩进
-    detailJson.value = JSON.stringify(res.data.json, null, 2)
+    detailJson.value = JSON.stringify(res.data, null, 2)
   }
 }
 getAssetDetail()
