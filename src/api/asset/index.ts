@@ -115,7 +115,10 @@ export const getSubdomainApi = (
   pageSize: number,
   filter: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
-  return request.post({ url: '/api/subdomain/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({
+    url: '/api/assets/subdomain',
+    data: { search, pageIndex, pageSize, filter }
+  })
 }
 
 interface URLDataResponse {
