@@ -627,11 +627,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
     const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
     const { currentPage, pageSize } = tableState
 
-    if (
-      (currentPage.value === 1 && pageSize.value === 20) ||
-      searchParamsChanged ||
-      filterChanged
-    ) {
+    if (searchParamsChanged || filterChanged) {
+      currentPage.value = 1
       getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
       getAssetstatistics()
       lastSearchParams.value = searchParams.value

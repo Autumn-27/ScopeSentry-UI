@@ -263,7 +263,7 @@ export const getSubdomaintakerApi = (
 }
 
 export const delDataApi = (ids: string[], index: string): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/data/delete', data: { ids, index } })
+  return request.post({ url: '/api/assets/common/delete', data: { ids, index } })
 }
 
 export const addTagApi = (
@@ -271,7 +271,7 @@ export const addTagApi = (
   tp: string,
   tag: string
 ): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/data/add/tag', data: { id, tp, tag } })
+  return request.post({ url: '/api/assets/common/add_tag', data: { id, tp, tag } })
 }
 
 export const deleteTagApi = (
@@ -279,7 +279,7 @@ export const deleteTagApi = (
   tp: string,
   tag: string
 ): Promise<IResponse<commonRespData>> => {
-  return request.post({ url: '/api/data/delete/tag', data: { id, tp, tag } })
+  return request.post({ url: '/api/assets/common/delete_tag', data: { id, tp, tag } })
 }
 
 interface TotalDataResponse {
@@ -305,7 +305,7 @@ export const getRootDomainApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
   return request.post({
-    url: '/api/root/domain/data',
+    url: '/api/assets/root_domain',
     data: { search, pageIndex, pageSize, filter }
   })
 }
