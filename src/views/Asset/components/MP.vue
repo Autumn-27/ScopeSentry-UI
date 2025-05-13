@@ -107,6 +107,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     field: 'tags',
     label: 'TAG',
     fit: 'true',
+    showOverflowTooltip: false,
     formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
       if (tags == null) {
         tags = []
@@ -128,12 +129,17 @@ const crudSchemas = reactive<CrudSchema[]>([
         rowState.inputVisible = false // 隐藏输入框
         rowState.inputValue = '' // 清空输入框的值
       }
-      const deleteTag = async (tag: string) => {
-        const indexT = tags.indexOf(tag)
-        if (indexT > -1) {
-          tags.splice(indexT, 1) // 从数组中移除指定的元素
+      const deleteTag = async (row: Recordable, tag: string) => {
+        if (!row.tags) {
+          row.tags = []
         }
-        deleteTagApi(row.id, index, tag)
+        const indexT = row.tags.indexOf(tag)
+        if (indexT > -1) {
+          row.tags.splice(indexT, 1) // 从数组中移除指定的元素
+        }
+        await deleteTagApi(row.id, index, tag)
+        // 如需强制刷新表格数据，可取消下行注释
+        // await getList()
       }
       const showInput = () => {
         rowState.inputVisible = true
@@ -160,7 +166,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         ...tags.map((tag) =>
           h(ElCol, { span: 24, key: tag }, () => [
             h('div', { onClick: (event: MouseEvent) => handleTagClick(event, tag) }, [
-              h(ElTag, { closable: true, onClose: () => deleteTag(tag) }, () => tag)
+              h(ElTag, { closable: true, onClose: () => deleteTag(row, tag) }, () => tag)
             ])
           ])
         ),
