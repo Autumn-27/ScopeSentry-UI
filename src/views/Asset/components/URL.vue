@@ -131,6 +131,7 @@ const crudSchemas = reactive<CrudSchema[]>([
       { text: '401', value: 401 },
       { text: '403', value: 403 },
       { text: '404', value: 404 },
+      { text: '405', value: 405 },
       { text: '500', value: 500 },
       { text: '502', value: 502 },
       { text: '503', value: 503 },
