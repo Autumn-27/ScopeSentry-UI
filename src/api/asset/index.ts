@@ -133,7 +133,10 @@ export const getURLApi = (
   filter: Record<string, any>,
   sort: Record<string, any>
 ): Promise<IResponse<URLDataResponse>> => {
-  return request.post({ url: '/api/url/data', data: { search, pageIndex, pageSize, filter, sort } })
+  return request.post({
+    url: '/api/assets/url',
+    data: { search, pageIndex, pageSize, filter, sort }
+  })
 }
 
 interface CrawlerDataResponse {
@@ -147,7 +150,7 @@ export const getCrawlerApi = (
   pageSize: number,
   filter: Record<string, any>
 ): Promise<IResponse<CrawlerDataResponse>> => {
-  return request.post({ url: '/api/crawler/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({ url: '/api/assets/crawler', data: { search, pageIndex, pageSize, filter } })
 }
 
 interface SensitiveDataResponse {
@@ -260,7 +263,7 @@ export const getSubdomaintakerApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SubdomaintakerDataResponse>> => {
   return request.post({
-    url: '/api/subdomaintaker/data',
+    url: '/api/assets/subdomain/taker',
     data: { search, pageIndex, pageSize, filter }
   })
 }
@@ -320,7 +323,7 @@ export const getAppApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
   return request.post({
-    url: '/api/app/data',
+    url: '/api/assets/app',
     data: { search, pageIndex, pageSize, filter }
   })
 }
@@ -332,7 +335,7 @@ export const getMpApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SubdomainDataResponse>> => {
   return request.post({
-    url: '/api/mp/data',
+    url: '/api/assets/mp',
     data: { search, pageIndex, pageSize, filter }
   })
 }
