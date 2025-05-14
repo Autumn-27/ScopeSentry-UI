@@ -211,7 +211,7 @@ const crudSchemas = reactive<CrudSchema[]>([
     minWidth: '130'
   }
 ])
-let index = 'SubdoaminTakerResult'
+let index = 'SubdomainTakerResult'
 crudSchemas.forEach((schema) => {
   schema.hidden = schema.hidden ?? false // 如果没有 hidden 属性，添加并设置为 false
 })
