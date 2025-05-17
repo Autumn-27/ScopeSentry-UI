@@ -17,7 +17,7 @@ import {
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { addTagApi, deleteTagApi, getDirScanApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getDirScanApi, totalDataApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
@@ -287,10 +287,22 @@ const handleColumnVisibilityChange = ({ field, hidden }) => {
 }
 loadColumnConfig()
 
+const lastSearchParams = ref('')
+let lastFilter = reactive<{ [key: string]: any }>({})
+
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
+    const searchParamsChanged = searchParams.value !== lastSearchParams.value
+    const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
     const { currentPage, pageSize } = tableState
+
+    if (searchParamsChanged || filterChanged) {
+      currentPage.value = 1
+      getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
+      lastSearchParams.value = searchParams.value
+      lastFilter = { ...filter }
+    }
     const res = await getDirScanApi(
       searchParams.value,
       currentPage.value,
@@ -300,13 +312,24 @@ const { tableRegister, tableState, tableMethods } = useTable({
     )
     return {
       list: res.data.list,
-      total: res.data.total
+      flag: true
     }
   },
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
+
+const getTotal = async (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+) => {
+  let res = await totalDataApi(search, pageIndex, pageSize, filter, index)
+  total.value = res.data.total
+}
+
 pageSize.value = 20
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }

@@ -51,6 +51,7 @@ const props = defineProps<{
   statisticsHidden?: boolean
   changeStatisticsHidden?: (boolean) => void
   searchResultCount: number
+  sensitiveAllNumber?: number
   activeSegment?: 'tableSegment' | 'cardSegment' // 可选属性
   setActiveSegment?: (segment: 'tableSegment' | 'cardSegment', flag: boolean) => void // 可选方法
   getFilter: () => { [key: string]: any }
@@ -518,6 +519,11 @@ const openCreateTask = async () => {
           <span style="color: #888">{{ t('asset.total') }}</span>
           <span style="font-weight: bold; color: #333333">{{ props.searchResultCount }}</span>
           <span style="color: #888">{{ t('asset.result') }}</span>
+          <div v-if="index == 'SensitiveResult'">
+            <span style="color: #888">{{ t('asset.total') }}</span>
+            <span style="font-weight: bold; color: #333333">{{ props?.sensitiveAllNumber }}</span>
+            <span style="color: #888">{{ t('asset.sensitiveNumber') }}</span>
+          </div>
           <ElTag
             v-for="tag in localDynamicTags"
             :key="tag"

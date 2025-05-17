@@ -30,6 +30,7 @@ import {
   getSensitiveNamesApi,
   getSensitiveResultApi,
   getSensitiveResultBodyApi,
+  getSensitiveResultNumberApi,
   updateStatusApi
 } from '@/api/asset'
 import { Icon } from '@iconify/vue'
@@ -161,26 +162,42 @@ const crudSchemas = reactive<CrudSchema[]>([
         row.status = 1
       }
 
-      const options = [
-        { value: 1, label: t('common.unprocessed') },
-        { value: 2, label: t('common.processing') },
-        { value: 3, label: t('common.ignored') },
-        { value: 4, label: t('common.suspected') },
-        { value: 5, label: t('common.confirmed') }
-      ]
+      if (row.status == 0) {
+        row.status = 1
+      }
 
+      const options = [
+        { value: 1, label: t('common.unprocessed'), color: '#909399' },
+        { value: 2, label: t('common.processing'), color: '#409EFF' },
+        { value: 3, label: t('common.ignored'), color: '#C0C4CC' },
+        { value: 4, label: t('common.suspected'), color: '#E6A23C' },
+        { value: 5, label: t('common.confirmed'), color: '#F56C6C' },
+        { value: 6, label: t('common.processed'), color: '#67C23A' }
+      ]
+      const selected = options.find((opt) => opt.value === row.status)
+      const selectedColor = selected?.color || '#000'
       return (
         <ElSelect
           modelValue={row.status}
+          class="colored-select"
+          popper-class="colored-select-popper"
+          style={{ '--select-text-color': selectedColor }}
           onUpdate:modelValue={async (newValue) => {
             try {
               row.status = newValue
-              updateStatusApi(row.id, 'SensitiveResult', newValue)
-            } catch (error) {}
+              await updateStatusApi(row.id, 'SensitiveResult', newValue)
+            } catch (error) {
+              console.error(error)
+            }
           }}
         >
           {options.map((item) => (
-            <ElOption key={item.value} label={item.label} value={item.value} />
+            <ElOption
+              key={item.value}
+              label={item.label}
+              value={item.value}
+              style={{ color: item.color }}
+            />
           ))}
         </ElSelect>
       )
@@ -190,7 +207,8 @@ const crudSchemas = reactive<CrudSchema[]>([
       { text: t('common.processing'), value: 2 },
       { text: t('common.ignored'), value: 3 },
       { text: t('common.suspected'), value: 4 },
-      { text: t('common.confirmed'), value: 5 }
+      { text: t('common.confirmed'), value: 5 },
+      { text: t('common.processed'), value: 5 }
     ]
   },
   {
@@ -353,11 +371,23 @@ const handleColumnVisibilityChange = ({ field, hidden }) => {
   saveColumnConfig()
 }
 loadColumnConfig()
+
+const lastSearchParams = ref('')
+let lastFilter = reactive<{ [key: string]: any }>({})
+
 const filter = reactive<{ [key: string]: any }>({})
 const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
+    const searchParamsChanged = searchParams.value !== lastSearchParams.value
+    const filterChanged = JSON.stringify(filter) !== JSON.stringify(lastFilter)
+    if (searchParamsChanged || filterChanged) {
+      currentPage.value = 1
+      getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
+      lastSearchParams.value = searchParams.value
+      lastFilter = { ...filter }
+    }
     const res = await getSensitiveResultApi(
       searchParams.value,
       currentPage.value,
@@ -366,13 +396,26 @@ const { tableRegister, tableState, tableMethods } = useTable({
     )
     return {
       list: res.data.list,
-      total: res.data.total
+      flag: true
     }
   },
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
 const { getList, getElTableExpose } = tableMethods
+
+let allNumber = ref(0)
+const getTotal = async (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+) => {
+  let res = await getSensitiveResultNumberApi(search, pageIndex, pageSize, filter, index)
+  total.value = res.data.total
+  allNumber.value = res.data.all
+}
+
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
 }
@@ -489,6 +532,7 @@ const OpenViewInfoDialogVisible = async (sid) => {
     :crudSchemas="crudSchemas"
     @update-column-visibility="handleColumnVisibilityChange"
     :searchResultCount="total"
+    :sensitiveAllNumber="allNumber"
     :getFilter="getFilter"
   />
   <ElRow>
@@ -596,5 +640,14 @@ const OpenViewInfoDialogVisible = async (sid) => {
 <style lang="less" scoped>
 .el-button {
   margin-top: 10px;
+}
+
+::v-deep(.colored-select .el-select__selected-item) {
+  color: var(--select-text-color) !important;
+}
+
+/* 生效于 popper 中的下拉选项 */
+.colored-select-popper .el-select-dropdown__item {
+  color: inherit;
 }
 </style>

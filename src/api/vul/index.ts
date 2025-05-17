@@ -11,5 +11,8 @@ export const getVulResultDataApi = (
   pageSize: number,
   filter: Record<string, any>
 ): Promise<IResponse<vulResultDataResponse>> => {
-  return request.post({ url: '/api/vul/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({
+    url: '/api/assets/vulnerability',
+    data: { search, pageIndex, pageSize, filter }
+  })
 }

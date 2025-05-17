@@ -169,27 +169,43 @@ const crudSchemas = reactive<CrudSchema[]>([
       if (row.status == null) {
         row.status = 1
       }
+      if (row.status == 0) {
+        row.status = 1
+      }
 
       const options = [
-        { value: 1, label: t('common.unprocessed') },
-        { value: 2, label: t('common.processing') },
-        { value: 3, label: t('common.ignored') },
-        { value: 4, label: t('common.suspected') },
-        { value: 5, label: t('common.confirmed') }
+        { value: 1, label: t('common.unprocessed'), color: '#909399' },
+        { value: 2, label: t('common.processing'), color: '#409EFF' },
+        { value: 3, label: t('common.ignored'), color: '#C0C4CC' },
+        { value: 4, label: t('common.suspected'), color: '#E6A23C' },
+        { value: 5, label: t('common.confirmed'), color: '#F56C6C' },
+        { value: 6, label: t('common.processed'), color: '#67C23A' }
       ]
+      const selected = options.find((opt) => opt.value === row.status)
+      const selectedColor = selected?.color || '#000'
 
       return (
         <ElSelect
           modelValue={row.status}
+          class="colored-select"
+          popper-class="colored-select-popper"
+          style={{ '--select-text-color': selectedColor }}
           onUpdate:modelValue={async (newValue) => {
             try {
               row.status = newValue
-              updateStatusApi(row.id, 'vulnerability', newValue)
-            } catch (error) {}
+              await updateStatusApi(row.id, index, newValue)
+            } catch (error) {
+              console.error(error)
+            }
           }}
         >
           {options.map((item) => (
-            <ElOption key={item.value} label={item.label} value={item.value} />
+            <ElOption
+              key={item.value}
+              label={item.label}
+              value={item.value}
+              style={{ color: item.color }}
+            />
           ))}
         </ElSelect>
       )
@@ -604,5 +620,13 @@ const getFilter = () => {
 }
 .el-descriptions {
   margin-top: 20px;
+}
+::v-deep(.colored-select .el-select__selected-item) {
+  color: var(--select-text-color) !important;
+}
+
+/* 生效于 popper 中的下拉选项 */
+.colored-select-popper .el-select-dropdown__item {
+  color: inherit;
 }
 </style>

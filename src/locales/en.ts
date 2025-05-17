@@ -7,6 +7,7 @@ export default {
     ignored: 'Ignored',
     suspected: 'Suspected',
     confirmed: 'Confirmed',
+    processed: 'Processed',
     cleanLog: 'Clear Logs',
     log: 'Log',
     filesize: 'Size',
@@ -428,7 +429,8 @@ export default {
     historyDiff: 'Historical changes',
     export: 'Export',
     screenshot: 'Screenshot',
-    Chart: 'Chart'
+    Chart: 'Chart',
+    sensitiveNumber: 'sensitive information'
   },
   subdomain: {
     subdomainName: 'Subdomain',

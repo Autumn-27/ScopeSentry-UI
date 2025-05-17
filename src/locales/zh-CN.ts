@@ -7,6 +7,7 @@ export default {
     ignored: '忽略',
     suspected: '疑似',
     confirmed: '确认',
+    processed: '已处理',
     cleanLog: '清除日志',
     log: '日志',
     filesize: '大小',
@@ -426,7 +427,8 @@ export default {
     historyDiff: '历史变更',
     export: '导出',
     screenshot: '截图',
-    Chart: '统计'
+    Chart: '统计',
+    sensitiveNumber: '条敏感信息'
   },
   subdomain: {
     subdomainName: '子域名',

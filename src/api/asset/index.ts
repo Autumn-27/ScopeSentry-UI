@@ -101,7 +101,7 @@ export const updateStatusApi = (
   tp: string,
   status: number
 ): Promise<IResponse<AssetChangeLog[]>> => {
-  return request.post({ url: '/api/data/update/status', data: { id, tp, status } })
+  return request.post({ url: '/api/assets/common/update_status', data: { id, tp, status } })
 }
 
 interface SubdomainDataResponse {
@@ -157,6 +157,12 @@ interface SensitiveDataResponse {
   list: SensitiveData[]
   total: number
 }
+
+interface SensitiveDataNumberResponse {
+  all: number
+  total: number
+}
+
 export const getSensitiveResultApi = (
   search: string,
   pageIndex: number,
@@ -164,13 +170,25 @@ export const getSensitiveResultApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SensitiveDataResponse>> => {
   return request.post({
-    url: '/api/sensitive/result/data2',
+    url: '/api/assets/sensitive',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}
+
+export const getSensitiveResultNumberApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<SensitiveDataNumberResponse>> => {
+  return request.post({
+    url: '/api/assets/sensitive/number',
     data: { search, pageIndex, pageSize, filter }
   })
 }
 
 export const getSensitiveResultBodyApi = (id: string): Promise<IResponse<SensitiveBody>> => {
-  return request.post({ url: '/api/sensitive/result/body', data: { id } })
+  return request.post({ url: '/api/assets/sensitive/body', data: { id } })
 }
 
 interface SensitiveNamesResponse {
@@ -182,7 +200,7 @@ export const getSensitiveNamesApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SensitiveNamesResponse>> => {
   return request.post({
-    url: '/api/sensitive/result/names',
+    url: '/api/assets/sensitive/names',
     data: { search, filter }
   })
 }
@@ -197,7 +215,7 @@ export const getSensitiveInfoApi = (
   filter: Record<string, any>
 ): Promise<IResponse<SensitiveInfoResponse>> => {
   return request.post({
-    url: '/api/sensitive/result/info',
+    url: '/api/assets/sensitive/info',
     data: { sid, search, filter }
   })
 }
@@ -214,7 +232,7 @@ export const getDirScanApi = (
   sort: Record<string, any>
 ): Promise<IResponse<DirScanDataResponse>> => {
   return request.post({
-    url: '/api/dirscan/result/data',
+    url: '/api/assets/dirscan',
     data: { search, pageIndex, pageSize, filter, sort }
   })
 }
