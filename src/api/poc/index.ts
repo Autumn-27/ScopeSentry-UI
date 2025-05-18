@@ -11,7 +11,7 @@ export const getPocDataApi = (
   pageSize: number,
   filter: Record<string, any>
 ): Promise<IResponse<pocDataResponse>> => {
-  return request.post({ url: '/api/poc/data', data: { search, pageIndex, pageSize, filter } })
+  return request.post({ url: '/api/poc', data: { search, pageIndex, pageSize, filter } })
 }
 
 export const getPocDataAllApi = (): Promise<IResponse<pocDataResponse>> => {
