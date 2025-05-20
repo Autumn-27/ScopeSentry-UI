@@ -582,15 +582,15 @@ const getFilter = () => {
     width="70%"
     :max-height="maxHeight"
   >
-    <ElDescriptions :border="true" :column="2">
-      <ElDescriptionsItem label="URL">{{ DialogData.URL }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="Level" width="100">
+    <ElDescriptions :border="true" :column="2" style="word-break: break-word">
+      <ElDescriptionsItem label="URL" :span="2">{{ DialogData.URL }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="Level">
         <Icon icon="clarity:circle-solid" :color="color" />
         <ElText type="info">{{ DialogData.Level }}</ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="Vulnerability">{{ DialogData.Vulnerability }}</ElDescriptionsItem>
       <ElDescriptionsItem label="Matched">{{ DialogData.Matched }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="Time" :span="2">{{ DialogData.Time }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="Time">{{ DialogData.Time }}</ElDescriptionsItem>
       <ElDescriptionsItem label="Request">
         <ElScrollbar :max-height="maxHeight" max-width="maxHeight">
           <div :style="{ whiteSpace: 'pre-line', width: '500px' }"> {{ DialogData.Request }}</div>
@@ -625,8 +625,14 @@ const getFilter = () => {
   color: var(--select-text-color) !important;
 }
 
-/* 生效于 popper 中的下拉选项 */
 .colored-select-popper .el-select-dropdown__item {
   color: inherit;
+}
+.cell-item {
+  display: flex;
+  align-items: center;
+}
+.margin-top {
+  margin-top: 20px;
 }
 </style>
