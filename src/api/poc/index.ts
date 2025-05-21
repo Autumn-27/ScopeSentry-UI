@@ -24,10 +24,8 @@ export const getPocNameListApi = (): Promise<IResponse<pocDataResponse>> => {
 export const getPocContentApi = (id: string): Promise<IResponse<pocContent>> => {
   return request.post({ url: '/api/poc/content', data: { id } })
 }
-interface pocDetailResponse {
-  data: pocData
-}
-export const getPocDetailApi = (id: string): Promise<IResponse<pocDetailResponse>> => {
+
+export const getPocDetailApi = (id: string): Promise<IResponse<pocData>> => {
   return request.post({ url: '/api/poc/detail', data: { id } })
 }
 

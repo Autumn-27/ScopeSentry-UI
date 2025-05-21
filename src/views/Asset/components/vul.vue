@@ -508,11 +508,11 @@ const openPoc = async (id) => {
   pocForm.content = ''
   pocForm.tags = []
   const res = await getPocDetailApi(id)
-  pocForm.id = res.data.data.id
-  pocForm.name = res.data.data.name
-  pocForm.level = res.data.data.level
-  pocForm.content = res.data.data.content
-  pocForm.tags = res.data.data.tags
+  pocForm.id = res.data.id
+  pocForm.name = res.data.name
+  pocForm.level = res.data.level
+  pocForm.content = res.data.content
+  pocForm.tags = res.data.tags
   dialogVisible.value = true
 }
 const closeDialog = () => {

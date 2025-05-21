@@ -22,7 +22,7 @@ import { useTable } from '@/hooks/web/useTable'
 import { Icon } from '@/components/Icon'
 import { useIcon } from '@/hooks/web/useIcon'
 import { BaseButton } from '@/components/Button'
-import { getPocDataApi, getPocContentApi, deletePocDataApi } from '@/api/poc'
+import { getPocDataApi, getPocContentApi, deletePocDataApi, getPocDetailApi } from '@/api/poc'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { useUserStore } from '@/store/modules/user'
@@ -224,7 +224,7 @@ const edit = async (data) => {
   pocForm.name = data.name
   pocForm.level = data.level
   pocForm.tags = data.tags
-  const res = await getPocContentApi(pocForm.id)
+  const res = await getPocDetailApi(pocForm.id)
   pocForm.content = res.data.content
   dialogVisible.value = true
 }
