@@ -248,7 +248,7 @@ export const getPageMonitoringApi = (
   filter: Record<string, any>
 ): Promise<IResponse<PageMonitoringDataResponse>> => {
   return request.post({
-    url: '/api/page/monitoring/result',
+    url: '/api/assets/page-monitoring',
     data: { search, pageIndex, pageSize, filter }
   })
 }

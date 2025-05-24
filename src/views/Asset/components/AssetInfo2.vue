@@ -258,7 +258,10 @@ let crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.status'),
     minWidth: '85',
     columnKey: 'statuscode',
-    formatter: (_: Recordable, __: TableColumn, statusValue: number) => {
+    formatter: (row: Recordable, __: TableColumn, statusValue: number) => {
+      if (row.type == 'other') {
+        return <div>-</div>
+      }
       if (statusValue == null) {
         return <div>-</div>
       }
@@ -440,6 +443,13 @@ let crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.banner'),
     fit: 'true',
     formatter: (row: Recordable, __: TableColumn, bannerValue: string) => {
+      if (row.type == 'other') {
+        return (
+          <ElScrollbar>
+            <div class="scrollbar-demo-item">{row.metadata}</div>
+          </ElScrollbar>
+        )
+      }
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
       return (
