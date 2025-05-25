@@ -52,6 +52,23 @@ const exportColums = reactive<TableColumn[]>([
     type: 'selection'
   },
   {
+    field: 'action',
+    label: t('tableDemo.action'),
+    fixed: 'left',
+    formatter: (row, __: TableColumn, _: number) => {
+      return (
+        <>
+          <BaseButton type="success" onClick={() => download(row.file_name)}>
+            {t('export.download')}
+          </BaseButton>
+          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
+            {t('common.delete')}
+          </BaseButton>
+        </>
+      )
+    }
+  },
+  {
     field: 'file_name',
     label: t('export.fileName')
   },
@@ -96,23 +113,6 @@ const exportColums = reactive<TableColumn[]>([
       } else {
         return value + ' MB'
       }
-    }
-  },
-  {
-    field: 'action',
-    label: t('tableDemo.action'),
-    fixed: 'right',
-    formatter: (row, __: TableColumn, _: number) => {
-      return (
-        <>
-          <BaseButton type="success" onClick={() => download(row.file_name)}>
-            {t('export.download')}
-          </BaseButton>
-          <BaseButton type="danger" onClick={() => confirmDelete(row)}>
-            {t('common.delete')}
-          </BaseButton>
-        </>
-      )
     }
   }
 ])
@@ -217,7 +217,7 @@ const filetype = ref('csv')
           </ElRadioGroup>
         </ElFormItem>
         <ElFormItem :label="t('export.exportQuantity')">
-          <ElInput v-model="exportForm.quantity" />
+          <ElInput v-model.number="exportForm.quantity" />
         </ElFormItem>
         <ElFormItem :label="t('export.field')">
           <ElCheckbox
@@ -237,7 +237,7 @@ const filetype = ref('csv')
         </ElFormItem>
         <ElFormItem :label="t('export.fileType')">
           <ElRadioGroup v-model="filetype">
-            <ElRadio value="csv">csv</ElRadio>
+            <ElRadio value="xlsx">csv</ElRadio>
             <ElRadio value="json">json</ElRadio>
           </ElRadioGroup>
         </ElFormItem>

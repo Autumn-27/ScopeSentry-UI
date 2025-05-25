@@ -411,7 +411,7 @@ const getTotal = async (
   pageSize: number,
   filter: Record<string, any>
 ) => {
-  let res = await getSensitiveResultNumberApi(search, pageIndex, pageSize, filter, index)
+  let res = await getSensitiveResultNumberApi(search, pageIndex, pageSize, filter)
   total.value = res.data.total
   allNumber.value = res.data.all
 }

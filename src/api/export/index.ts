@@ -17,7 +17,7 @@ export const exportApi = (
 }
 
 export const getExportRecordApi = () => {
-  return request.get({ url: '/api/export/record' })
+  return request.get({ url: '/api/export/records' })
 }
 
 export const delExportApi = (ids: string[]): Promise<IResponse<commonRespData>> => {
@@ -46,5 +46,5 @@ type FieldRespData = {
 }
 
 export const getFieldApi = (index: string): Promise<IResponse<FieldRespData>> => {
-  return request.post({ url: '/api/getfield', data: { index } })
+  return request.post({ url: '/api/export/fields', data: { index } })
 }
