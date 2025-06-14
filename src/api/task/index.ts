@@ -286,7 +286,7 @@ export const getTemplateDataApi = (
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<TaskDataResponse>> => {
-  return request.post({ url: '/api/task/template/list', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/task/template', data: { search, pageIndex, pageSize } })
 }
 
 export const getTemplateDetailApi = (id: string): Promise<IResponse<TemplateDetail>> => {

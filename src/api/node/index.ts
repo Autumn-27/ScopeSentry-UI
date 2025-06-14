@@ -24,7 +24,7 @@ export const restartNodeApi = (name: string): Promise<IResponse<commonRespData>>
 }
 
 export const getNodeDataOnlineApi = (): Promise<IResponse<NodeDataOnlineResponse>> => {
-  return request.get({ url: '/api/node/data/online' })
+  return request.get({ url: '/api/node/online' })
 }
 
 export const updateNodeConfigDataApi = (
