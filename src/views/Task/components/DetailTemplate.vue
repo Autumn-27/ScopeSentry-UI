@@ -88,6 +88,7 @@ const vulList = ref<string[]>([])
 // 根据 ID 加载模板数据
 const loadTemplate = async (id: string) => {
   const template = await getTemplateDetailApi(id) // 调用实际接口获取已有数据
+  console.log(template)
   templateName.value = template.data.name
   vulList.value = template.data.vullist
   for (const module of modules) {
