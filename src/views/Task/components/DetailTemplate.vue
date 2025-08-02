@@ -331,7 +331,7 @@ const handleCheckChange = (data, checked) => {
             <ElSelectV2
               v-model="vulList"
               filterable
-              :options="vulOptions"
+              :options="vulSelectOptions"
               placeholder="Please select vul"
               style="width: 80%; margin-right: 10px"
               multiple

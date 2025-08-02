@@ -36,14 +36,6 @@ const props = defineProps<{
 const { pocForm } = toRefs(props)
 const localForm = ref({ ...pocForm.value })
 
-interface RuleForm {
-  name: string
-  level: string
-}
-const rules = reactive<FormRules<RuleForm>>({
-  name: [{ required: true, message: t('poc.nameMsg'), trigger: 'blur' }],
-  level: [{ required: true, message: t('poc.contentMsg'), trigger: 'blur' }]
-})
 const levelOptions = [
   {
     value: 'critical',
@@ -77,35 +69,39 @@ const dynamicTags = ref<string[]>([...pocForm.value.tags])
 const submitForm = async (formEl: FormInstance | undefined) => {
   saveLoading.value = true
   if (!formEl) return
-  await formEl.validate(async (valid, fields) => {
-    if (valid) {
-      let res
-      if (localForm.value.id != '') {
-        res = await updatePocDataApi(
-          localForm.value.id,
-          localForm.value.name,
-          localForm.value.content,
-          localForm.value.level,
-          dynamicTags.value
-        )
+  try {
+    await formEl.validate(async (valid, fields) => {
+      if (valid) {
+        let res
+        if (localForm.value.id != '') {
+          res = await updatePocDataApi(
+            localForm.value.id,
+            localForm.value.name,
+            localForm.value.content,
+            localForm.value.level,
+            dynamicTags.value
+          )
+        } else {
+          res = await addPocDataApi(
+            localForm.value.name,
+            localForm.value.content,
+            localForm.value.level,
+            dynamicTags.value
+          )
+        }
+        if (res.code === 200) {
+          props.getList()
+          props.closeDialog()
+        }
       } else {
-        res = await addPocDataApi(
-          localForm.value.name,
-          localForm.value.content,
-          localForm.value.level,
-          dynamicTags.value
-        )
+        console.log('error submit!', fields)
       }
-      if (res.code === 200) {
-        props.getList()
-        props.closeDialog()
-      }
-      saveLoading.value = false
-    } else {
-      console.log('error submit!', fields)
-      saveLoading.value = false
-    }
-  })
+    })
+  } catch (error) {
+    console.error('提交失败:', error)
+  } finally {
+    saveLoading.value = false
+  }
 }
 const inputValue = ref('')
 const inputVisible = ref(false)
@@ -131,10 +127,7 @@ const handleInputConfirm = () => {
 }
 </script>
 <template>
-  <ElForm :model="localForm" label-width="120px" :rules="rules" status-icon ref="ruleFormRef">
-    <ElFormItem :label="t('poc.pocName')" prop="name">
-      <ElInput v-model="localForm.name" :placeholder="t('poc.nameMsg')" />
-    </ElFormItem>
+  <ElForm :model="localForm" label-width="120px" status-icon ref="ruleFormRef">
     <ElFormItem :label="t('poc.content')" prop="content">
       <codemirror
         v-model="localForm.content"
@@ -144,38 +137,6 @@ const handleInputConfirm = () => {
         :tab-size="2"
         :extensions="extensions"
       />
-    </ElFormItem>
-    <ElFormItem :label="t('poc.level')">
-      <ElSelectV2
-        v-model="localForm.level"
-        placeholder="Please select level"
-        :options="levelOptions"
-      />
-    </ElFormItem>
-    <ElFormItem label="TAG">
-      <div class="flex gap-2">
-        <ElTag
-          v-for="tag in dynamicTags"
-          :key="tag"
-          closable
-          :disable-transitions="false"
-          @close="handleClose(tag)"
-        >
-          {{ tag }}
-        </ElTag>
-        <ElInput
-          v-if="inputVisible"
-          ref="InputRef"
-          v-model="inputValue"
-          class="w-20"
-          size="small"
-          @keyup.enter="handleInputConfirm"
-          @blur="handleInputConfirm"
-        />
-        <el-button v-else class="button-new-tag" size="small" @click="showInput">
-          + New Tag
-        </el-button>
-      </div>
     </ElFormItem>
     <ElDivider />
     <ElRow>
