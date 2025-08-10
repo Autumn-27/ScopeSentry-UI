@@ -136,6 +136,7 @@ const taskColums = reactive<TableColumn[]>([
     fixed: 'right',
     formatter: (row, __: TableColumn, _: number) => {
       const handleCommand = (command) => {
+        ids.value = []
         switch (command) {
           case 'retest':
             confirmRetest(row)
