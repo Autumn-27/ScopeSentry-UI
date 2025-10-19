@@ -223,7 +223,7 @@ export const getScheduledTaskDataApi = (
   pageIndex: number,
   pageSize: number
 ): Promise<IResponse<ScheduledTaskDataResponse>> => {
-  return request.post({ url: '/api/task/scheduled/data', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/task/scheduled', data: { search, pageIndex, pageSize } })
 }
 
 export const taskRunApi = (id: string): Promise<IResponse<commonRespData>> => {
