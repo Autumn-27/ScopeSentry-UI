@@ -49,7 +49,7 @@ export const deleteNodeApi = (names: string[]): Promise<IResponse<nodeRespData>>
 }
 
 export const getNodeLogApi = (name: string): Promise<IResponse<nodeLogRespData>> => {
-  return request.post({ url: '/api/node/log/data', data: { name } })
+  return request.post({ url: '/api/node/log', data: { name } })
 }
 
 interface pluginInfoDataresp {
