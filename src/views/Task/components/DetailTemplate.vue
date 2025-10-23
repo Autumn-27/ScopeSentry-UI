@@ -144,14 +144,25 @@ const onSubmit = async () => {
   }
   result['name'] = templateName.value
   result['vullist'] = vulList.value
-  await saveTemplateDetailApi(result, props.id)
-  // 打印数据或通过接口提交
-  console.log(result)
-  ElMessage.success('提交成功')
-  saveLoading.value = false
-  // 提交后执行父组件的关闭和列表刷新逻辑
-  props.closeDialog()
-  props.getList()
+  try {
+    const res = await saveTemplateDetailApi(result, props.id)
+    console.log(result)
+
+    if (res.code === 200) {
+      ElMessage.success('success')
+      // 提交成功才执行父组件逻辑
+      props.closeDialog()
+      props.getList()
+    } else {
+      // 提交失败
+      ElMessage.error(res.message || 'error')
+    }
+  } catch (error) {
+    ElMessage.error('error')
+    console.error(error)
+  } finally {
+    saveLoading.value = false
+  }
 }
 const moduleColorMap = {
   TargetHandler: '#2243dda6', // 浅红色

@@ -226,29 +226,8 @@ const logContent = ref('')
 const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
 const openLogDialogVisible = async (data) => {
   const res = await getNodeLogApi(data.name)
-  logContent.value = res.logs
+  logContent.value = res.data.logs
   logDialogVisible.value = true
-  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-  const host = window.location.host
-
-  // 构建 WebSocket 地址
-  const socket = new WebSocket(protocol + host)
-  socket.onopen = () => {
-    setInterval(() => {
-      const message = { node_name: data.name }
-      socket.send(JSON.stringify(message))
-    }, 3000)
-  }
-  socket.onmessage = (event) => {
-    logContent.value += event.data
-    scrollbarRef.value!.setScrollTop(5000)
-  }
-  const stopListening = watch(logDialogVisible, (newValue) => {
-    if (!newValue) {
-      socket.close()
-      stopListening()
-    }
-  })
 }
 onMounted(() => {
   setMaxHeight()

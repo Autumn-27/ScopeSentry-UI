@@ -125,7 +125,7 @@ const taskColums = reactive<TableColumn[]>([
     formatter: (row, __: TableColumn, _: number) => {
       return (
         <>
-          {row.id === 'page_monitoring' ? (
+          {row.TaskID === 'page_monitoring' ? (
             <BaseButton type="success" onClick={() => getPageMonitContent(row)}>
               {t('common.edit')}
             </BaseButton>
