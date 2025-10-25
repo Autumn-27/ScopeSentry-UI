@@ -83,13 +83,6 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
-    field: 'isSystem',
-    label: t('plugin.isSystem'),
-    formatter: (_, __: TableColumn, value: boolean) => {
-      return <ElTag type={value ? 'success' : 'warning'}>{value ? 'true' : 'false'}</ElTag>
-    }
-  },
-  {
     field: 'version',
     label: t('plugin.version'),
     minWidth: 100

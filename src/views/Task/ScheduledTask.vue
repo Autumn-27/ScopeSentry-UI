@@ -247,24 +247,27 @@ const pageMontForm = reactive({
   hour: 24,
   allNode: true,
   node: [] as string[],
-  state: true
+  scheduledTasks: true
 })
 const submitConfigPageMonitForm = async () => {
   ConfigPageMonitSaveLoading.value = true
-  await updateScheduledTaskPageMonitApi(
-    pageMontForm.hour,
-    pageMontForm.node,
-    pageMontForm.allNode,
-    pageMontForm.state
-  )
-  ConfigPageMonitSaveLoading.value = false
-  getList()
+  try {
+    await updateScheduledTaskPageMonitApi(
+      pageMontForm.hour,
+      pageMontForm.node,
+      pageMontForm.allNode,
+      pageMontForm.scheduledTasks
+    )
+    getList()
+  } finally {
+    ConfigPageMonitSaveLoading.value = false
+  }
 }
 const getPageMonitContent = async (data) => {
-  pageMontForm.hour = data.cycle
+  pageMontForm.hour = data.hour
   pageMontForm.allNode = data.allNode
   pageMontForm.node = data.node
-  pageMontForm.state = data.state
+  pageMontForm.scheduledTasks = data.scheduledTasks
   pageMontDialogVisible.value = true
 }
 const nodeOptions = reactive<{ value: string; label: string }[]>([])
@@ -438,7 +441,7 @@ const addTask = async () => {
             </ElFormItem>
             <ElFormItem :label="t('common.state')">
               <ElSwitch
-                v-model="pageMontForm.state"
+                v-model="pageMontForm.scheduledTasks"
                 inline-prompt
                 :active-text="t('common.switchAction')"
                 :inactive-text="t('common.switchInactive')"

@@ -255,7 +255,7 @@ export const updateScheduledTaskPageMonitApi = (
   hour: number,
   node: string[],
   allNode: boolean,
-  state: boolean
+  scheduledTasks: boolean
 ): Promise<IResponse<taskRespData>> => {
   return request.post({
     url: '/api/task/scheduled/pagemonit/update',
@@ -263,7 +263,7 @@ export const updateScheduledTaskPageMonitApi = (
       hour,
       node,
       allNode,
-      state
+      scheduledTasks
     }
   })
 }
