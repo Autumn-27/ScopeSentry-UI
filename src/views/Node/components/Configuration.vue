@@ -56,17 +56,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       let res
-      res = await updateNodeConfigDataApi(
-        oldName,
-        localForm.value.name,
-        localForm.value.ModulesConfig,
-        switchValue.value
-      )
-      if (res.code === 200) {
-        props.getList()
-        props.closeDialog()
+      try {
+        res = await updateNodeConfigDataApi(
+          oldName,
+          localForm.value.name,
+          localForm.value.ModulesConfig,
+          switchValue.value
+        )
+        if (res.code === 200) {
+          props.getList()
+          props.closeDialog()
+        }
+      } finally {
+        saveLoading.value = false
       }
-      saveLoading.value = false
     } else {
       console.log('error submit!', fields)
       saveLoading.value = false

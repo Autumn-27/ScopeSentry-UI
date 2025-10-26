@@ -74,44 +74,50 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       if (props.projectid == '') {
-        const res = await addProjectDataApi(
-          runNow.value,
-          projectForm.name,
-          projectForm.tag,
-          projectForm.target,
-          projectForm.logo,
-          projectForm.scheduledTasks,
-          projectForm.hour,
-          projectForm.allNode,
-          projectForm.node,
-          projectForm.duplicates,
-          projectForm.ignore,
-          projectForm.template
-        )
-        if (res.code === 200) {
-          props.closeDialog()
+        try {
+          const res = await addProjectDataApi(
+            runNow.value,
+            projectForm.name,
+            projectForm.tag,
+            projectForm.target,
+            projectForm.logo,
+            projectForm.scheduledTasks,
+            projectForm.hour,
+            projectForm.allNode,
+            projectForm.node,
+            projectForm.duplicates,
+            projectForm.ignore,
+            projectForm.template
+          )
+          if (res.code === 200) {
+            props.closeDialog()
+          }
+        } finally {
+          saveLoading.value = false
         }
-        saveLoading.value = false
       } else {
-        const res = await updateProjectDataApi(
-          runNow.value,
-          props.projectid,
-          projectForm.name,
-          projectForm.tag,
-          projectForm.target,
-          projectForm.logo,
-          projectForm.scheduledTasks,
-          projectForm.hour,
-          projectForm.allNode,
-          projectForm.node,
-          projectForm.duplicates,
-          projectForm.ignore,
-          projectForm.template
-        )
-        if (res.code === 200) {
-          props.closeDialog()
+        try {
+          const res = await updateProjectDataApi(
+            runNow.value,
+            props.projectid,
+            projectForm.name,
+            projectForm.tag,
+            projectForm.target,
+            projectForm.logo,
+            projectForm.scheduledTasks,
+            projectForm.hour,
+            projectForm.allNode,
+            projectForm.node,
+            projectForm.duplicates,
+            projectForm.ignore,
+            projectForm.template
+          )
+          if (res.code === 200) {
+            props.closeDialog()
+          }
+        } finally {
+          saveLoading.value = false
         }
-        saveLoading.value = false
       }
     } else {
       console.log('error submit!', fields)
