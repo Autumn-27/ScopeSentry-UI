@@ -48,29 +48,32 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       let res
       console.log('submit!')
-      if (localFingerprintForm.value.id != '') {
-        res = await updateFingerprintDataApi(
-          localFingerprintForm.value.id,
-          localFingerprintForm.value.name,
-          localFingerprintForm.value.rule,
-          localFingerprintForm.value.category,
-          localFingerprintForm.value.parent_category,
-          localFingerprintForm.value.state
-        )
-      } else {
-        res = await addFingerprintDataApi(
-          localFingerprintForm.value.name,
-          localFingerprintForm.value.rule,
-          localFingerprintForm.value.category,
-          localFingerprintForm.value.parent_category,
-          localFingerprintForm.value.state
-        )
+      try {
+        if (localFingerprintForm.value.id != '') {
+          res = await updateFingerprintDataApi(
+            localFingerprintForm.value.id,
+            localFingerprintForm.value.name,
+            localFingerprintForm.value.rule,
+            localFingerprintForm.value.category,
+            localFingerprintForm.value.parent_category,
+            localFingerprintForm.value.state
+          )
+        } else {
+          res = await addFingerprintDataApi(
+            localFingerprintForm.value.name,
+            localFingerprintForm.value.rule,
+            localFingerprintForm.value.category,
+            localFingerprintForm.value.parent_category,
+            localFingerprintForm.value.state
+          )
+        }
+        if (res.code === 200) {
+          props.getList()
+          props.closeDialog()
+        }
+      } finally {
+        saveLoading.value = false
       }
-      if (res.code === 200) {
-        props.getList()
-        props.closeDialog()
-      }
-      saveLoading.value = false
     } else {
       console.log('error submit!', fields)
       saveLoading.value = false

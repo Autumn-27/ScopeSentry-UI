@@ -33,9 +33,9 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     console.log('err： ' + error) // for debug
     if (error.response?.data) {
-      const responseData = error.response.data as { message: string }
+      const responseData = error.response.data as { message: string; data: string }
       // 显示后端返回的具体错误消息
-      ElMessage.error(responseData.message || 'Request failed')
+      ElMessage.error(responseData.message + ':' + responseData.data || 'Request failed')
       if (error.response?.status === 401) {
         const userStore = useUserStoreWithOut()
         userStore.logout()

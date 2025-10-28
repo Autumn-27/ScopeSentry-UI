@@ -239,7 +239,7 @@ const closeTemplateDialog = () => {
       <ElInput v-model="projectForm.logo" placeholder="http(s)://xxxxx.xx" />
     </ElFormItem>
 
-    <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
+    <!-- <ElDivider content-position="center" style="">{{ t('project.scheduledTasks') }}</ElDivider>
     <ElRow>
       <ElCol :span="6">
         <ElFormItem :label="t('project.scheduledTasks')">
@@ -275,9 +275,9 @@ const closeTemplateDialog = () => {
           />
         </ElFormItem>
       </ElCol>
-    </ElRow>
+    </ElRow> -->
 
-    <div v-if="projectForm.scheduledTasks || runNow">
+    <!-- <div v-if="projectForm.scheduledTasks || runNow">
       <ElRow>
         <ElCol :span="12">
           <ElFormItem :label="t('task.nodeSelect')" prop="node">
@@ -341,7 +341,6 @@ const closeTemplateDialog = () => {
         t('router.scanTemplate')
       }}</ElDivider>
       <ElFormItem :label="t('router.scanTemplate')" prop="template">
-        <!-- <ElSelectV2 v-model="taskData.template" placeholder="Please select node" style="width: 50%" /> -->
         <ElSelect
           v-model="projectForm.template"
           placeholder="Please select template"
@@ -382,7 +381,7 @@ const closeTemplateDialog = () => {
           </template>
         </ElSelect>
       </ElFormItem>
-    </div>
+    </div> -->
     <ElDivider />
     <ElRow>
       <ElCol :span="2" :offset="12">
