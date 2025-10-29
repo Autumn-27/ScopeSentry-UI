@@ -41,7 +41,7 @@ interface notificationRespInter {
 }
 
 export const getNotificationApi = (): Promise<IResponse<notificationRespInter>> => {
-  return request.get({ url: '/api/notification/data' })
+  return request.get({ url: '/api/configuration/notification/data' })
 }
 
 export const addNotificationApi = (
@@ -53,7 +53,7 @@ export const addNotificationApi = (
   state: boolean
 ): Promise<IResponse<configRespData>> => {
   return request.post({
-    url: '/api/notification/add',
+    url: '/api/configuration/notification/add',
     data: { name, url, method, contentType, data, state }
   })
 }
@@ -68,13 +68,13 @@ export const updateNotificationApi = (
   state: boolean
 ): Promise<IResponse<configRespData>> => {
   return request.post({
-    url: '/api/notification/add',
+    url: '/api/configuration/notification/update',
     data: { id, name, url, method, contentType, data, state }
   })
 }
 
 export const deletePocDataApi = (ids: string[]): Promise<IResponse<configRespData>> => {
-  return request.post({ url: '/api/notification/delete', data: { ids } })
+  return request.post({ url: '/api/configuration/notification/delete', data: { ids } })
 }
 
 interface notificationConfigRespInter {
@@ -87,7 +87,7 @@ interface notificationConfigRespInter {
   vulNotification: boolean
 }
 export const getNotificationConfigApi = (): Promise<IResponse<notificationConfigRespInter>> => {
-  return request.get({ url: '/api/notification/config/data' })
+  return request.get({ url: '/api/configuration/notification/config/data' })
 }
 
 export const updateNotificationConfigApi = (
@@ -100,7 +100,7 @@ export const updateNotificationConfigApi = (
   vulNotification: boolean
 ): Promise<IResponse<configRespData>> => {
   return request.post({
-    url: '/api/notification/config/update',
+    url: '/api/configuration/notification/config/update',
     data: {
       dirScanNotification,
       portScanNotification,

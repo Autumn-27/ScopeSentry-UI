@@ -157,31 +157,35 @@ const addNotification = async () => {
 const notificationId = ref('')
 const addNotificationSaveLoading = ref(false)
 const submitAddPageMonitForm = async () => {
+  console.log(notificationId.value)
   addNotificationSaveLoading.value = true
   // await addScheduledTaskPageMonitApi(pageMontForm.url)
-  if (notificationId.value == '') {
-    await addNotificationApi(
-      notificationForm.name,
-      notificationForm.url,
-      notificationForm.method,
-      notificationForm.contentType,
-      notificationForm.data,
-      notificationForm.state
-    )
-  } else {
-    await updateNotificationApi(
-      notificationId.value,
-      notificationForm.name,
-      notificationForm.url,
-      notificationForm.method,
-      notificationForm.contentType,
-      notificationForm.data,
-      notificationForm.state
-    )
+  try {
+    if (notificationId.value == '') {
+      await addNotificationApi(
+        notificationForm.name,
+        notificationForm.url,
+        notificationForm.method,
+        notificationForm.contentType,
+        notificationForm.data,
+        notificationForm.state
+      )
+    } else {
+      await updateNotificationApi(
+        notificationId.value,
+        notificationForm.name,
+        notificationForm.url,
+        notificationForm.method,
+        notificationForm.contentType,
+        notificationForm.data,
+        notificationForm.state
+      )
+    }
+    getList()
+    addNotificationSaveLoading.value = false
+  } finally {
+    dialogVisible.value = false
   }
-  getList()
-  addNotificationSaveLoading.value = false
-  dialogVisible.value = false
 }
 const edit = (data) => {
   notificationId.value = data.id
@@ -192,6 +196,7 @@ const edit = (data) => {
   notificationForm.data = data.data
   notificationForm.state = data.state
   dialogVisible.value = true
+  console.log(notificationId.value)
 }
 const delLoading = ref(false)
 const del = async (data) => {

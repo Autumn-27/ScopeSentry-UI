@@ -145,7 +145,7 @@ let AssetstatisticsData: Ref<{
   Icon: []
 })
 let iconPage = 1 // 当前页
-const iconPageSize = 50 // 每次加载的数据量
+let iconPageSize = 50 // 每次加载的数据量
 
 const getAssetstatistics = async () => {
   if (statisticsHidden.value) {
@@ -166,6 +166,8 @@ const getAssetstatistics = async () => {
   AssetstatisticsData.value.Service = serviceRes.data.Service
   AssetstatisticsData.value.Product = productRes.data.Product
   staticLoading.value = false
+  iconPage = 1
+  iconPageSize = 50
   let iconRes = await getAssetStatisticsiconApi(searchParams.value, filter, iconPage, iconPageSize)
   AssetstatisticsData.value.Icon = iconRes.data.Icon
 }
