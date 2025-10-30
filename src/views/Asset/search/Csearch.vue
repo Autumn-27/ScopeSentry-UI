@@ -529,11 +529,11 @@ const openCreateTask = async () => {
           <span style="color: #888">{{ t('asset.total') }}</span>
           <span style="font-weight: bold; color: #333333">{{ props.searchResultCount }}</span>
           <span style="color: #888">{{ t('asset.result') }}</span>
-          <div v-if="index == 'SensitiveResult'">
+          <!-- <div v-if="index == 'SensitiveResult'">
             <span style="color: #888">{{ t('asset.total') }}</span>
             <span style="font-weight: bold; color: #333333">{{ props?.sensitiveAllNumber }}</span>
             <span style="color: #888">{{ t('asset.sensitiveNumber') }}</span>
-          </div>
+          </div> -->
           <ElTag
             v-for="tag in localDynamicTags"
             :key="tag"
