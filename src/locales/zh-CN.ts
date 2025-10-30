@@ -1,5 +1,6 @@
 export default {
   common: {
+    clearAll: '清空',
     selectCategory: '分类选择',
     about: '关于',
     unprocessed: '未处理',

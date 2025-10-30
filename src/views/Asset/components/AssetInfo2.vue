@@ -695,15 +695,19 @@ const changeTags = (type, value) => {
   dynamicTags.value = [...dynamicTags.value, key]
 }
 const handleClose = (tag: string) => {
-  if (dynamicTags.value) {
-    const [key, value] = tag.split('=')
-    if (key in filter && Array.isArray(filter[key])) {
-      filter[key] = filter[key].filter((item: string) => item !== value)
-      if (filter[key].length === 0) {
-        delete filter[key]
+  if (tag == 'close') {
+    dynamicTags.value = []
+  } else {
+    if (dynamicTags.value) {
+      const [key, value] = tag.split('=')
+      if (key in filter && Array.isArray(filter[key])) {
+        filter[key] = filter[key].filter((item: string) => item !== value)
+        if (filter[key].length === 0) {
+          delete filter[key]
+        }
       }
+      dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
     }
-    dynamicTags.value = dynamicTags.value.filter((item) => item !== tag)
   }
 }
 const changeStatisticsHidden = (value: boolean) => {

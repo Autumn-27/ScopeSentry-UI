@@ -1,5 +1,6 @@
 export default {
   common: {
+    clearAll: 'Clear All',
     selectCategory: 'Select Category',
     about: 'About',
     unprocessed: 'Unprocessed',
@@ -433,7 +434,7 @@ export default {
     sensitiveNumber: 'sensitive information',
     // ===== 新加多语言字段 =====
     iconSelected: 'Selected Icons',
-    confirm: 'Confirm',
+    confirm: 'Confirm'
     // ====================
   },
   subdomain: {

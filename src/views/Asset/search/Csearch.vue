@@ -334,6 +334,9 @@ function getIconByHash(hash: string) {
 }
 function clearAllTags() {
   localDynamicTags.value = []
+  if (props.handleClose) {
+    props.handleClose('close')
+  }
 }
 const emit = defineEmits<{
   (event: 'update-column-visibility', payload: { field: string; hidden: boolean }): void
@@ -553,13 +556,13 @@ const openCreateTask = async () => {
             </template>
           </ElTag>
           <!-- <ElButton
-            v-if="localDynamicTags.length > 0"
+            v-if="localDynamicTags.length > 0 && index == 'asset'"
             size="small"
             type="danger"
             plain
             @click="clearAllTags"
             style="margin-left: 8px; align-self: flex-start"
-            >清空</ElButton
+            >{{ t('common.clearAll') }}</ElButton
           > -->
         </div>
       </ElCol>
