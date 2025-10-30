@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { h, nextTick, reactive, Ref, ref } from 'vue'
+import { computed, h, nextTick, reactive, Ref, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import {
@@ -92,9 +92,9 @@ const crudSchemas = reactive<CrudSchema[]>([
   },
   {
     field: 'index',
-    label: t('tableDemo.index'),
+    label: '',
     type: 'index',
-    minWidth: 55
+    minWidth: 50
   },
   {
     field: 'url',
@@ -106,30 +106,30 @@ const crudSchemas = reactive<CrudSchema[]>([
     label: t('sensitiveInformation.sensitiveName'),
     minWidth: 150
   },
-  {
-    field: 'color',
-    label: 'Level',
-    minWidth: 50,
-    columnKey: 'color',
-    formatter: (_, __: TableColumn, cellValue: string) => {
-      if (!cellValue) {
-        return
-      }
-      return (
-        <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
-      )
-    },
-    filters: [
-      { text: 'Red', value: 'red' },
-      { text: 'Green', value: 'green' },
-      { text: 'Cyan', value: 'cyan' },
-      { text: 'Yellow', value: 'yellow' },
-      { text: 'Orange', value: 'orange' },
-      { text: 'Gray', value: 'gray' },
-      { text: 'Pink', value: 'pink' },
-      { text: 'Null', value: 'null' }
-    ]
-  },
+  // {
+  //   field: 'color',
+  //   label: 'Level',
+  //   minWidth: 50,
+  //   columnKey: 'color',
+  //   formatter: (_, __: TableColumn, cellValue: string) => {
+  //     if (!cellValue) {
+  //       return
+  //     }
+  //     return (
+  //       <Icon icon="clarity:circle-solid" color={cellValue} style={'transform: translateY(-35%)'} />
+  //     )
+  //   },
+  //   filters: [
+  //     { text: 'Red', value: 'red' },
+  //     { text: 'Green', value: 'green' },
+  //     { text: 'Cyan', value: 'cyan' },
+  //     { text: 'Yellow', value: 'yellow' },
+  //     { text: 'Orange', value: 'orange' },
+  //     { text: 'Gray', value: 'gray' },
+  //     { text: 'Pink', value: 'pink' },
+  //     { text: 'Null', value: 'null' }
+  //   ]
+  // },
   {
     field: 'match',
     label: 'Info',
@@ -515,6 +515,36 @@ const OpenViewInfoDialogVisible = async (sid) => {
   infoArray.value = res.data.list
   ViewInfoDialogVisible.value = true
 }
+const colorMap = {
+  null: '#f4f4f5',
+  green: '#D0F5EA',
+  red: '#FFD6D6',
+  cyan: '#D4F6FF',
+  yellow: '#FFF9C4',
+  orange: '#FFD9B3',
+  gray: '#ECECEC',
+  pink: '#FFE0F0',
+  default: '#E9F3FF'
+}
+
+const parseTags = (tags) => {
+  if (!tags || !tags.length) return []
+  return tags.map((tagStr) => {
+    const [type, value] = tagStr.split('=')
+    return { type, value }
+  })
+}
+interface SensitiveAggregation {
+  name: string
+  color: string
+  count: number
+}
+const drawerAggregationData = computed<SensitiveAggregation[]>(() => {
+  if (!dynamicTags.value?.length) return aggregationData.value
+  const parsedTags = parseTags(dynamicTags.value)
+  const snames = parsedTags.filter((tag) => tag.type === 'sname').map((tag) => tag.value)
+  return aggregationData.value.filter((item) => snames.includes(item.name))
+})
 </script>
 
 <template>
@@ -536,42 +566,72 @@ const OpenViewInfoDialogVisible = async (sid) => {
     :getFilter="getFilter"
   />
   <ElRow>
-    <ElCol>
-      <ElCard>
-        <Table
-          v-model:pageSize="pageSize"
-          v-model:currentPage="currentPage"
-          :columns="allSchemas.tableColumns"
-          :data="dataList"
-          stripe
-          rowKey="id"
-          :border="true"
-          :max-height="maxHeight"
-          :loading="loading"
-          :resizable="true"
-          @register="tableRegister"
-          @filter-change="filterChange"
-          :headerCellStyle="tableHeaderColor"
-          :tooltip-options="{
-            offset: 1,
-            showArrow: false,
-            effect: 'dark',
-            enterable: true,
-            showAfter: 0,
-            popperOptions: {},
-            popperClass: 'test',
-            placement: 'top',
-            hideAfter: 0,
-            disabled: false
-          }"
-          :style="{
-            fontFamily:
-              '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-          }"
-        />
-      </ElCard>
-    </ElCol>
-    <ElCol ::span="24">
+    <div style="display: flex; width: 100%">
+      <!-- 左侧目录栏，高度与表格一致，内容可滚动 -->
+      <div style="width: 220px; margin-right: 18px">
+        <ElCard style="height: 100%">
+          <ElScrollbar :height="`${maxHeight}px`" class="agg-scroll">
+            <div
+              v-for="item in aggregationData"
+              :key="item.name"
+              style="display: flex; align-items: center; cursor: pointer; margin-bottom: 10px"
+              @click="changeTags('sname', item.name)"
+            >
+              <ElTag
+                :style="{
+                  background: colorMap[item.color || 'null'] || colorMap.default,
+                  color: '#333',
+                  border: 'none'
+                }"
+                effect="plain"
+              >
+                {{ item.name }}
+              </ElTag>
+              <span style="margin-left: 8px; color: #888">({{ item.count }})</span>
+            </div>
+          </ElScrollbar>
+        </ElCard>
+      </div>
+      <!-- 右侧表格 -->
+      <div style="flex: 1">
+        <ElCol>
+          <ElCard>
+            <Table
+              v-model:pageSize="pageSize"
+              v-model:currentPage="currentPage"
+              :columns="allSchemas.tableColumns"
+              :data="dataList"
+              stripe
+              rowKey="id"
+              :border="true"
+              :max-height="maxHeight"
+              :loading="loading"
+              :resizable="true"
+              @register="tableRegister"
+              @filter-change="filterChange"
+              :headerCellStyle="tableHeaderColor"
+              :tooltip-options="{
+                offset: 1,
+                showArrow: false,
+                effect: 'dark',
+                enterable: true,
+                showAfter: 0,
+                popperOptions: {},
+                popperClass: 'test',
+                placement: 'top',
+                hideAfter: 0,
+                disabled: false
+              }"
+              :style="{
+                fontFamily:
+                  '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
+              }"
+            />
+          </ElCard>
+        </ElCol>
+      </div>
+    </div>
+    <ElCol ::span="22">
       <ElCard>
         <ElPagination
           v-model:pageSize="pageSize"
@@ -601,7 +661,7 @@ const OpenViewInfoDialogVisible = async (sid) => {
     direction="rtl"
     size="30%"
   >
-    <ElTable :data="aggregationData">
+    <ElTable :data="drawerAggregationData">
       <ElTableColumn prop="name" :label="t('sensitiveInformation.sensitiveName')" width="180">
         <template #default="scope">
           <div
@@ -649,5 +709,25 @@ const OpenViewInfoDialogVisible = async (sid) => {
 /* 生效于 popper 中的下拉选项 */
 .colored-select-popper .el-select-dropdown__item {
   color: inherit;
+}
+.agg-scroll {
+  // WebKit 美化
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 </style>
