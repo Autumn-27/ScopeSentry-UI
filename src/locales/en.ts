@@ -430,7 +430,11 @@ export default {
     export: 'Export',
     screenshot: 'Screenshot',
     Chart: 'Chart',
-    sensitiveNumber: 'sensitive information'
+    sensitiveNumber: 'sensitive information',
+    // ===== 新加多语言字段 =====
+    iconSelected: 'Selected Icons',
+    confirm: 'Confirm',
+    // ====================
   },
   subdomain: {
     subdomainName: 'Subdomain',

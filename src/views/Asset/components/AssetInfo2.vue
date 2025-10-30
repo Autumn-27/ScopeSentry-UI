@@ -786,6 +786,24 @@ const getStatusColor = (statusValue) => {
 const getFilter = () => {
   return filter
 }
+const selectedIcons = ref<{ value: string; number: number; icon_hash: string }[]>([])
+
+const toggleSelectIcon = (iconItem: { value: string; number: number; icon_hash: string }) => {
+  const idx = selectedIcons.value.findIndex((i) => i.icon_hash === iconItem.icon_hash)
+  if (idx > -1) {
+    selectedIcons.value.splice(idx, 1) // 已选再点取消
+  } else {
+    selectedIcons.value.push(iconItem)
+  }
+}
+
+const confirmSelectedIcons = () => {
+  dynamicTags.value = [
+    ...dynamicTags.value,
+    ...selectedIcons.value.map((i) => `icon=${i.icon_hash}`)
+  ]
+  selectedIcons.value = []
+}
 </script>
 
 <template>
@@ -807,6 +825,7 @@ const getFilter = () => {
     :activeSegment="activeSegment"
     :setActiveSegment="setActiveSegment"
     :getFilter="getFilter"
+    :iconData="AssetstatisticsData.Icon"
   />
   <ElRow :gutter="3" v-if="activeSegment == 'tableSegment'">
     <ElCol :span="statisticsHidden ? 0 : 3">
@@ -821,7 +840,7 @@ const getFilter = () => {
             </ElCol>
           </ElRow>
         </div>
-        <ElCollapse v-model="activeNames" style="position: relative; top: 15px">
+        <ElCollapse v-model="activeNames" style="position: relative">
           <!-- <ElCollapseItem name="1">
             <template #title>
               <ElText tag="b" size="small">{{ t('asset.assetTotalNum') }}</ElText>
@@ -894,26 +913,70 @@ const getFilter = () => {
               </ElRow>
             </ElScrollbar>
           </ElCollapseItem>
+          <!-- 吸附于icon块上方的浮层 -->
+          <template v-if="activeNames.includes('5') && selectedIcons.length">
+            <div class="icon-selection-float-abs">
+              <div class="float-header">
+                <span>{{ t('asset.iconSelected') }}</span>
+                <span class="icon-selection-close" @click="selectedIcons = []">×</span>
+              </div>
+              <div class="float-body">
+                <span
+                  v-for="icon in selectedIcons"
+                  :key="icon.icon_hash"
+                  class="icon-selection-img"
+                >
+                  <img :src="'data:image/png;base64,' + icon.value" />
+                </span>
+                <ElButton
+                  class="float-confirm"
+                  type="primary"
+                  size="small"
+                  @click="confirmSelectedIcons"
+                >
+                  {{ t('asset.confirm') }}
+                </ElButton>
+              </div>
+            </div>
+          </template>
+
           <ElCollapseItem name="5">
             <template #title>
-              <ElText tag="b" size="small">icon</ElText>
+              <div
+                class="icon-collapse-title"
+                ref="iconTitleRef"
+                style="display: inline-block; position: relative"
+              >
+                <ElText tag="b" size="small">Icon</ElText>
+              </div>
             </template>
-            <ElScrollbar ref="scrollbarRef" height="25rem" @scroll="handleScroll">
-              <ElRow style="margin-top: 10px; margin-left: 10px">
-                <ElCol :span="8" v-for="iconItem in AssetstatisticsData.Icon" :key="iconItem.value">
-                  <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
-                    <ElTooltip :content="iconItem.icon_hash" placement="top-start">
-                      <img
-                        :src="'data:image/png;base64,' + iconItem.value"
-                        alt="Icon"
-                        style="width: 30px; height: 30px"
-                        @click="changeTags('icon', iconItem.icon_hash)"
-                      />
-                    </ElTooltip>
-                  </ElBadge>
-                </ElCol>
-              </ElRow>
-            </ElScrollbar>
+            <div class="collapse-item-icon-area">
+              <ElScrollbar ref="scrollbarRef" height="25rem" @scroll="handleScroll">
+                <ElRow style="margin-top: 10px; margin-left: 10px">
+                  <ElCol
+                    :span="8"
+                    v-for="iconItem in AssetstatisticsData.Icon"
+                    :key="iconItem.value"
+                  >
+                    <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
+                      <ElTooltip :content="iconItem.icon_hash" placement="top-start">
+                        <img
+                          :src="'data:image/png;base64,' + iconItem.value"
+                          alt="Icon"
+                          style="width: 30px; height: 30px"
+                          :class="{
+                            'selected-icon': selectedIcons.some(
+                              (i) => i.icon_hash === iconItem.icon_hash
+                            )
+                          }"
+                          @click="toggleSelectIcon(iconItem)"
+                        />
+                      </ElTooltip>
+                    </ElBadge>
+                  </ElCol>
+                </ElRow>
+              </ElScrollbar>
+            </div>
           </ElCollapseItem>
         </ElCollapse>
       </ElCard>
@@ -1081,11 +1144,75 @@ const getFilter = () => {
 }
 </style>
 <style lang="less" scoped>
-:deep(.el-popper.is-dark) {
-  max-width: 50% !important;
-  line-height: 24px;
-  color: #fff !important;
-  background-color: rgb(48, 65, 86) !important;
-  display: none;
+.icon-selection-float-abs {
+  left: 0; // 靠左对齐icon块
+  bottom: 100%; // 下边界紧贴icon块上边界
+  margin-bottom: 4px; // 微小间隔
+  z-index: 220;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #aaa;
+  padding: 8px 14px 10px 14px;
+  min-width: 120px;
+  border: 1px solid #e3e4e6;
+}
+.icon-collapse-title {
+  position: relative;
+  z-index: 10;
+}
+.selected-icon {
+  border: 2px solid #409eff;
+  box-shadow: 0 0 4px #409eff;
+  border-radius: 5px;
+}
+.icon-selection-float {
+  position: absolute;
+  right: 8px;
+  top: 2px;
+  z-index: 100;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #aaa;
+  padding: 8px 14px 10px 14px;
+  min-width: 120px;
+  border: 1px solid #e3e4e6;
+  /* 可根据实际位置微调 */
+}
+.float-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #555;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.icon-selection-close {
+  color: #bbb;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: color 0.2s;
+}
+.icon-selection-close:hover {
+  color: #ff4949;
+}
+.float-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.icon-selection-img {
+  margin: 0 2px 2px 0;
+}
+.icon-selection-img img {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid #e3e3e3;
+  margin-right: 2px;
+  background: #fafafa;
+}
+.float-confirm {
+  margin-left: 10px;
 }
 </style>

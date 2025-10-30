@@ -428,7 +428,11 @@ export default {
     export: '导出',
     screenshot: '截图',
     Chart: '统计',
-    sensitiveNumber: '条敏感信息'
+    sensitiveNumber: '条敏感信息',
+    // ===== 新加的多语言字段 =====
+    iconSelected: '已选图标',
+    confirm: '确定',
+    // =======================
   },
   subdomain: {
     subdomainName: '子域名',

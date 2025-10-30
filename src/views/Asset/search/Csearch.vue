@@ -55,6 +55,7 @@ const props = defineProps<{
   activeSegment?: 'tableSegment' | 'cardSegment' // 可选属性
   setActiveSegment?: (segment: 'tableSegment' | 'cardSegment', flag: boolean) => void // 可选方法
   getFilter: () => { [key: string]: any }
+  iconData?: { value: string; number: number; icon_hash: string }[]
 }>()
 const localSearchKeywordsData = reactive([...props.searchKeywordsData])
 const newKeyword = {
@@ -328,6 +329,12 @@ function handleCloseTag(tag: string) {
     console.warn('handleClose function is not defined')
   }
 }
+function getIconByHash(hash: string) {
+  return props.iconData?.find((item) => item.icon_hash === hash)
+}
+function clearAllTags() {
+  localDynamicTags.value = []
+}
 const emit = defineEmits<{
   (event: 'update-column-visibility', payload: { field: string; hidden: boolean }): void
 }>()
@@ -515,7 +522,7 @@ const openCreateTask = async () => {
     </ElRow>
     <ElRow style="margin-top: 10px">
       <ElCol :span="24">
-        <div class="flex gap-2">
+        <div class="flex gap-2" style="flex-wrap: wrap">
           <span style="color: #888">{{ t('asset.total') }}</span>
           <span style="font-weight: bold; color: #333333">{{ props.searchResultCount }}</span>
           <span style="color: #888">{{ t('asset.result') }}</span>
@@ -533,8 +540,27 @@ const openCreateTask = async () => {
             size="small"
             @close="handleCloseTag(tag)"
           >
-            {{ tag }}
+            <template v-if="tag.startsWith('icon=')">
+              <img
+                v-if="getIconByHash(tag.split('=')[1])"
+                :src="'data:image/png;base64,' + getIconByHash(tag.split('=')[1])?.value"
+                :alt="tag"
+                style="width: 20px; height: 20px; vertical-align: middle"
+              />
+            </template>
+            <template v-else>
+              {{ tag }}
+            </template>
           </ElTag>
+          <!-- <ElButton
+            v-if="localDynamicTags.length > 0"
+            size="small"
+            type="danger"
+            plain
+            @click="clearAllTags"
+            style="margin-left: 8px; align-self: flex-start"
+            >清空</ElButton
+          > -->
         </div>
       </ElCol>
     </ElRow>
