@@ -65,6 +65,10 @@ export const cleanPluginLogApi = (
   return request.post({ url: '/api/plugin/log/clean', data: { module, hash } })
 }
 
+export const cleanAllPluginLogApi = (): Promise<IResponse<LogRespData>> => {
+  return request.post({ url: '/api/plugin/log/clean/all' })
+}
+
 export const getPluginDataByModuleApi = (
   module: string
 ): Promise<IResponse<pluginDataResponse>> => {

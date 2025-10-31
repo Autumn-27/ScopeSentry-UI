@@ -30,6 +30,7 @@ import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import {
   checkKeyApi,
+  cleanAllPluginLogApi,
   cleanPluginLogApi,
   deletePluginDataApi,
   getPluginDataApi,
@@ -163,6 +164,13 @@ const taskColums = reactive<TableColumn[]>([
           >
             {t('common.log')}
           </BaseButton>
+          <BaseButton
+            type="info"
+            style={{ marginLeft: '10px' }}
+            onClick={() => confirmCleanLog(row.hash, row.module)}
+          >
+            {t('common.cleanLog')}
+          </BaseButton>
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
             {t('common.edit')}
           </BaseButton>
@@ -237,6 +245,26 @@ const confirmDelete = async (hash: string, module: string) => {
     await del(hash, module)
   })
 }
+
+const confirmCleanLog = async (hash: string, module: string) => {
+  ElMessageBox({
+    title: 'Clean Log',
+    message: 'Are you sure you want to clean the logs?',
+    draggable: true
+  }).then(async () => {
+    await cleanPluginLogApi(module, hash)
+  })
+}
+
+const confirmCleanAllLog = async () => {
+  ElMessageBox({
+    title: 'Clean All Plugin Logs',
+    message: 'Are you sure you want to clean all plugin logs?',
+    draggable: true
+  }).then(async () => {
+    await cleanAllPluginLogApi()
+  })
+}
 const delLoading = ref(false)
 const del = async (hash: string, module: string) => {
   delLoading.value = true
@@ -308,7 +336,7 @@ const openLogDialogVisible = async (data) => {
   logModule.value = data.module
   logHash.value = data.hash
   const res = await getPluginLogApi(data.module, data.hash)
-  logContent.value = res.logs
+  logContent.value = res.data
   logDialogVisible.value = true
 }
 
@@ -399,6 +427,10 @@ LoadPluginKey()
               {{ t('plugin.market') }}
             </BaseButton>
           </a>
+
+          <BaseButton type="warning" @click="confirmCleanAllLog">
+            {{ t('common.cleanAllLog') }}
+          </BaseButton>
 
           <ElUpload
             ref="upload"

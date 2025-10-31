@@ -10,6 +10,7 @@ export default {
     confirmed: '确认',
     processed: '已处理',
     cleanLog: '清除日志',
+    cleanAllLog: '清空所有插件日志',
     log: '日志',
     filesize: '大小',
     quantity: '数量',
@@ -432,7 +433,7 @@ export default {
     sensitiveNumber: '条敏感信息',
     // ===== 新加的多语言字段 =====
     iconSelected: '已选图标',
-    confirm: '确定',
+    confirm: '确定'
     // =======================
   },
   subdomain: {

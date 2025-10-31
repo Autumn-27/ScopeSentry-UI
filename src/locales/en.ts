@@ -10,6 +10,7 @@ export default {
     confirmed: 'Confirmed',
     processed: 'Processed',
     cleanLog: 'Clear Logs',
+    cleanAllLog: 'Clean All Plugin Logs',
     log: 'Log',
     filesize: 'Size',
     quantity: 'Quantity',
