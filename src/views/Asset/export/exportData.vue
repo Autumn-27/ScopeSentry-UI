@@ -16,7 +16,13 @@ import {
   ElCheckboxGroup
 } from 'element-plus'
 import { onMounted, reactive, Ref, ref } from 'vue'
-import { exportApi, getExportRecordApi, delExportApi, getFieldApi } from '@/api/export'
+import {
+  exportApi,
+  getExportRecordApi,
+  delExportApi,
+  getFieldApi,
+  downloadExportApi
+} from '@/api/export'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { BaseButton } from '@/components/Button'
@@ -129,9 +135,18 @@ const { dataList, loading } = tableState
 const { getList, getElTableExpose } = tableMethods
 
 const download = async (id) => {
-  const aTag = document.createElement('a')
-  aTag.href = '/api/export/download?file_name=' + id
-  aTag.click()
+  try {
+    const blob = await downloadExportApi(id)
+    const url = window.URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${id}`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    console.error('下载失败:', err)
+  }
 }
 const createLoading = ref(false)
 const onClick = (name) => {

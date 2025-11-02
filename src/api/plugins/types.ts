@@ -13,5 +13,5 @@ export type pluginData = {
 
 export type LogRespData = {
   code: string
-  logs: string
+  data: string
 }

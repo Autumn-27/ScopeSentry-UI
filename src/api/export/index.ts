@@ -27,9 +27,8 @@ export const delExportApi = (ids: string[]): Promise<IResponse<commonRespData>> 
 export const downloadExportApi = (id: string): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     request
-      .post({
-        url: '/api/export/download',
-        data: { id },
+      .get({
+        url: '/api/export/download?filename=' + id,
         responseType: 'blob'
       })
       .then((response) => {
