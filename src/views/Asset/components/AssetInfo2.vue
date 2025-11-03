@@ -327,7 +327,7 @@ let crudSchemas = reactive<CrudSchema[]>([
           </ElRow>
         )
       }
-      const st = 'data:image/png;base64,' + row.icon
+      const st = '/images/icon/' + row.icon_hash + '.png'
       return (
         <ElRow gutter={20}>
           <ElCol span={2}>
@@ -930,7 +930,7 @@ const confirmSelectedIcons = () => {
                   :key="icon.icon_hash"
                   class="icon-selection-img"
                 >
-                  <img :src="'data:image/png;base64,' + icon.value" />
+                  <img :src="'/images/icon/' + icon.icon_hash + '.png'" />
                 </span>
                 <ElButton
                   class="float-confirm"
@@ -965,7 +965,7 @@ const confirmSelectedIcons = () => {
                     <ElBadge :value="iconItem.number" :max="99" style="font-size: 8px">
                       <ElTooltip :content="iconItem.icon_hash" placement="top-start">
                         <img
-                          :src="'data:image/png;base64,' + iconItem.value"
+                          :src="'/images/icon/' + iconItem.icon_hash + '.png'"
                           alt="Icon"
                           style="width: 30px; height: 30px"
                           :class="{
