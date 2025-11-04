@@ -316,7 +316,7 @@ let crudSchemas = reactive<CrudSchema[]>([
       if (title == null || title == '') {
         title = ''
       }
-      if (row.icon == '' || row.icon == null) {
+      if (row.faviconmmh3 == '' || row.faviconmmh3 == null) {
         return (
           <ElRow gutter={10}>
             <ElCol span={24}>
@@ -327,7 +327,7 @@ let crudSchemas = reactive<CrudSchema[]>([
           </ElRow>
         )
       }
-      const st = '/images/icon/' + row.icon_hash + '.png'
+      const st = '/images/icon/' + row.faviconmmh3 + '.png'
       return (
         <ElRow gutter={20}>
           <ElCol span={2}>
@@ -529,16 +529,38 @@ let crudSchemas = reactive<CrudSchema[]>([
     label: t('asset.screenshot'),
     minWidth: '170',
     formatter: (row) => {
-      if (row.screenshot == undefined) {
+      if (row.ResponseBodyHash == undefined) {
         return
       }
-      if (row.screenshot != '') {
+      if (row.ResponseBodyHash == '') {
+        return
+      }
+      if (row.ResponseBodyHash != '') {
+        const imageSrc = `/images/screenshots/${row.ResponseBodyHash}.png`
         return (
           <img
-            src={`${row.screenshot}`}
+            src={imageSrc}
             alt="screenshot"
-            style={{ width: '100%', height: 'auto', maxHeight: '250px' }}
-            onClick={() => handleImageClick(row.screenshot)}
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: '250px',
+              opacity: 0,
+              transition: 'opacity 0.2s'
+            }}
+            onLoad={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.opacity = '1'
+              }
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none' // 图片加载失败时隐藏
+              }
+            }}
+            onClick={() => handleImageClick(`/images/screenshots/${row.ResponseBodyHash}.png`)}
           />
         )
       }
@@ -772,11 +794,31 @@ const setActiveSegment = (segment: 'tableSegment' | 'cardSegment', flag: boolean
   }
 }
 const websites = ref<AssetData[]>([])
+// 跟踪每个图片的加载状态：'loading' | 'loaded' | 'error'
+const imageLoadStates = ref<Record<string, 'loading' | 'loaded' | 'error'>>({})
+const handleImageLoad = (hash: string) => {
+  if (imageLoadStates.value[hash] !== 'loaded') {
+    imageLoadStates.value[hash] = 'loaded'
+  }
+}
+const handleImageError = (hash: string) => {
+  if (imageLoadStates.value[hash] !== 'error') {
+    imageLoadStates.value[hash] = 'error'
+  }
+}
 const getAssetCardData = async () => {
   websites.value = []
+  // 重置图片加载状态
+  imageLoadStates.value = {}
   getTotal(searchParams.value, currentPage.value, pageSize.value, filter)
   const res = await getAssetCardApi(searchParams.value, currentPage.value, pageSize.value, filter)
   websites.value = res.data.list
+  // 初始化所有图片为加载中状态
+  res.data.list.forEach((site) => {
+    if (site.ResponseBodyHash) {
+      imageLoadStates.value[site.ResponseBodyHash] = 'loading'
+    }
+  })
 }
 const getStatusColor = (statusValue) => {
   if (statusValue < 300) {
@@ -1045,15 +1087,9 @@ const confirmSelectedIcons = () => {
           :body-style="{ padding: '0px', height: '100%', width: '100%' }"
           style="display: flex; flex-direction: column; height: 100%"
         >
-          <img
-            :src="site.screenshot"
-            alt="screenshot"
-            style="width: 100%; height: 100%; max-height: 270px"
-            @click="handleImageClick(site.screenshot)"
-            v-if="site.screenshot"
-          />
+          <!-- 占位符，在图片未加载成功时显示 -->
           <div
-            v-else
+            v-if="imageLoadStates[site.ResponseBodyHash] !== 'loaded'"
             style="
               width: 100%;
               height: 100%;
@@ -1065,9 +1101,27 @@ const confirmSelectedIcons = () => {
               color: #ccc;
             "
           >
-            <span v-if="site.type == 'http'">无图片</span>
+            <span v-if="site.type == 'http'">No pictures available</span>
             <span v-else>{{ site.service }}</span>
           </div>
+          <!-- 图片元素，先隐藏，加载成功后再显示 -->
+          <img
+            v-show="imageLoadStates[site.ResponseBodyHash] === 'loaded'"
+            :src="`/images/screenshots/${site.ResponseBodyHash}.png`"
+            alt="screenshot"
+            style="width: 100%; height: 100%; max-height: 270px"
+            @click="handleImageClick(`/images/screenshots/${site.ResponseBodyHash}.png`)"
+            @load="handleImageLoad(site.ResponseBodyHash)"
+            @error="handleImageError(site.ResponseBodyHash)"
+          />
+          <!-- 隐藏的预加载图片，用于在不显示时也能触发加载事件 -->
+          <img
+            v-if="imageLoadStates[site.ResponseBodyHash] !== 'loaded'"
+            v-show="false"
+            :src="`/images/screenshots/${site.ResponseBodyHash}.png`"
+            @load="handleImageLoad(site.ResponseBodyHash)"
+            @error="handleImageError(site.ResponseBodyHash)"
+          />
           <template #footer>
             <ElRow>
               <ElCol

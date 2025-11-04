@@ -545,8 +545,7 @@ const openCreateTask = async () => {
           >
             <template v-if="tag.startsWith('icon=')">
               <img
-                v-if="getIconByHash(tag.split('=')[1])"
-                :src="'data:image/png;base64,' + getIconByHash(tag.split('=')[1])?.value"
+                :src="'/images/icon/' + tag.split('=')[1] + '.png'"
                 :alt="tag"
                 style="width: 20px; height: 20px; vertical-align: middle"
               />

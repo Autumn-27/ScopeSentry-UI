@@ -17,6 +17,7 @@ export type AssetData = {
   screenshot: string
   type: string
   statuscode: number
+  ResponseBodyHash: string
   url: string
 }
 
