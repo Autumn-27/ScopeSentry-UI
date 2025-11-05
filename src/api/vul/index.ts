@@ -2,6 +2,11 @@ import request from '@/axios'
 import type { vulResultData } from './types'
 
 interface vulResultDataResponse {
+  list: vulResultData[]
+  total: number
+}
+
+interface vulDetailResponse {
   res: string,
   req: string
 }
@@ -19,7 +24,7 @@ export const getVulResultDataApi = (
 
 export const getVulDetailApi = (
   hash: string
-): Promise<IResponse<vulResultDataResponse>> => {
+): Promise<IResponse<vulDetailResponse>> => {
   return request.post({
     url: '/api/assets/vulnerability/detail',
     data: { hash }
