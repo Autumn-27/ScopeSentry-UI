@@ -22,7 +22,7 @@ import {
 import { Dialog } from '@/components/Dialog'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { getVulResultDataApi } from '@/api/vul'
+import { getVulDetailApi, getVulResultDataApi } from '@/api/vul'
 import { Icon } from '@iconify/vue'
 import Csearch from '../search/Csearch.vue'
 import { BaseButton } from '@/components/Button'
@@ -431,7 +431,7 @@ const DialogData = reactive<RowData>({
 })
 const color = ref('')
 const DialogVisible = ref(false)
-const action = (data: any) => {
+const action = async (data: any) => {
   const levelValue = data.level
   color.value = ''
   let flag = ''
@@ -454,13 +454,14 @@ const action = (data: any) => {
     color.value = 'gray'
     flag = t('poc.unknown')
   }
+  const res = await getVulDetailApi(data.hash)
   DialogData.Level = flag
   DialogData.Vulnerability = data.vulnerability
   DialogData.Matched = data.matched
   DialogData.Time = data.time
   DialogData.URL = data.url
-  DialogData.Request = data.request
-  DialogData.Response = data.response
+  DialogData.Request = res.data.req
+  DialogData.Response = res.data.res
   DialogVisible.value = true
 }
 

@@ -2,8 +2,8 @@ import request from '@/axios'
 import type { vulResultData } from './types'
 
 interface vulResultDataResponse {
-  list: vulResultData[]
-  total: number
+  res: string,
+  req: string
 }
 export const getVulResultDataApi = (
   search: string,
@@ -14,5 +14,14 @@ export const getVulResultDataApi = (
   return request.post({
     url: '/api/assets/vulnerability',
     data: { search, pageIndex, pageSize, filter }
+  })
+}
+
+export const getVulDetailApi = (
+  hash: string
+): Promise<IResponse<vulResultDataResponse>> => {
+  return request.post({
+    url: '/api/assets/vulnerability/detail',
+    data: { hash }
   })
 }
