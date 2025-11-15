@@ -7,7 +7,7 @@ interface vulResultDataResponse {
 }
 
 interface vulDetailResponse {
-  res: string,
+  res: string
   req: string
 }
 export const getVulResultDataApi = (
@@ -22,6 +22,7 @@ export const getVulResultDataApi = (
   })
 }
 
+// eslint-disable-next-line prettier/prettier
 export const getVulDetailApi = (
   hash: string
 ): Promise<IResponse<vulDetailResponse>> => {
