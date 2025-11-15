@@ -1052,7 +1052,7 @@ const confirmSelectedIcons = () => {
                 popperClass: 'test',
                 placement: 'bottom',
                 hideAfter: 0,
-                disabled: false
+                disabled: true
               }"
               :style="{
                 fontFamily:

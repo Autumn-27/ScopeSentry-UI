@@ -16,6 +16,7 @@ import { getProjectAllApi } from '@/api/project'
 import RootDomain from './components/RootDomain.vue'
 import APP from './components/APP.vue'
 import MP from './components/MP.vue'
+import IP from './components/IP.vue'
 const { t } = useI18n()
 interface Project {
   value: string
@@ -35,6 +36,7 @@ getProjectList()
 <template>
   <ElTabs type="border-card">
     <ElTabPane :label="t('asset.assetName')"><AssetInfo2 :projectList="projectList" /></ElTabPane>
+    <ElTabPane label="IP"><IP :projectList="projectList" /></ElTabPane>
     <ElTabPane :label="t('rootDomain.rootDomainName')">
       <RootDomain :projectList="projectList" />
     </ElTabPane>

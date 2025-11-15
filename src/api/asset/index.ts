@@ -357,3 +357,15 @@ export const getMpApi = (
     data: { search, pageIndex, pageSize, filter }
   })
 }
+
+export const getIPAssetApi = (
+  search: string,
+  pageIndex: number,
+  pageSize: number,
+  filter: Record<string, any>
+): Promise<IResponse<SubdomainDataResponse>> => {
+  return request.post({
+    url: '/api/assets/ip',
+    data: { search, pageIndex, pageSize, filter }
+  })
+}

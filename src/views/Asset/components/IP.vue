@@ -3,10 +3,10 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { h, nextTick, reactive, Ref, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
-import { ElCard, ElPagination, ElRow, ElCol } from 'element-plus'
+import { ElCard, ElPagination, ElRow, ElCol, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { addTagApi, deleteTagApi, getAppApi } from '@/api/asset'
+import { addTagApi, deleteTagApi, getIPAssetApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 const { t } = useI18n()
 interface Project {
@@ -99,7 +99,23 @@ const crudSchemas = reactive<CrudSchema[]>([
   {
     field: 'products',
     label: t('asset.products'),
-    minWidth: '180'
+    minWidth: '180',
+    formatter: (_: Recordable, __: TableColumn, ProductsValue: string[] | null) => {
+      if (!ProductsValue || ProductsValue.length === 0) return
+      if (ProductsValue.length != 0) {
+        return (
+          <ElRow style={{ flexWrap: 'wrap' }}>
+            {ProductsValue.map((product) => (
+              <ElCol span={24} key={product}>
+                <div style={'display: inline-block; cursor: pointer'}>
+                  <ElTag type={'success'}>{product}</ElTag>
+                </div>
+              </ElCol>
+            ))}
+          </ElRow>
+        )
+      }
+    }
   },
   {
     field: 'time',
@@ -148,7 +164,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
     const { currentPage, pageSize } = tableState
-    const res = await getAppApi(searchParams.value, currentPage.value, pageSize.value, filter)
+    const res = await getIPAssetApi(searchParams.value, currentPage.value, pageSize.value, filter)
     return {
       list: res.data.list,
       total: res.data.total
@@ -188,6 +204,32 @@ const handleClose = (tag: string) => {
 const getFilter = () => {
   return filter
 }
+const spanMethod = ({ row, column, rowIndex, columnIndex }) => {
+  // columnIndex:
+  // 0 = IP
+  // 1 = Port
+
+  // 📌 IP 合并
+  if (columnIndex === 1) {
+    if (row.ipRowSpan > 0) {
+      return [row.ipRowSpan, 1] // 显示并合并
+    } else {
+      return [0, 0] // 隐藏单元格
+    }
+  }
+
+  // 📌 Port 合并
+  if (columnIndex === 2) {
+    if (row.portRowSpan > 0) {
+      return [row.portRowSpan, 1]
+    } else {
+      return [0, 0]
+    }
+  }
+
+  // 📌 默认正常显示
+  return [1, 1]
+}
 </script>
 
 <template>
@@ -217,6 +259,7 @@ const getFilter = () => {
           stripe
           :border="true"
           :loading="loading"
+          :span-method="spanMethod"
           :resizable="true"
           @register="tableRegister"
           @filter-change="filterChange"
