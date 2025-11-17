@@ -17,7 +17,7 @@ const { t } = useI18n()
 const deduplication = reactive({
   asset: false,
   subdomain: true,
-  SubdoaminTakerResult: true,
+  SubdomainTakerResult: true,
   UrlScan: true,
   crawler: true,
   SensitiveResult: true,
@@ -33,7 +33,7 @@ const updateDeduplicationConfig = async () => {
   await updateDeduplicationConfigApi(
     deduplication.asset,
     deduplication.subdomain,
-    deduplication.SubdoaminTakerResult,
+    deduplication.SubdomainTakerResult,
     deduplication.UrlScan,
     deduplication.crawler,
     deduplication.SensitiveResult,
@@ -133,7 +133,7 @@ const DeduplicationConfigLoading = ref(false)
         <ElCol :span="5">
           <ElFormItem :label="t('task.subdomainTakeover')">
             <ElSwitch
-              v-model="deduplication.SubdoaminTakerResult"
+              v-model="deduplication.SubdomainTakerResult"
               inline-prompt
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"

@@ -116,7 +116,7 @@ export const updateNotificationConfigApi = (
 interface deduplicationConfigResp {
   asset: boolean
   subdomain: boolean
-  SubdoaminTakerResult: boolean
+  SubdomainTakerResult: boolean
   UrlScan: boolean
   crawler: boolean
   SensitiveResult: boolean
@@ -134,7 +134,7 @@ export const getDeduplicationConfigApi = (): Promise<IResponse<deduplicationConf
 export const updateDeduplicationConfigApi = (
   asset: boolean,
   subdomain: boolean,
-  SubdoaminTakerResult: boolean,
+  SubdomainTakerResult: boolean,
   UrlScan: boolean,
   crawler: boolean,
   SensitiveResult: boolean,
@@ -150,7 +150,7 @@ export const updateDeduplicationConfigApi = (
     data: {
       asset,
       subdomain,
-      SubdoaminTakerResult,
+      SubdomainTakerResult,
       UrlScan,
       crawler,
       SensitiveResult,
