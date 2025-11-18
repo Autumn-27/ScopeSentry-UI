@@ -539,28 +539,19 @@ let crudSchemas = reactive<CrudSchema[]>([
         const imageSrc = `/images/screenshots/${row.ResponseBodyHash}.png`
         return (
           <img
+            key={`${row.id}-${row.ResponseBodyHash}`}
             src={imageSrc}
             alt="screenshot"
             style={{
               width: '100%',
               height: 'auto',
-              maxHeight: '250px',
-              opacity: 0,
-              transition: 'opacity 0.2s'
-            }}
-            onLoad={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.opacity = '1'
-              }
+              maxHeight: '250px'
             }}
             onError={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.display = 'none' // 图片加载失败时隐藏
-              }
+              // 404 或其他错误时，隐藏图片（不显示裂开的图片）
+              ;(e.target as HTMLImageElement).style.display = 'none'
             }}
-            onClick={() => handleImageClick(`/images/screenshots/${row.ResponseBodyHash}.png`)}
+            onClick={() => handleImageClick(imageSrc)}
           />
         )
       }
