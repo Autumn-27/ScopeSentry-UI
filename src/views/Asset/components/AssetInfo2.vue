@@ -455,7 +455,7 @@ let crudSchemas = reactive<CrudSchema[]>([
       const lines = bannerValue.split('\n')
       const elements = lines.map((line, index) => <div key={index}>{line}</div>)
       return (
-        <ElScrollbar height="100px">
+        <ElScrollbar height="150px">
           <div class="scrollbar-demo-item">{elements}</div>
         </ElScrollbar>
       )

@@ -104,15 +104,13 @@ const crudSchemas = reactive<CrudSchema[]>([
       if (!ProductsValue || ProductsValue.length === 0) return
       if (ProductsValue.length != 0) {
         return (
-          <ElRow style={{ flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {ProductsValue.map((product) => (
-              <ElCol span={24} key={product}>
-                <div style={'display: inline-block; cursor: pointer'}>
-                  <ElTag type={'success'}>{product}</ElTag>
-                </div>
-              </ElCol>
+              <div key={product} style={{ cursor: 'pointer' }}>
+                <ElTag type={'success'}>{product}</ElTag>
+              </div>
             ))}
-          </ElRow>
+          </div>
         )
       }
     }
@@ -173,6 +171,8 @@ const { tableRegister, tableState, tableMethods } = useTable({
   immediate: false
 })
 const { loading, dataList, total, currentPage, pageSize } = tableState
+// 单独设置 IP 组件的 pageSize 默认值
+pageSize.value = 10 // 可以根据需要修改为你想要的默认值
 const { getList, getElTableExpose } = tableMethods
 function tableHeaderColor() {
   return { background: 'var(--el-fill-color-light)' }
@@ -206,8 +206,18 @@ const getFilter = () => {
 }
 const spanMethod = ({ row, column, rowIndex, columnIndex }) => {
   // columnIndex:
-  // 0 = IP
-  // 1 = Port
+  // 0 = selection (复选框列)
+  // 1 = IP
+  // 2 = Port
+
+  // 📌 Selection 列合并（与 IP 列同步）
+  if (columnIndex === 0) {
+    if (row.ipRowSpan > 0) {
+      return [row.ipRowSpan, 1] // 显示并合并
+    } else {
+      return [0, 0] // 隐藏单元格
+    }
+  }
 
   // 📌 IP 合并
   if (columnIndex === 1) {
@@ -256,6 +266,7 @@ const spanMethod = ({ row, column, rowIndex, columnIndex }) => {
           v-model:currentPage="currentPage"
           :columns="allSchemas.tableColumns"
           :data="dataList"
+          rowKey="datakey"
           stripe
           :border="true"
           :loading="loading"
