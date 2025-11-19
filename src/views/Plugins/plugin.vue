@@ -393,6 +393,14 @@ const savePluginKey = async () => {
   }
 }
 
+const handlePluginKeyChange = () => {
+  if (pluginKey.value) {
+    localStorage.setItem('plugin_key', pluginKey.value)
+  } else {
+    localStorage.removeItem('plugin_key')
+  }
+}
+
 LoadPluginKey()
 </script>
 
@@ -409,6 +417,17 @@ LoadPluginKey()
         <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
           >Search</ElButton
         >
+      </ElCol>
+      <ElCol :span="1" style="position: relative; left: 32px">
+        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('plugin.key') }}:</ElText>
+      </ElCol>
+      <ElCol :span="5" style="position: relative; left: 32px">
+        <ElInput
+          v-model="pluginKey"
+          :placeholder="t('plugin.key')"
+          style="height: 38px"
+          @blur="handlePluginKeyChange"
+        />
       </ElCol>
     </ElRow>
     <ElRow :gutter="16" class="mt-4">
@@ -512,7 +531,7 @@ LoadPluginKey()
       <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
         <ElInput v-model="pluginKey" />
       </el-tooltip>
-      <BaseButton @click="savePluginKey" type="primary" class="w-full">确定</BaseButton>
+      <BaseButton @click="savePluginKey" type="primary" class="w-full">Save</BaseButton>
     </div>
   </Dialog>
 </template>
