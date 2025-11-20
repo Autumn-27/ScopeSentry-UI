@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
 import { h, nextTick, reactive, Ref, ref } from 'vue'
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
 import { ElCard, ElPagination, ElRow, ElCol, ElTag } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
@@ -57,6 +57,10 @@ const searchKeywordsData = [
 onMounted(() => {
   setMaxHeight()
   window.addEventListener('resize', setMaxHeight)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setMaxHeight)
 })
 
 const maxHeight = ref(0)
@@ -272,6 +276,7 @@ const spanMethod = ({ row, column, rowIndex, columnIndex }) => {
           :loading="loading"
           :span-method="spanMethod"
           :resizable="true"
+          :max-height="maxHeight"
           @register="tableRegister"
           @filter-change="filterChange"
           :headerCellStyle="tableHeaderColor"
