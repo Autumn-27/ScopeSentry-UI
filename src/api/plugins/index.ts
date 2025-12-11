@@ -33,11 +33,12 @@ export const savePluginDataApi = (
   help: string,
   introduction: string,
   source: string,
-  key: string
+  key: string,
+  parameterList?: string
 ): Promise<IResponse<commonRespData>> => {
   return request.post({
     url: '/api/plugin/save',
-    data: { id, name, version, module, parameter, help, introduction, source, key }
+    data: { id, name, version, module, parameter, help, introduction, source, key, parameterList }
   })
 }
 

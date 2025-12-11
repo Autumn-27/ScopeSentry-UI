@@ -13,4 +13,5 @@ export type fileData = {
   id: string
   name: string
   size: string
+  category?: string
 }

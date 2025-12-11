@@ -9,6 +9,7 @@ export type pluginData = {
   introduction: string
   isSystem: boolean
   source: string
+  parameterList?: string
 }
 
 export type LogRespData = {

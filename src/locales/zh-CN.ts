@@ -576,7 +576,19 @@ export default {
     keyMsg: '输入插件密钥，查看server运行日志，或者在项目运行根目录PLUGINKEY文件查看。',
     reInstall: '重新install',
     reCheck: '重新check',
-    uninstall: '卸载'
+    uninstall: '卸载',
+    parameterConfig: '参数配置',
+    parameterName: '参数名称',
+    parameterType: '类型',
+    defaultValue: '默认值',
+    category: '分类',
+    dictName: '名称',
+    portName: '端口名称',
+    addParameter: '添加参数',
+    basicInfo: '基础信息',
+    sourceCode: '源码',
+    save: '保存',
+    parameterTip: '此字段由上方参数配置自动生成，格式为：-参数名 默认值。'
   },
   workplace: {
     goodMorning: '早安',
