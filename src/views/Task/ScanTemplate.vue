@@ -2,12 +2,20 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h, onMounted } from 'vue'
-import { ElButton, ElCol, ElInput, ElRow, ElText, ElMessageBox, ElSwitch } from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElInput,
+  ElRow,
+  ElText,
+  ElMessageBox,
+  ElSwitch,
+  ElDrawer
+} from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { useIcon } from '@/hooks/web/useIcon'
 import { deleteTemplateDetailApi, getTemplateDataApi } from '@/api/task'
-import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'
 const searchicon = useIcon({ icon: 'iconoir:search' })
@@ -203,13 +211,7 @@ const editTemplate = async (data) => {
       />
     </div>
   </ContentWrap>
-  <Dialog
-    v-model="dialogVisible"
-    :title="DialogTitle"
-    center
-    fullscreen
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
+  <ElDrawer v-model="dialogVisible" :title="DialogTitle" direction="rtl" size="80%">
     <DetailTemplate :closeDialog="closeDialog" :getList="getList" :id="templateId" />
-  </Dialog>
+  </ElDrawer>
 </template>
