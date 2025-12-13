@@ -175,6 +175,16 @@ watch(
     </div>
 
     <div class="flex justify-between items-center">
+      <span class="text-14px">{{ t('setting.tagsView') }}</span>
+      <ElSwitch v-model="tagsView" @change="tagsViewChange" />
+    </div>
+
+    <div class="flex justify-between items-center">
+      <span class="text-14px">{{ t('setting.tagsViewIcon') }}</span>
+      <ElSwitch v-model="tagsViewIcon" @change="tagsViewIconChange" />
+    </div>
+
+    <div class="flex justify-between items-center">
       <span class="text-14px">{{ t('setting.logo') }}</span>
       <ElSwitch v-model="logo" @change="logoChange" />
     </div>

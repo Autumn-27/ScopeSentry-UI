@@ -4,7 +4,7 @@ import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useStorage } from '@/hooks/web/useStorage'
-import { getCssVar } from './utils'
+import { getCssVar, setCssVar } from './utils'
 import { isDark } from '@/utils/is'
 
 const { getPrefixCls } = useDesign()
@@ -29,15 +29,19 @@ const setDefaultTheme = () => {
     const color = getCssVar('--el-bg-color')
     appStore.setMenuTheme(color)
     appStore.setHeaderTheme(color)
-    return
+  } else {
+    // 如果用户没有设置过，则根据系统主题自动设置
+    const isDarkTheme = isDark()
+    appStore.setIsDark(isDarkTheme)
+    // 初始化时也需要更新菜单和头部主题
+    const color = getCssVar('--el-bg-color')
+    appStore.setMenuTheme(color)
+    appStore.setHeaderTheme(color)
   }
-  // 如果用户没有设置过，则根据系统主题自动设置
-  const isDarkTheme = isDark()
-  appStore.setIsDark(isDarkTheme)
-  // 初始化时也需要更新菜单和头部主题
-  const color = getCssVar('--el-bg-color')
-  appStore.setMenuTheme(color)
-  appStore.setHeaderTheme(color)
+  
+  // 初始化标签页高度
+  const tagsViewEnabled = appStore.getTagsView
+  setCssVar('--tags-view-height', tagsViewEnabled ? '35px' : '0px')
 }
 
 setDefaultTheme()

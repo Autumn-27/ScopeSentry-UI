@@ -52,7 +52,7 @@ export const useAppStore = defineStore('app', {
       screenfull: true, // 全屏图标
       size: true, // 尺寸图标
       locale: true, // 多语言图标
-      tagsView: false, // 标签页
+      tagsView: true, // 标签页
       tagsViewIcon: false, // 是否显示标签图标
       logo: true, // logo
       fixedHeader: true, // 固定toolheader
