@@ -6,7 +6,7 @@ import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { colorIsDark, lighten, hexToRGB } from '@/utils/color'
 import { useCssVar } from '@vueuse/core'
 import { useAppStore } from '@/store/modules/app'
-import { trim, setCssVar, getCssVar } from '@/utils'
+import { trim, setCssVar } from '@/utils'
 import ColorRadioPicker from './components/ColorRadioPicker.vue'
 import InterfaceDisplay from './components/InterfaceDisplay.vue'
 import LayoutRadioPicker from './components/LayoutRadioPicker.vue'
@@ -192,11 +192,6 @@ const clear = () => {
   storageClear()
   window.location.reload()
 }
-const themeChange = () => {
-  const color = getCssVar('--el-bg-color')
-  setMenuTheme(color)
-  setHeaderTheme(color)
-}
 </script>
 
 <template>
@@ -216,7 +211,7 @@ const themeChange = () => {
     <div class="text-center">
       <!-- 主题 -->
       <ElDivider>{{ t('setting.theme') }}</ElDivider>
-      <ThemeSwitch @change="themeChange" />
+      <ThemeSwitch />
 
       <!-- 布局 -->
       <ElDivider>{{ t('setting.layout') }}</ElDivider>

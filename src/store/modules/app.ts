@@ -5,6 +5,9 @@ import { ElMessage, ComponentSize } from 'element-plus'
 import { colorIsDark, hexToRGB, lighten, mix } from '@/utils/color'
 import { unref } from 'vue'
 import { useCssVar } from '@vueuse/core'
+import { useStorage } from '@/hooks/web/useStorage'
+
+const { setStorage } = useStorage('localStorage')
 
 interface AppState {
   breadcrumb: boolean
@@ -235,6 +238,8 @@ export const useAppStore = defineStore('app', {
     },
     setIsDark(isDark: boolean) {
       this.isDark = isDark
+      // 保存到 localStorage
+      setStorage('isDark', isDark)
       if (this.isDark) {
         document.documentElement.classList.add('dark')
         document.documentElement.classList.remove('light')
