@@ -1049,6 +1049,7 @@ const confirmSelectedIcons = () => {
                 fontFamily:
                   '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
               }"
+              class="asset-table"
             />
           </ElCard>
         </ElCol>
@@ -1263,5 +1264,54 @@ const confirmSelectedIcons = () => {
 }
 .float-confirm {
   margin-left: 10px;
+}
+
+// 优化表格滚动性能
+:deep(.asset-table) {
+  .el-table__body-wrapper {
+    // 启用硬件加速
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: scroll-position;
+    // 优化滚动性能
+    -webkit-overflow-scrolling: touch;
+    overflow-anchor: none;
+
+    // 防止滚动时重排
+    .el-table__body {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+  }
+
+  // 优化单元格滚动条性能
+  .el-scrollbar {
+    .el-scrollbar__wrap {
+      // 启用硬件加速
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      will-change: scroll-position;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  // 优化滚动条
+  .el-scrollbar__bar {
+    // 启用硬件加速
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+// 优化表格单元格内容
+:deep(.asset-table .el-table__cell) {
+  // 防止内容变化导致重排
+  contain: layout style paint;
+
+  .scrollbar-demo-item {
+    // 启用硬件加速
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
 }
 </style>

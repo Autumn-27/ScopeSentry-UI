@@ -104,18 +104,17 @@ const nodeColums = reactive<TableColumn[]>([
     formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
       if (tags.length != 0) {
         return (
-          <ElRow style={{ flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {tags.map((product) => (
-              <ElCol span={24} key={product}>
-                <div
-                  onClick={() => changeTags('app', product)}
-                  style={'display: inline-block; cursor: pointer'}
-                >
-                  <ElTag type={'success'}>{product}</ElTag>
-                </div>
-              </ElCol>
+              <div
+                key={product}
+                onClick={() => changeTags('app', product)}
+                style={{ cursor: 'pointer' }}
+              >
+                <ElTag type={'success'}>{product}</ElTag>
+              </div>
             ))}
-          </ElRow>
+          </div>
         )
         // if (ProductsValue.length > 1) {
         //   let contentTool = ''
