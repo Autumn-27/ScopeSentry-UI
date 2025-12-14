@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { LogRespData, pluginData } from './types'
+import type { LogRespData, pluginData, RemotePluginResponse } from './types'
 import { commonRespData } from '../scommon/types'
 
 interface pluginDataResponse {
@@ -98,4 +98,8 @@ export const uninstallPluginApi = (
   module: string
 ): Promise<IResponse<pluginDataResponse>> => {
   return request.post({ url: '/api/plugin/uninstall', data: { node, hash, module } })
+}
+
+export const getRemotePluginListApi = (): Promise<IResponse<RemotePluginResponse>> => {
+  return request.post({ url: '/api/plugin/remote/search' })
 }

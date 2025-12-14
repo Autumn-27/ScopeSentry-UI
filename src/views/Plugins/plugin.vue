@@ -1,11 +1,13 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted, h } from 'vue'
+import { ref, reactive, onMounted, h, computed } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {
   ElButton,
+  ElCard,
   ElCol,
+  ElDrawer,
   ElInput,
   ElRow,
   ElText,
@@ -35,10 +37,12 @@ import {
   deletePluginDataApi,
   getPluginDataApi,
   getPluginLogApi,
+  getRemotePluginListApi,
   reCheckPluginApi,
   reInstallPluginApi,
   uninstallPluginApi
 } from '@/api/plugins'
+import type { RemotePluginData } from '@/api/plugins/types'
 import detail from './components/detail.vue'
 import { useUserStore } from '@/store/modules/user'
 
@@ -336,7 +340,7 @@ const openLogDialogVisible = async (data) => {
   logModule.value = data.module
   logHash.value = data.hash
   const res = await getPluginLogApi(data.module, data.hash)
-  logContent.value = res.data
+  logContent.value = res.data.data
   logDialogVisible.value = true
 }
 
@@ -401,6 +405,141 @@ const handlePluginKeyChange = () => {
   }
 }
 
+// 插件市场相关
+const marketDrawerVisible = ref(false)
+const remotePluginList = ref<RemotePluginData[]>([])
+const marketLoading = ref(false)
+const marketSearch = ref('')
+
+// 模块选项
+const moduleOptions = [
+  { label: 'TargetHandler', value: 'TargetHandler' },
+  { label: 'SubdomainScan', value: 'SubdomainScan' },
+  { label: 'SubdomainSecurity', value: 'SubdomainSecurity' },
+  { label: 'PortScanPreparation', value: 'PortScanPreparation' },
+  { label: 'PortScan', value: 'PortScan' },
+  { label: 'AssetMapping', value: 'AssetMapping' },
+  { label: 'URLScan', value: 'URLScan' },
+  { label: 'WebCrawler', value: 'WebCrawler' },
+  { label: 'DirScan', value: 'DirScan' },
+  { label: 'VulnerabilityScan', value: 'VulnerabilityScan' },
+  { label: 'AssetHandle', value: 'AssetHandle' },
+  { label: 'PortFingerprint', value: 'PortFingerprint' },
+  { label: 'URLSecurity', value: 'URLSecurity' },
+  { label: 'PassiveScan', value: 'PassiveScan' }
+]
+
+// 模块渐变背景
+const moduleBackgrounds: { [key: string]: string } = {
+  TargetHandler: 'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)',
+  SubdomainScan: 'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)',
+  SubdomainSecurity: 'linear-gradient(to top, #fad0c4 0%, #fad0c4 1%, #ffd1ff 100%)',
+  PortScanPreparation: 'linear-gradient(to right, #ffecd2 0%, #fcb69f 100%)',
+  PortScan:
+    'linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)',
+  PortFingerprint: 'linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)',
+  AssetMapping: 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)',
+  AssetHandle: 'linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%)',
+  URLScan: 'linear-gradient(to top, #fdcbf1 0%, #fdcbf1 1%, #e6dee9 100%)',
+  WebCrawler: 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)',
+  URLSecurity: 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)',
+  DirScan: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
+  VulnerabilityScan: 'linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%)',
+  PassiveScan: 'linear-gradient(to top, #e0c3fc 0%, #8ec5fc 100%)'
+}
+
+const openMarketDialog = async () => {
+  marketDrawerVisible.value = true
+  await loadRemotePlugins()
+}
+
+const closeMarketDialog = () => {
+  marketDrawerVisible.value = false
+  marketSearch.value = ''
+}
+
+const loadRemotePlugins = async () => {
+  marketLoading.value = true
+  try {
+    const res = await getRemotePluginListApi()
+    if (res.code === 200) {
+      remotePluginList.value = res.data.data || []
+    } else {
+      ElMessage.error(res.message || '获取插件列表失败')
+    }
+  } catch (error) {
+    console.error('Error loading remote plugins:', error)
+    ElMessage.error('获取插件列表失败')
+  } finally {
+    marketLoading.value = false
+  }
+}
+
+const handleInstallPlugin = async (plugin: RemotePluginData) => {
+  try {
+    // 使用现有的导入功能，通过 hash 下载插件
+    const key = pluginKey.value || localStorage.getItem('plugin_key')
+    if (!key) {
+      ElMessage.warning(t('plugin.pleaseSetKey'))
+      keyDialogVisible.value = true
+      return
+    }
+
+    // 这里可能需要调用安装 API，暂时使用导入功能
+    // 可以通过 window.open 或者 fetch 下载插件文件
+    const downloadUrl = `https://plugin.scope-sentry.top/plugin/${plugin.hash}/download?key=${key}`
+
+    const action =
+      plugin.isInstalled && plugin.needUpdate ? t('plugin.update') : t('plugin.install')
+    const confirmMessage = t('plugin.confirmInstall')
+      .replace('{action}', action)
+      .replace('{name}', plugin.name)
+
+    ElMessageBox.confirm(confirmMessage, t('common.reminder'), {
+      confirmButtonText: t('common.ok'),
+      cancelButtonText: t('common.cancel'),
+      type: 'info'
+    })
+      .then(() => {
+        // 创建一个隐藏的链接来触发下载
+        const link = document.createElement('a')
+        link.href = downloadUrl
+        link.download = `${plugin.name}.plugin`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        const successMessage = t('plugin.installSuccess').replace('{action}', action)
+        ElMessage.success(successMessage)
+        // 延迟刷新本地插件列表
+        setTimeout(() => {
+          getList()
+          loadRemotePlugins()
+        }, 2000)
+      })
+      .catch(() => {
+        // 用户取消
+      })
+  } catch (error) {
+    console.error('Error installing plugin:', error)
+    ElMessage.error(t('plugin.installFailed'))
+  }
+}
+
+const filteredRemotePlugins = computed(() => {
+  if (!marketSearch.value) {
+    return remotePluginList.value
+  }
+  const searchLower = marketSearch.value.toLowerCase()
+  return remotePluginList.value.filter(
+    (plugin) =>
+      plugin.name.toLowerCase().includes(searchLower) ||
+      plugin.module.toLowerCase().includes(searchLower) ||
+      plugin.introduction.toLowerCase().includes(searchLower) ||
+      plugin.username.toLowerCase().includes(searchLower)
+  )
+})
+
 LoadPluginKey()
 </script>
 
@@ -441,11 +580,9 @@ LoadPluginKey()
             {{ t('plugin.delete') }}
           </BaseButton>
 
-          <a href="https://plugin.scope-sentry.top/" target="_blank">
-            <BaseButton type="info">
-              {{ t('plugin.market') }}
-            </BaseButton>
-          </a>
+          <BaseButton type="info" @click="openMarketDialog">
+            {{ t('plugin.market') }}
+          </BaseButton>
 
           <BaseButton type="warning" @click="confirmCleanAllLog">
             {{ t('common.cleanAllLog') }}
@@ -534,4 +671,226 @@ LoadPluginKey()
       <BaseButton @click="savePluginKey" type="primary" class="w-full">Save</BaseButton>
     </div>
   </Dialog>
+  <ElDrawer
+    v-model="marketDrawerVisible"
+    :title="t('plugin.market')"
+    direction="rtl"
+    size="90%"
+    :close-on-click-modal="false"
+  >
+    <div class="flex flex-col gap-4">
+      <ElRow :gutter="16">
+        <ElCol :span="8">
+          <ElInput
+            v-model="marketSearch"
+            :placeholder="t('common.inputText')"
+            clearable
+            style="height: 38px"
+          >
+            <template #prefix>
+              <Icon icon="iconoir:search" />
+            </template>
+          </ElInput>
+        </ElCol>
+        <ElCol :span="4">
+          <BaseButton type="primary" @click="loadRemotePlugins" :loading="marketLoading">
+            {{ t('plugin.refresh') }}
+          </BaseButton>
+        </ElCol>
+      </ElRow>
+      <div v-loading="marketLoading" class="plugin-market-container">
+        <ElRow :gutter="20">
+          <ElCol
+            v-for="plugin in filteredRemotePlugins"
+            :key="plugin.id"
+            :xs="24"
+            :sm="12"
+            :md="8"
+            :lg="6"
+            :xl="6"
+          >
+            <ElCard
+              class="plugin-market-card"
+              :style="{ width: '100%', position: 'relative', marginBottom: '20px' }"
+              shadow="hover"
+              :body-style="{ padding: '0' }"
+            >
+              <div class="plugin-card-cover">
+                <div
+                  :style="{
+                    height: '150px',
+                    background:
+                      moduleBackgrounds[plugin.module] || 'linear-gradient(to top, #e7f0fd 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative'
+                  }"
+                >
+                  <div
+                    :style="{
+                      fontSize: '18px',
+                      fontWeight: 'bold',
+                      color: '#333',
+                      textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)',
+                      letterSpacing: '0.5px',
+                      textAlign: 'center'
+                    }"
+                  >
+                    {{ plugin.name }}
+                  </div>
+                  <ElTag
+                    :type="plugin.priceStatus === 0 ? 'success' : 'danger'"
+                    :style="{ position: 'absolute', bottom: '8px', left: '8px' }"
+                  >
+                    {{ plugin.priceStatus === 0 ? t('plugin.free') : t('plugin.paid') }}
+                  </ElTag>
+                  <ElTag type="info" :style="{ position: 'absolute', bottom: '8px', right: '8px' }">
+                    {{
+                      moduleOptions.find((option) => option.value === plugin.module)?.label ||
+                      t('plugin.unknownModule')
+                    }}
+                  </ElTag>
+                </div>
+              </div>
+              <div class="plugin-card-content">
+                <div class="plugin-info-item">
+                  <span class="label">{{ t('plugin.version') }}：</span>
+                  <span class="value">{{ plugin.version || 'N/A' }}</span>
+                </div>
+                <div class="plugin-info-item">
+                  <span class="label">{{ t('plugin.author') }}：</span>
+                  <span class="value">{{ plugin.username }}</span>
+                </div>
+                <div class="plugin-info-item">
+                  <span class="label">{{ t('plugin.createTime') }}：</span>
+                  <span class="value">{{ plugin.createTime }}</span>
+                </div>
+                <div class="plugin-info-item introduction">
+                  <span class="label">{{ t('plugin.introduction') }}：</span>
+                  <span class="value">{{ plugin.introduction || t('plugin.noIntroduction') }}</span>
+                </div>
+                <div class="plugin-status">
+                  <ElTag
+                    v-if="plugin.isInstalled && plugin.needUpdate"
+                    type="warning"
+                    style="margin-bottom: 10px"
+                  >
+                    {{ t('plugin.needUpdate') }}
+                  </ElTag>
+                  <ElTag v-else-if="plugin.isInstalled" type="success" style="margin-bottom: 10px">
+                    {{ t('plugin.installed') }}
+                  </ElTag>
+                  <ElTag v-else style="margin-bottom: 10px">{{ t('plugin.notInstalled') }}</ElTag>
+                </div>
+                <div class="plugin-actions">
+                  <BaseButton
+                    v-if="plugin.isInstalled && plugin.needUpdate"
+                    type="warning"
+                    style="width: 100%"
+                    @click="handleInstallPlugin(plugin)"
+                  >
+                    {{ t('plugin.update') }}
+                  </BaseButton>
+                  <BaseButton
+                    v-else-if="plugin.isInstalled"
+                    type="info"
+                    disabled
+                    style="width: 100%"
+                  >
+                    {{ t('plugin.installed') }}
+                  </BaseButton>
+                  <BaseButton
+                    v-else
+                    type="primary"
+                    style="width: 100%"
+                    @click="handleInstallPlugin(plugin)"
+                  >
+                    {{ t('plugin.install') }}
+                  </BaseButton>
+                </div>
+              </div>
+            </ElCard>
+          </ElCol>
+        </ElRow>
+        <div v-if="filteredRemotePlugins.length === 0" class="empty-state">
+          <p>{{ t('plugin.noPluginData') }}</p>
+        </div>
+      </div>
+    </div>
+  </ElDrawer>
 </template>
+
+<style scoped lang="less">
+.plugin-market-container {
+  min-height: 400px;
+  padding: 10px 0;
+}
+
+.plugin-market-card {
+  border-radius: 12px;
+  overflow: hidden;
+
+  :deep(.el-card__body) {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+.plugin-card-cover {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.plugin-card-content {
+  padding: 15px;
+}
+
+.plugin-info-item {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+
+  .label {
+    font-weight: 600;
+    color: #606266;
+    margin-right: 5px;
+  }
+
+  .value {
+    color: #303133;
+  }
+
+  &.introduction {
+    .value {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #909399;
+    }
+  }
+}
+
+.plugin-status {
+  margin: 15px 0;
+}
+
+.plugin-actions {
+  margin-top: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #909399;
+  font-size: 16px;
+}
+
+:deep(.el-card__body) {
+  padding: 0;
+}
+</style>

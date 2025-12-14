@@ -16,3 +16,22 @@ export type LogRespData = {
   code: string
   data: string
 }
+
+export type RemotePluginData = {
+  id: number
+  name: string
+  module: string
+  priceStatus: number
+  price: number | null
+  hash: string
+  introduction: string
+  version: string
+  createTime: string
+  username: string
+  isInstalled: boolean
+  needUpdate: boolean
+}
+
+export interface RemotePluginResponse {
+  data: RemotePluginData[]
+}
