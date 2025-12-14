@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, watch, nextTick } from 'vue'
 import {
   ElMessage,
   ElTooltip,
@@ -14,14 +14,19 @@ import {
   ElCol,
   ElSelectV2,
   ElTreeV2,
-  ElTree
+  ElSelect,
+  ElOption,
+  ElDrawer
 } from 'element-plus'
+import { Plus, Delete } from '@element-plus/icons-vue'
 import { Dialog } from '@/components/Dialog'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPluginDataByModuleApi } from '@/api/plugins'
 import { getPocDataAllApi } from '@/api/poc'
 import { getTemplateDetailApi, saveTemplateDetailApi } from '@/api/task'
 import { pocData } from '@/api/poc/types'
+import { getManagetListApi, getPortDictDataApi } from '@/api/DictionaryManagement'
+import type { fileData, portDictData } from '@/api/DictionaryManagement/types'
 
 const { t } = useI18n()
 
@@ -50,6 +55,16 @@ const modules = [
   'PassiveScan'
 ]
 
+// 参数类型定义
+interface ParameterItem {
+  name: string
+  type: 'string' | 'bool' | 'dict' | 'port'
+  defaultValue?: string
+  dictCategory?: string
+  dictName?: string
+  portName?: string
+}
+
 // 存储每个模块的插件和参数数据
 const plugins = reactive<
   Record<
@@ -58,23 +73,206 @@ const plugins = reactive<
       name: string
       hash: string
       parameter: string
+      parameterList?: string
       help: string
       introduction: string
       enabled: boolean
     }[]
   >
 >({})
+// 存储每个插件的参数列表（结构化数据）
+const parameterLists = reactive<Record<string, Record<string, ParameterItem[]>>>({})
+// 存储生成的参数字符串（用于显示和保存）
 const parameters = reactive<Record<string, Record<string, string>>>({})
 const selectPlugin = reactive<Record<string, string[]>>({})
+
+// 字典和端口数据
+const dictList = ref<fileData[]>([])
+const portList = ref<portDictData[]>([])
+
+// 加载字典列表
+const loadDictList = async () => {
+  try {
+    const res = await getManagetListApi()
+    if (res.code === 200) {
+      dictList.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载字典列表失败:', error)
+  }
+}
+
+// 加载端口列表
+const loadPortList = async () => {
+  try {
+    const res = await getPortDictDataApi('', 1, 1000)
+    if (res.code === 200) {
+      portList.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载端口列表失败:', error)
+  }
+}
+
+// 格式化参数列表为参数字符串
+const formatParameters = (params: ParameterItem[]): string => {
+  if (!params || params.length === 0) {
+    return ''
+  }
+  return params
+    .filter((param) => param && param.name && param.type)
+    .map((param) => {
+      if (param.type === 'dict') {
+        // dict 类型：-name {dict.分类.名称}
+        if (param.dictCategory && param.dictName) {
+          return `-${param.name} {dict.${param.dictCategory}.${param.dictName}}`
+        }
+        return null
+      }
+      if (param.type === 'port') {
+        // port 类型：-name {port.name}
+        if (param.portName) {
+          return `-${param.name} {port.${param.portName}}`
+        }
+        return null
+      }
+      // string 和 bool 类型：只有当默认值有值时才格式化
+      if (
+        param.defaultValue !== undefined &&
+        param.defaultValue !== null &&
+        param.defaultValue !== ''
+      ) {
+        return `-${param.name} ${param.defaultValue}`
+      }
+      return null
+    })
+    .filter((item) => item !== null)
+    .join(' ')
+}
+
+// 解析参数字符串为参数列表（用于向后兼容，如果parameterList不存在时）
+const parseParameters = (paramStr: string): ParameterItem[] => {
+  if (!paramStr || paramStr.trim() === '') {
+    return []
+  }
+  // 简单的解析逻辑，将 -name value 格式解析为参数列表
+  const parts = paramStr.match(/-(\w+)\s+(\S+)/g)
+  if (!parts) {
+    return []
+  }
+  return parts
+    .map((part) => {
+      const match = part.match(/-(\w+)\s+(.+)/)
+      if (match) {
+        const name = match[1]
+        const value = match[2]
+        // 判断是否为 bool 类型
+        if (value === 'true' || value === 'false') {
+          return { name, type: 'bool', defaultValue: value }
+        }
+        // 判断是否为 dict 类型
+        if (value.startsWith('{dict.')) {
+          const dictMatch = value.match(/{dict\.(.+)\.(.+)}/)
+          if (dictMatch) {
+            return { name, type: 'dict', dictCategory: dictMatch[1], dictName: dictMatch[2] }
+          }
+        }
+        // 判断是否为 port 类型
+        if (value.startsWith('{port.')) {
+          const portMatch = value.match(/{port\.(.+)}/)
+          if (portMatch) {
+            return { name, type: 'port', portName: portMatch[1] }
+          }
+        }
+        // 默认 string 类型
+        return { name, type: 'string', defaultValue: value }
+      }
+      return null
+    })
+    .filter((item) => item !== null) as ParameterItem[]
+}
+
+// 处理参数列表变化，更新参数字符串
+const handleParameterListChange = (module: string, hash: string) => {
+  setTimeout(() => {
+    const params = parameterLists[module]?.[hash] || []
+    const formattedParams = formatParameters(params)
+    if (!parameters[module]) {
+      parameters[module] = {}
+    }
+    parameters[module][hash] = formattedParams
+  }, 0)
+}
+
+// 根据分类筛选字典名称
+const getFilteredDictNames = (category: string | undefined) => {
+  if (!category) {
+    return []
+  }
+  return dictList.value.filter((dict) => (dict.category || dict.name) === category)
+}
+
+// 处理分类改变，清空名称
+const handleDictCategoryChange = (module: string, hash: string, index: number) => {
+  const param = parameterLists[module][hash][index]
+  param.dictName = undefined
+  handleParameterListChange(module, hash)
+}
+
+// 添加参数（只允许添加string类型）
+const addParameter = (module: string, hash: string) => {
+  if (!parameterLists[module]) {
+    parameterLists[module] = {}
+  }
+  if (!parameterLists[module][hash]) {
+    parameterLists[module][hash] = []
+  }
+  parameterLists[module][hash].push({
+    name: '',
+    type: 'string',
+    defaultValue: ''
+  })
+  handleParameterListChange(module, hash)
+}
+
+// 删除参数
+const removeParameter = (module: string, hash: string, index: number) => {
+  parameterLists[module][hash].splice(index, 1)
+  handleParameterListChange(module, hash)
+}
+
 // 初始化插件数据
 const initPlugins = async () => {
   for (const module of modules) {
     const modulePlugins = await getPluginDataByModuleApi(module) // 调用实际接口获取插件数据
     parameters[module] = {} // 初始化空的参数对象
+    parameterLists[module] = {} // 初始化空的参数列表对象
     selectPlugin[module] = []
 
     plugins[module] = modulePlugins.data.list.map((plugin) => {
-      parameters[module][plugin.hash] = plugin.parameter || ''
+      // 如果有 parameterList，解析它；否则解析 parameter 字符串
+      let paramList: ParameterItem[] = []
+      if (plugin.parameterList) {
+        try {
+          paramList = JSON.parse(plugin.parameterList) as ParameterItem[]
+        } catch (error) {
+          console.error('解析 parameterList 失败:', error)
+          // 如果解析失败，尝试从 parameter 字符串解析
+          paramList = parseParameters(plugin.parameter || '')
+        }
+      } else {
+        paramList = parseParameters(plugin.parameter || '')
+      }
+
+      // 存储参数列表
+      if (!parameterLists[module]) {
+        parameterLists[module] = {}
+      }
+      parameterLists[module][plugin.hash] = paramList
+
+      // 生成参数字符串
+      const formattedParams = formatParameters(paramList)
+      parameters[module][plugin.hash] = formattedParams
 
       return {
         ...plugin,
@@ -93,15 +291,107 @@ const loadTemplate = async (id: string) => {
   vulList.value = template.data.vullist
   for (const module of modules) {
     parameters[module] = {}
+    parameterLists[module] = {}
 
     const moduleData = template.data?.[module] || []
     const modulePlugins = await getPluginDataByModuleApi(module) // 获取模块对应的插件
 
-    plugins[module] = modulePlugins.data.list.map((plugin) => ({
-      ...plugin,
-      enabled: moduleData.includes(plugin.hash) || false // 判断插件是否启用
-    }))
-    parameters[module] = template.data.Parameters[module] || {}
+    plugins[module] = modulePlugins.data.list.map((plugin) => {
+      // 优先使用保存的 parameterList，如果没有则尝试老版本的 Parameters，最后使用插件的默认 parameterList
+      const templateData = template.data as any
+      const savedParameterList = templateData.ParameterLists?.[module]?.[plugin.hash]
+      const savedParameterString = templateData.Parameters?.[module]?.[plugin.hash] // 老版本存储的参数字符串
+      let paramList: ParameterItem[] = []
+
+      if (savedParameterList) {
+        // 新版本：如果保存的是 parameterList（JSON字符串），直接解析
+        if (typeof savedParameterList === 'string') {
+          try {
+            paramList = JSON.parse(savedParameterList) as ParameterItem[]
+          } catch (error) {
+            console.error('解析保存的 parameterList 失败:', error)
+            // 解析失败，尝试从保存的参数字符串解析
+            if (savedParameterString && typeof savedParameterString === 'string') {
+              paramList = parseParameters(savedParameterString)
+            } else {
+              // 回退到使用插件默认 parameterList
+              paramList = plugin.parameterList
+                ? (JSON.parse(plugin.parameterList) as ParameterItem[])
+                : []
+            }
+          }
+        } else if (Array.isArray(savedParameterList)) {
+          // 如果保存的已经是数组格式，直接使用
+          paramList = savedParameterList as ParameterItem[]
+        } else {
+          // 其他格式，尝试从保存的参数字符串解析
+          if (savedParameterString && typeof savedParameterString === 'string') {
+            paramList = parseParameters(savedParameterString)
+          } else {
+            // 回退到使用插件默认 parameterList
+            paramList = plugin.parameterList
+              ? (JSON.parse(plugin.parameterList) as ParameterItem[])
+              : []
+          }
+        }
+      } else if (savedParameterString && typeof savedParameterString === 'string') {
+        // 老版本兼容：如果只有参数字符串，解析它
+        // 但需要与插件的 parameterList 合并，确保不丢失未配置的参数
+        const parsedParams = parseParameters(savedParameterString)
+
+        if (plugin.parameterList) {
+          // 如果有插件的 parameterList，合并两者
+          try {
+            const pluginParamList = JSON.parse(plugin.parameterList) as ParameterItem[]
+            // 将解析出的参数值更新到插件的参数列表中
+            paramList = pluginParamList.map((pluginParam) => {
+              const savedParam = parsedParams.find((p) => p.name === pluginParam.name)
+              if (savedParam) {
+                // 如果模板中有配置，使用模板的值，但保留插件的类型和其他信息
+                return {
+                  ...pluginParam,
+                  defaultValue: savedParam.defaultValue,
+                  dictCategory: savedParam.dictCategory,
+                  dictName: savedParam.dictName,
+                  portName: savedParam.portName
+                }
+              }
+              return pluginParam
+            })
+          } catch (error) {
+            console.error('解析插件 parameterList 失败:', error)
+            // 解析失败，直接使用从参数字符串解析的结果
+            paramList = parsedParams
+          }
+        } else {
+          // 插件没有 parameterList，直接使用解析结果
+          paramList = parsedParams
+        }
+      } else if (plugin.parameterList) {
+        // 没有保存的参数，使用插件的默认 parameterList
+        try {
+          paramList = JSON.parse(plugin.parameterList) as ParameterItem[]
+        } catch (error) {
+          console.error('解析插件 parameterList 失败:', error)
+          paramList = []
+        }
+      } else {
+        // 插件也没有 parameterList，尝试从 parameter 字符串解析（最后的后向兼容）
+        paramList = parseParameters(plugin.parameter || '')
+      }
+
+      // 存储参数列表
+      parameterLists[module][plugin.hash] = paramList
+
+      // 生成参数字符串（用于显示和向后兼容）
+      const formattedParams = formatParameters(paramList)
+      parameters[module][plugin.hash] = formattedParams
+
+      return {
+        ...plugin,
+        enabled: moduleData.includes(plugin.hash) || false // 判断插件是否启用
+      }
+    })
   }
 }
 
@@ -132,13 +422,27 @@ const onSubmit = async () => {
   for (const module of modules) {
     const enabledPlugins = plugins[module].filter((plugin) => plugin.enabled)
     result[module] = enabledPlugins.map((plugin) => plugin.hash)
+
+    // 保存参数字符串（用于向后兼容和执行）
     result.Parameters = result.Parameters || {}
     result.Parameters[module] = {}
 
-    // 收集参数
-    for (const plugin of plugins[module]) {
-      if (parameters[module][plugin.hash]) {
+    // 保存 parameterList（JSON字符串，用于完整恢复参数配置）
+    result.ParameterLists = result.ParameterLists || {}
+    result.ParameterLists[module] = {}
+
+    // 只收集已启用插件的参数
+    for (const plugin of enabledPlugins) {
+      // 保存参数字符串
+      if (parameters[module]?.[plugin.hash]) {
         result.Parameters[module][plugin.hash] = parameters[module][plugin.hash]
+      }
+
+      // 保存 parameterList（JSON字符串）
+      if (parameterLists[module]?.[plugin.hash]) {
+        result.ParameterLists[module][plugin.hash] = JSON.stringify(
+          parameterLists[module][plugin.hash]
+        )
       }
     }
   }
@@ -232,9 +536,49 @@ const getPocList = async () => {
 }
 
 getPocList()
+// 初始化时加载字典和端口列表
+loadDictList()
+loadPortList()
+
 const dialogVisible = ref(false)
 const openPocList = async () => {
   dialogVisible.value = true
+}
+
+// 参数配置抽屉
+const parameterDrawerVisible = ref(false)
+const currentPluginModule = ref('')
+const currentPluginHash = ref('')
+const currentPluginName = ref('')
+const drawerSize = ref('50%')
+
+// 计算抽屉尺寸
+const calculateDrawerSize = () => {
+  const screenWidth = window.innerWidth
+  if (screenWidth < 768) {
+    drawerSize.value = '90%'
+  } else if (screenWidth < 1024) {
+    drawerSize.value = '60%'
+  } else {
+    drawerSize.value = '50%'
+  }
+}
+
+// 打开参数配置抽屉
+const openParameterDialog = (module: string, hash: string, name: string) => {
+  currentPluginModule.value = module
+  currentPluginHash.value = hash
+  currentPluginName.value = name
+  calculateDrawerSize()
+  parameterDrawerVisible.value = true
+}
+
+// 关闭参数配置抽屉
+const closeParameterDialog = () => {
+  parameterDrawerVisible.value = false
+  currentPluginModule.value = ''
+  currentPluginHash.value = ''
+  currentPluginName.value = ''
 }
 watch(dialogVisible, (newVal) => {
   if (newVal) {
@@ -322,44 +666,83 @@ const handleCheckChange = (data, checked) => {
     </ElFormItem>
     <div v-for="module in modules" :key="module">
       <ElCard class="module-card" :body-style="{ padding: '20px' }" shadow="always">
-        <div style="display: flex; justify-content: space-between; align-items: center">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+          "
+        >
           <ElTag :style="{ backgroundColor: moduleColorMap[module], color: '#000' }">
             {{ t(`scanTemplate.${module}`) }}
           </ElTag>
         </div>
 
-        <div v-for="plugin in plugins[module]" :key="plugin.hash">
-          <ElFormItem :label="plugin.name">
-            <ElTooltip placement="top" effect="light" :content="plugin.introduction">
-              <ElSwitch v-model="plugin.enabled" />
-            </ElTooltip>
-          </ElFormItem>
-          <ElFormItem
-            :label="t('task.vulList')"
-            prop="type"
-            v-if="plugin.enabled && plugin.hash === 'ed93b8af6b72fe54a60efdb932cf6fbc'"
+        <div class="plugins-container">
+          <ElCard
+            v-for="plugin in plugins[module]"
+            :key="plugin.hash"
+            :class="['plugin-card', { 'plugin-card-enabled': plugin.enabled }]"
+            :body-style="{ padding: '0' }"
+            shadow="hover"
           >
-            <ElSelectV2
-              v-model="vulList"
-              filterable
-              :options="vulSelectOptions"
-              placeholder="Please select vul"
-              style="width: 80%; margin-right: 10px"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              tag-type="info"
-              :max-collapse-tags="3"
-            />
-            <ElButton type="primary" @click="openPocList" :loading="saveLoading">
-              {{ t('common.selectCategory') }}
-            </ElButton>
-          </ElFormItem>
-          <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
-            <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
-              <ElInput v-model="parameters[module][plugin.hash]" />
-            </ElTooltip>
-          </ElFormItem>
+            <div :class="['plugin-card-header', { 'plugin-card-header-enabled': plugin.enabled }]">
+              <div class="plugin-title">
+                <span class="plugin-name">{{ plugin.name }}</span>
+                <ElTooltip placement="top" effect="light" :content="plugin.introduction">
+                  <ElSwitch v-model="plugin.enabled" class="plugin-switch" />
+                </ElTooltip>
+              </div>
+            </div>
+            <div class="plugin-card-body">
+              <ElFormItem
+                :label="t('task.vulList')"
+                prop="type"
+                v-if="plugin.enabled && plugin.hash === 'ed93b8af6b72fe54a60efdb932cf6fbc'"
+              >
+                <ElSelectV2
+                  v-model="vulList"
+                  filterable
+                  :options="vulSelectOptions"
+                  placeholder="Please select vul"
+                  style="width: 80%; margin-right: 10px"
+                  multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+                  tag-type="info"
+                  :max-collapse-tags="3"
+                />
+                <ElButton type="primary" @click="openPocList" :loading="saveLoading">
+                  {{ t('common.selectCategory') }}
+                </ElButton>
+              </ElFormItem>
+              <!-- 参数预览和配置按钮 -->
+              <ElFormItem v-if="plugin.enabled" :label="t('plugin.parameter')">
+                <div style="display: flex; gap: 8px; align-items: flex-start">
+                  <ElInput
+                    :model-value="parameters[module]?.[plugin.hash] || ''"
+                    readonly
+                    style="background-color: #f5f5f5; flex: 1"
+                    type="textarea"
+                    :rows="2"
+                  />
+                  <ElButton
+                    type="primary"
+                    size="small"
+                    @click="openParameterDialog(module, plugin.hash, plugin.name)"
+                  >
+                    {{ t('plugin.parameterConfig') }}
+                  </ElButton>
+                </div>
+                <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
+                  <div style="font-size: 12px; color: #909399; margin-top: 4px; cursor: help">
+                    {{ t('plugin.parameterTip') }}
+                  </div>
+                </ElTooltip>
+              </ElFormItem>
+            </div>
+          </ElCard>
         </div>
       </ElCard>
     </div>
@@ -386,6 +769,201 @@ const handleCheckChange = (data, checked) => {
       @check-change="handleCheckChange"
     />
   </Dialog>
+
+  <!-- 参数配置抽屉 -->
+  <ElDrawer
+    v-model="parameterDrawerVisible"
+    :title="
+      currentPluginName
+        ? `${currentPluginName} - ${t('plugin.parameterConfig')}`
+        : t('plugin.parameterConfig')
+    "
+    :size="drawerSize"
+    direction="rtl"
+    :close-on-click-modal="false"
+  >
+    <ElForm label-width="100px">
+      <ElRow :gutter="20" v-if="parameterLists[currentPluginModule]?.[currentPluginHash]?.length">
+        <template
+          v-for="(param, index) in parameterLists[currentPluginModule]?.[currentPluginHash] || []"
+          :key="index"
+        >
+          <ElCol :span="24" style="margin-bottom: 16px">
+            <div style="padding: 12px; border: 1px solid #dcdfe6; border-radius: 4px">
+              <ElRow :gutter="10">
+                <!-- 参数名称 -->
+                <ElCol :span="24">
+                  <ElFormItem
+                    :prop="`parameterList.${currentPluginModule}.${currentPluginHash}.${index}.name`"
+                    style="margin-bottom: 8px"
+                    :label="t('plugin.parameterName')"
+                  >
+                    <div style="display: flex; align-items: center; gap: 8px">
+                      <ElInput
+                        v-model="param.name"
+                        :placeholder="t('plugin.parameterName')"
+                        :readonly="param.type !== 'string'"
+                        :disabled="param.type !== 'string'"
+                        style="flex: 1"
+                        @input="handleParameterListChange(currentPluginModule, currentPluginHash)"
+                      />
+                      <ElButton
+                        :icon="Delete"
+                        type="danger"
+                        circle
+                        size="small"
+                        @click="removeParameter(currentPluginModule, currentPluginHash, index)"
+                      />
+                    </div>
+                  </ElFormItem>
+                </ElCol>
+
+                <!-- string 和 bool 类型的默认值 -->
+                <template v-if="param.type === 'string' || param.type === 'bool'">
+                  <ElCol :span="24">
+                    <ElFormItem
+                      :prop="`parameterList.${currentPluginModule}.${currentPluginHash}.${index}.defaultValue`"
+                      style="margin-bottom: 0"
+                      :label="t('plugin.defaultValue')"
+                    >
+                      <ElSelect
+                        v-if="param.type === 'bool'"
+                        v-model="param.defaultValue"
+                        :placeholder="t('plugin.defaultValue')"
+                        @change="handleParameterListChange(currentPluginModule, currentPluginHash)"
+                      >
+                        <ElOption label="true" value="true" />
+                        <ElOption label="false" value="false" />
+                      </ElSelect>
+                      <ElInput
+                        v-else
+                        v-model="param.defaultValue"
+                        :placeholder="t('plugin.defaultValue')"
+                        @input="handleParameterListChange(currentPluginModule, currentPluginHash)"
+                      />
+                    </ElFormItem>
+                  </ElCol>
+                </template>
+
+                <!-- dict 类型的分类和名称 -->
+                <template v-if="param.type === 'dict'">
+                  <ElCol :span="24" style="margin-bottom: 8px">
+                    <ElFormItem
+                      :prop="`parameterList.${currentPluginModule}.${currentPluginHash}.${index}.dictCategory`"
+                      style="margin-bottom: 0"
+                      :label="t('plugin.category')"
+                    >
+                      <ElSelect
+                        v-model="param.dictCategory"
+                        :placeholder="t('plugin.category')"
+                        filterable
+                        @change="
+                          handleDictCategoryChange(currentPluginModule, currentPluginHash, index)
+                        "
+                      >
+                        <ElOption
+                          v-for="dict in dictList"
+                          :key="dict.id"
+                          :label="dict.category || dict.name"
+                          :value="dict.category || dict.name"
+                        />
+                      </ElSelect>
+                    </ElFormItem>
+                  </ElCol>
+                  <ElCol :span="24">
+                    <ElFormItem
+                      :prop="`parameterList.${currentPluginModule}.${currentPluginHash}.${index}.dictName`"
+                      style="margin-bottom: 0"
+                      :label="t('plugin.dictName')"
+                    >
+                      <ElSelect
+                        v-model="param.dictName"
+                        :placeholder="t('plugin.dictName')"
+                        filterable
+                        :disabled="!param.dictCategory"
+                        @change="handleParameterListChange(currentPluginModule, currentPluginHash)"
+                      >
+                        <ElOption
+                          v-for="dict in getFilteredDictNames(param.dictCategory)"
+                          :key="dict.id"
+                          :label="dict.name"
+                          :value="dict.name"
+                        />
+                      </ElSelect>
+                    </ElFormItem>
+                  </ElCol>
+                </template>
+
+                <!-- port 类型的 name -->
+                <template v-if="param.type === 'port'">
+                  <ElCol :span="24">
+                    <ElFormItem
+                      :prop="`parameterList.${currentPluginModule}.${currentPluginHash}.${index}.portName`"
+                      style="margin-bottom: 0"
+                      :label="t('plugin.portName')"
+                    >
+                      <ElSelect
+                        v-model="param.portName"
+                        :placeholder="t('plugin.portName')"
+                        filterable
+                        @change="handleParameterListChange(currentPluginModule, currentPluginHash)"
+                      >
+                        <ElOption
+                          v-for="port in portList"
+                          :key="port.id"
+                          :label="port.name"
+                          :value="port.name"
+                        />
+                      </ElSelect>
+                    </ElFormItem>
+                  </ElCol>
+                </template>
+              </ElRow>
+            </div>
+          </ElCol>
+        </template>
+      </ElRow>
+      <div v-else style="text-align: center; padding: 40px; color: #909399">
+        {{ t('plugin.noParameters') }}
+      </div>
+
+      <!-- 添加参数按钮 -->
+      <ElRow style="margin-top: 20px">
+        <ElCol :span="24">
+          <ElButton
+            :icon="Plus"
+            style="width: 100%"
+            @click="addParameter(currentPluginModule, currentPluginHash)"
+          >
+            {{ t('plugin.addParameter') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <!-- 参数预览 -->
+      <ElFormItem :label="t('plugin.parameter')" style="margin-top: 20px">
+        <ElInput
+          :model-value="parameters[currentPluginModule]?.[currentPluginHash] || ''"
+          readonly
+          style="background-color: #f5f5f5"
+          type="textarea"
+          :rows="3"
+        />
+        <div style="font-size: 12px; color: #909399; margin-top: 4px">
+          {{ t('plugin.parameterTip') }}
+        </div>
+      </ElFormItem>
+    </ElForm>
+
+    <template #footer>
+      <div style="text-align: right">
+        <ElButton @click="closeParameterDialog">{{ t('common.cancel') }}</ElButton>
+        <ElButton type="primary" @click="closeParameterDialog" style="margin-left: 10px">
+          {{ t('common.confirmed') }}
+        </ElButton>
+      </div>
+    </template>
+  </ElDrawer>
 </template>
 
 <style scoped>
@@ -393,9 +971,72 @@ const handleCheckChange = (data, checked) => {
 .ElFormItem {
   margin-bottom: 20px;
 }
+
 .module-card {
   margin-bottom: 20px; /* 卡片之间的间距 */
   border-radius: 8px; /* 圆角 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+.plugins-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* 插件卡片之间的间距 */
+}
+.plugin-card {
+  flex: 0 0 calc(33.333% - 10px); /* 每行显示3个插件卡片，留出间距 */
+  min-width: 300px; /* 最小宽度，确保在小屏幕上也能正常显示 */
+  border-radius: 8px;
+  border: 1px solid #e4e7ed;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.plugin-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #409eff;
+}
+.plugin-card-header {
+  padding: 12px 15px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-bottom: 1px solid #e4e7ed;
+}
+.plugin-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.plugin-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #303133;
+  flex: 1;
+}
+.plugin-switch {
+  flex-shrink: 0;
+}
+.plugin-card-body {
+  padding: 15px;
+  background-color: #ffffff;
+}
+.plugin-card:hover .plugin-card-header {
+  background: linear-gradient(135deg, #ecf5ff 0%, #b3d8ff 100%);
+}
+.plugin-card-enabled {
+  border-color: #67c23a;
+  border-width: 2px;
+  box-shadow: 0 2px 8px rgba(103, 194, 58, 0.2);
+}
+.plugin-card-enabled:hover {
+  border-color: #67c23a;
+  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
+}
+.plugin-card-header-enabled {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e1f3d8 100%) !important;
+  border-bottom-color: #67c23a;
+}
+.plugin-card-enabled .plugin-name {
+  color: #67c23a;
+  font-weight: 700;
 }
 </style>

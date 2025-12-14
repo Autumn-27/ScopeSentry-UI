@@ -588,7 +588,8 @@ export default {
     basicInfo: '基础信息',
     sourceCode: '源码',
     save: '保存',
-    parameterTip: '此字段由上方参数配置自动生成，格式为：-参数名 默认值。'
+    parameterTip: '此字段由上方参数配置自动生成，格式为：-参数名 默认值。',
+    noParameters: '该插件暂无参数配置'
   },
   workplace: {
     goodMorning: '早安',
