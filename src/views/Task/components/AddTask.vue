@@ -21,7 +21,8 @@ import {
   ElInputNumber,
   CheckboxValueType,
   ElText,
-  ElTreeSelect
+  ElTreeSelect,
+  ElDrawer
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
@@ -34,7 +35,6 @@ import {
   getTemplateDataApi,
   updateScheduleApi
 } from '@/api/task'
-import { Dialog } from '@/components/Dialog'
 import DetailTemplate from './DetailTemplate.vue'
 import { getProjectAllApi } from '@/api/project'
 const { t } = useI18n()
@@ -692,17 +692,11 @@ getProjectList()
       </ElCol>
     </ElRow>
   </ElForm>
-  <Dialog
-    v-model="dialogVisible"
-    :title="DialogTitle"
-    center
-    fullscreen
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
+  <ElDrawer v-model="dialogVisible" :title="DialogTitle" direction="rtl" size="80%">
     <DetailTemplate
       :closeDialog="closeTemplateDialog"
       :getList="getTemplateList"
       :id="templateId"
     />
-  </Dialog>
+  </ElDrawer>
 </template>

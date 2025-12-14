@@ -550,6 +550,7 @@ const parameterDrawerVisible = ref(false)
 const currentPluginModule = ref('')
 const currentPluginHash = ref('')
 const currentPluginName = ref('')
+const currentPluginHelp = ref('')
 const drawerSize = ref('50%')
 
 // 计算抽屉尺寸
@@ -569,6 +570,9 @@ const openParameterDialog = (module: string, hash: string, name: string) => {
   currentPluginModule.value = module
   currentPluginHash.value = hash
   currentPluginName.value = name
+  // 获取当前插件的 help 信息
+  const plugin = plugins[module]?.find((p) => p.hash === hash)
+  currentPluginHelp.value = plugin?.help || ''
   calculateDrawerSize()
   parameterDrawerVisible.value = true
 }
@@ -579,6 +583,7 @@ const closeParameterDialog = () => {
   currentPluginModule.value = ''
   currentPluginHash.value = ''
   currentPluginName.value = ''
+  currentPluginHelp.value = ''
 }
 watch(dialogVisible, (newVal) => {
   if (newVal) {
@@ -735,11 +740,6 @@ const handleCheckChange = (data, checked) => {
                     {{ t('plugin.parameterConfig') }}
                   </ElButton>
                 </div>
-                <ElTooltip placement="top" effect="light" :content="plugin.help" :trigger-keys="[]">
-                  <div style="font-size: 12px; color: #909399; margin-top: 4px; cursor: help">
-                    {{ t('plugin.parameterTip') }}
-                  </div>
-                </ElTooltip>
               </ElFormItem>
             </div>
           </ElCard>
@@ -783,6 +783,19 @@ const handleCheckChange = (data, checked) => {
     :close-on-click-modal="false"
   >
     <ElForm label-width="100px">
+      <!-- 插件帮助信息 -->
+      <ElRow v-if="currentPluginHelp" style="margin-bottom: 20px">
+        <ElCol :span="24">
+          <ElCard shadow="never" style="background-color: #f0f9ff; border: 1px solid #b3d8ff">
+            <div style="display: flex; align-items: flex-start; gap: 8px">
+              <span style="font-weight: 600; color: #409eff; flex-shrink: 0">
+                {{ t('plugin.help') }}:
+              </span>
+              <span style="color: #606266; line-height: 1.6">{{ currentPluginHelp }}</span>
+            </div>
+          </ElCard>
+        </ElCol>
+      </ElRow>
       <ElRow :gutter="20" v-if="parameterLists[currentPluginModule]?.[currentPluginHash]?.length">
         <template
           v-for="(param, index) in parameterLists[currentPluginModule]?.[currentPluginHash] || []"
