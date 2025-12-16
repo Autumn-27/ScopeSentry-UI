@@ -30,6 +30,7 @@ export type RemotePluginData = {
   username: string
   isInstalled: boolean
   needUpdate: boolean
+  isSystem: boolean
 }
 
 export interface RemotePluginResponse {

@@ -589,6 +589,8 @@ export default {
     sourceCode: '源码',
     save: '保存',
     parameterTip: '此字段由上方参数配置自动生成，格式为：-参数名 默认值。',
+    parameterConfigTip:
+      '提示：此处修改的参数只设置插件参数的模板，真正扫描时用到的参数是在扫描模板中设置的。',
     noParameters: '该插件暂无参数配置',
     free: '免费',
     paid: '收费',
@@ -606,7 +608,9 @@ export default {
     confirmInstall: '确定要{action}插件 "{name}" 吗？',
     installSuccess: '{action}请求已发送，请稍后刷新列表',
     installFailed: '安装插件失败',
-    pleaseSetKey: '请先设置插件密钥'
+    pleaseSetKey: '请先设置插件密钥',
+    priceStatus: '价格状态',
+    installStatus: '安装状态'
   },
   workplace: {
     goodMorning: '早安',

@@ -1,4 +1,5 @@
 import request from '@/axios'
+import axios from 'axios'
 import type { LogRespData, pluginData, RemotePluginResponse } from './types'
 import { commonRespData } from '../scommon/types'
 
@@ -100,6 +101,60 @@ export const uninstallPluginApi = (
   return request.post({ url: '/api/plugin/uninstall', data: { node, hash, module } })
 }
 
-export const getRemotePluginListApi = (): Promise<IResponse<RemotePluginResponse>> => {
-  return request.post({ url: '/api/plugin/remote/search' })
+// 获取本地已安装的插件列表
+export const getLocalPluginListApi = (): Promise<IResponse<pluginDataResponse>> => {
+  return request.post({ url: '/api/plugin', data: { search: '', pageIndex: 1, pageSize: 1000 } })
+}
+
+// 获取远程插件市场数据
+export const getRemotePluginMarketApi = (): Promise<any> => {
+  // 使用原生 axios 直接调用远程 API，避免添加 Authorization header
+  return axios
+    .post(
+      'https://api.scope-sentry.top/api/common/plugin/search',
+      {
+        name: '',
+        priceStatus: 2,
+        module: 'All',
+        tags: '',
+        page: 1,
+        size: 200
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    .then((res) => res.data)
+}
+
+// 获取插件导出数据
+export const getPluginExportDataApi = (hash: string): Promise<any> => {
+  // 使用原生 axios 直接调用远程 API
+  return axios
+    .get(`https://api.scope-sentry.top/api/common/plugin/export-data/${hash}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((res) => res.data)
+}
+
+// 导入插件
+export const importPluginApi = (
+  json: string,
+  source: string,
+  isSystem: boolean,
+  key: string
+): Promise<IResponse<commonRespData>> => {
+  return request.post({
+    url: '/api/plugin/import/data',
+    data: {
+      json,
+      source,
+      isSystem,
+      key
+    }
+  })
 }

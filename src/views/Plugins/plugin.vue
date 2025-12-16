@@ -10,6 +10,8 @@ import {
   ElDrawer,
   ElInput,
   ElRow,
+  ElSelect,
+  ElOption,
   ElText,
   ElMessageBox,
   ElTag,
@@ -23,7 +25,8 @@ import {
   ElDropdownItem,
   ElDropdownMenu,
   ElDropdown,
-  ElIcon
+  ElIcon,
+  ElBadge
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -37,12 +40,15 @@ import {
   deletePluginDataApi,
   getPluginDataApi,
   getPluginLogApi,
-  getRemotePluginListApi,
+  getLocalPluginListApi,
+  getRemotePluginMarketApi,
+  getPluginExportDataApi,
+  importPluginApi,
   reCheckPluginApi,
   reInstallPluginApi,
   uninstallPluginApi
 } from '@/api/plugins'
-import type { RemotePluginData } from '@/api/plugins/types'
+import type { RemotePluginData, pluginData } from '@/api/plugins/types'
 import detail from './components/detail.vue'
 import { useUserStore } from '@/store/modules/user'
 
@@ -319,6 +325,8 @@ const editPlugin = async (data) => {
 onMounted(() => {
   setMaxHeight()
   window.addEventListener('resize', setMaxHeight)
+  // 页面加载时自动查询远程插件列表，用于显示角标
+  loadRemotePlugins()
 })
 
 const maxHeight = ref(0)
@@ -410,6 +418,9 @@ const marketDrawerVisible = ref(false)
 const remotePluginList = ref<RemotePluginData[]>([])
 const marketLoading = ref(false)
 const marketSearch = ref('')
+const selectedModule = ref('')
+const selectedPriceStatus = ref<number | string>('')
+const selectedInstallStatus = ref<string>('')
 
 // 模块选项
 const moduleOptions = [
@@ -448,27 +459,87 @@ const moduleBackgrounds: { [key: string]: string } = {
   PassiveScan: 'linear-gradient(to top, #e0c3fc 0%, #8ec5fc 100%)'
 }
 
-const openMarketDialog = async () => {
+const openMarketDialog = () => {
   marketDrawerVisible.value = true
-  await loadRemotePlugins()
+  // 如果列表为空，则重新加载（防止首次打开时数据未加载）
+  if (remotePluginList.value.length === 0) {
+    loadRemotePlugins()
+  }
 }
 
 const closeMarketDialog = () => {
   marketDrawerVisible.value = false
+  resetFilters()
+}
+
+const resetFilters = () => {
   marketSearch.value = ''
+  selectedModule.value = ''
+  selectedPriceStatus.value = ''
+  selectedInstallStatus.value = ''
 }
 
 const loadRemotePlugins = async () => {
   marketLoading.value = true
   try {
-    const res = await getRemotePluginListApi()
-    if (res.code === 200) {
-      remotePluginList.value = res.data.data || []
-    } else {
-      ElMessage.error(res.message || '获取插件列表失败')
+    // 同时请求本地和远程接口
+    const [localRes, remoteRes] = await Promise.all([
+      getLocalPluginListApi(),
+      getRemotePluginMarketApi()
+    ])
+
+    // 处理本地插件数据，创建 hash 映射
+    const localPluginsMap = new Map<string, pluginData>()
+    if (localRes.code === 200 && localRes.data?.list) {
+      localRes.data.list.forEach((plugin: pluginData) => {
+        localPluginsMap.set(plugin.hash, plugin)
+      })
     }
+
+    // 处理远程插件数据
+    let remotePlugins: RemotePluginData[] = []
+    if (remoteRes.status === '200' && remoteRes.data?.data) {
+      remotePlugins = remoteRes.data.data.map((plugin: any) => {
+        const localPlugin = localPluginsMap.get(plugin.hash)
+        const isInstalled = !!localPlugin
+        let needUpdate = false
+
+        // 判断是否需要更新：如果已安装且版本不同，则需要更新
+        if (isInstalled && localPlugin) {
+          const localVersion = localPlugin.version || ''
+          const remoteVersion = plugin.version || ''
+          needUpdate =
+            localVersion !== remoteVersion && remoteVersion !== null && remoteVersion !== ''
+        }
+
+        // 解析 tags，判断是否为系统插件
+        let isSystem = false
+        if (plugin.tags) {
+          const tags = plugin.tags.split(',').map((tag: string) => tag.trim())
+          isSystem = tags.includes('内置')
+        }
+
+        return {
+          id: plugin.id,
+          name: plugin.name?.trim() || plugin.hash || `插件-${plugin.id}`,
+          module: plugin.module || '',
+          priceStatus: plugin.priceStatus,
+          price: plugin.price,
+          hash: plugin.hash || '',
+          introduction: plugin.introduction || '',
+          version: plugin.version || '',
+          createTime: plugin.createTime || '',
+          username: plugin.username || '',
+          isInstalled,
+          needUpdate,
+          isSystem
+        }
+      })
+    }
+
+    remotePluginList.value = remotePlugins
   } catch (error) {
-    console.error('Error loading remote plugins:', error)
+    console.error('Error loading plugins:', error)
     ElMessage.error('获取插件列表失败')
   } finally {
     marketLoading.value = false
@@ -477,67 +548,128 @@ const loadRemotePlugins = async () => {
 
 const handleInstallPlugin = async (plugin: RemotePluginData) => {
   try {
-    // 使用现有的导入功能，通过 hash 下载插件
-    const key = pluginKey.value || localStorage.getItem('plugin_key')
-    if (!key) {
-      ElMessage.warning(t('plugin.pleaseSetKey'))
-      keyDialogVisible.value = true
-      return
-    }
-
-    // 这里可能需要调用安装 API，暂时使用导入功能
-    // 可以通过 window.open 或者 fetch 下载插件文件
-    const downloadUrl = `https://plugin.scope-sentry.top/plugin/${plugin.hash}/download?key=${key}`
-
     const action =
       plugin.isInstalled && plugin.needUpdate ? t('plugin.update') : t('plugin.install')
-    const confirmMessage = t('plugin.confirmInstall')
-      .replace('{action}', action)
-      .replace('{name}', plugin.name)
 
-    ElMessageBox.confirm(confirmMessage, t('common.reminder'), {
+    // 确保插件名称不为空 - 检查多种可能的情况
+    let pluginName = '未知插件'
+    if (plugin && plugin.name) {
+      const trimmedName = String(plugin.name).trim()
+      if (trimmedName) {
+        pluginName = trimmedName
+      }
+    }
+
+    // 使用 Vue i18n 的参数化功能
+    const confirmMessage = t('plugin.confirmInstall', {
+      action,
+      name: pluginName
+    })
+
+    await ElMessageBox.confirm(confirmMessage, t('common.reminder'), {
       confirmButtonText: t('common.ok'),
       cancelButtonText: t('common.cancel'),
       type: 'info'
     })
-      .then(() => {
-        // 创建一个隐藏的链接来触发下载
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.download = `${plugin.name}.plugin`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
 
-        const successMessage = t('plugin.installSuccess').replace('{action}', action)
+    // 显示加载提示
+    const loadingMessage = ElMessage({
+      message: `${action}中...`,
+      type: 'info',
+      duration: 0,
+      showClose: false
+    })
+
+    try {
+      // 第一步：获取插件导出数据
+      const exportRes = await getPluginExportDataApi(plugin.hash)
+
+      if (exportRes.status !== '200' || !exportRes.data) {
+        loadingMessage.close()
+        ElMessage.error(exportRes.message || '获取插件数据失败')
+        return
+      }
+
+      const { json, source } = exportRes.data
+
+      // 第二步：导入插件
+      const importRes = await importPluginApi(
+        json || '',
+        source || '',
+        plugin.isSystem || false,
+        pluginKey.value || ''
+      )
+
+      loadingMessage.close()
+
+      if (importRes.code === 200) {
+        const successMessage = t('plugin.installSuccess', { action })
         ElMessage.success(successMessage)
-        // 延迟刷新本地插件列表
-        setTimeout(() => {
-          getList()
-          loadRemotePlugins()
-        }, 2000)
-      })
-      .catch(() => {
-        // 用户取消
-      })
-  } catch (error) {
-    console.error('Error installing plugin:', error)
-    ElMessage.error(t('plugin.installFailed'))
+        // 刷新本地插件列表和远程插件列表
+        getList()
+        loadRemotePlugins()
+      } else {
+        ElMessage.error(importRes.message || t('plugin.installFailed'))
+      }
+    } catch (error: any) {
+      loadingMessage.close()
+      console.error('Error installing plugin:', error)
+      ElMessage.error(error?.response?.data?.message || error?.message || t('plugin.installFailed'))
+    }
+  } catch (error: any) {
+    // 用户取消操作
+    if (error !== 'cancel') {
+      console.error('Error:', error)
+    }
   }
 }
 
+// 计算待处理插件数量（未安装或需要更新）
+const pendingPluginsCount = computed(() => {
+  return remotePluginList.value.filter((plugin) => !plugin.isInstalled || plugin.needUpdate).length
+})
+
 const filteredRemotePlugins = computed(() => {
-  if (!marketSearch.value) {
-    return remotePluginList.value
+  let filtered = remotePluginList.value
+
+  // 搜索筛选
+  if (marketSearch.value) {
+    const searchLower = marketSearch.value.toLowerCase()
+    filtered = filtered.filter(
+      (plugin) =>
+        plugin.name.toLowerCase().includes(searchLower) ||
+        plugin.module.toLowerCase().includes(searchLower) ||
+        plugin.introduction.toLowerCase().includes(searchLower) ||
+        plugin.username.toLowerCase().includes(searchLower)
+    )
   }
-  const searchLower = marketSearch.value.toLowerCase()
-  return remotePluginList.value.filter(
-    (plugin) =>
-      plugin.name.toLowerCase().includes(searchLower) ||
-      plugin.module.toLowerCase().includes(searchLower) ||
-      plugin.introduction.toLowerCase().includes(searchLower) ||
-      plugin.username.toLowerCase().includes(searchLower)
-  )
+
+  // 模块筛选
+  if (selectedModule.value) {
+    filtered = filtered.filter((plugin) => plugin.module === selectedModule.value)
+  }
+
+  // 价格状态筛选
+  if (selectedPriceStatus.value !== '') {
+    if (selectedPriceStatus.value === 'free') {
+      filtered = filtered.filter((plugin) => plugin.priceStatus === 0)
+    } else if (selectedPriceStatus.value === 'paid') {
+      filtered = filtered.filter((plugin) => plugin.priceStatus !== 0)
+    }
+  }
+
+  // 安装状态筛选
+  if (selectedInstallStatus.value) {
+    if (selectedInstallStatus.value === 'installed') {
+      filtered = filtered.filter((plugin) => plugin.isInstalled && !plugin.needUpdate)
+    } else if (selectedInstallStatus.value === 'needUpdate') {
+      filtered = filtered.filter((plugin) => plugin.isInstalled && plugin.needUpdate)
+    } else if (selectedInstallStatus.value === 'notInstalled') {
+      filtered = filtered.filter((plugin) => !plugin.isInstalled)
+    }
+  }
+
+  return filtered
 })
 
 LoadPluginKey()
@@ -580,9 +712,11 @@ LoadPluginKey()
             {{ t('plugin.delete') }}
           </BaseButton>
 
-          <BaseButton type="info" @click="openMarketDialog">
-            {{ t('plugin.market') }}
-          </BaseButton>
+          <ElBadge :value="pendingPluginsCount" :hidden="pendingPluginsCount === 0" :max="99">
+            <BaseButton type="success" @click="openMarketDialog">
+              {{ t('plugin.market') }}
+            </BaseButton>
+          </ElBadge>
 
           <BaseButton type="warning" @click="confirmCleanAllLog">
             {{ t('common.cleanAllLog') }}
@@ -636,10 +770,17 @@ LoadPluginKey()
   </ContentWrap>
   <Dialog
     v-model="dialogVisible"
-    :title="DialogTitle"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
   >
+    <template #title>
+      <div style="display: flex; align-items: center; gap: 16px; width: 100%">
+        <span style="font-weight: 500; white-space: nowrap">{{ DialogTitle }}</span>
+        <span style="color: #f56c6c; font-size: 12px; font-weight: normal; line-height: 1.4">
+          {{ t('plugin.parameterConfigTip') }}
+        </span>
+      </div>
+    </template>
     <detail :closeDialog="closeDialog" :getList="getList" :id="id" />
   </Dialog>
   <Dialog
@@ -680,7 +821,7 @@ LoadPluginKey()
   >
     <div class="flex flex-col gap-4">
       <ElRow :gutter="16">
-        <ElCol :span="8">
+        <ElCol :span="6">
           <ElInput
             v-model="marketSearch"
             :placeholder="t('common.inputText')"
@@ -693,8 +834,51 @@ LoadPluginKey()
           </ElInput>
         </ElCol>
         <ElCol :span="4">
+          <ElSelect
+            v-model="selectedModule"
+            :placeholder="t('plugin.module')"
+            clearable
+            style="width: 100%; height: 38px"
+          >
+            <ElOption
+              v-for="option in moduleOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </ElSelect>
+        </ElCol>
+        <ElCol :span="4">
+          <ElSelect
+            v-model="selectedPriceStatus"
+            :placeholder="t('plugin.priceStatus')"
+            clearable
+            style="width: 100%; height: 38px"
+          >
+            <ElOption :label="t('plugin.free')" value="free" />
+            <ElOption :label="t('plugin.paid')" value="paid" />
+          </ElSelect>
+        </ElCol>
+        <ElCol :span="4">
+          <ElSelect
+            v-model="selectedInstallStatus"
+            :placeholder="t('plugin.installStatus')"
+            clearable
+            style="width: 100%; height: 38px"
+          >
+            <ElOption :label="t('plugin.notInstalled')" value="notInstalled" />
+            <ElOption :label="t('plugin.installed')" value="installed" />
+            <ElOption :label="t('plugin.needUpdate')" value="needUpdate" />
+          </ElSelect>
+        </ElCol>
+        <ElCol :span="3">
           <BaseButton type="primary" @click="loadRemotePlugins" :loading="marketLoading">
             {{ t('plugin.refresh') }}
+          </BaseButton>
+        </ElCol>
+        <ElCol :span="3">
+          <BaseButton @click="resetFilters">
+            {{ t('common.reset') }}
           </BaseButton>
         </ElCol>
       </ElRow>
@@ -834,6 +1018,7 @@ LoadPluginKey()
   :deep(.el-card__body) {
     border-radius: 12px;
     overflow: hidden;
+    padding: 0;
   }
 }
 
@@ -890,7 +1075,9 @@ LoadPluginKey()
   font-size: 16px;
 }
 
-:deep(.el-card__body) {
-  padding: 0;
+.plugin-market-card {
+  :deep(.el-card__body) {
+    padding: 0;
+  }
 }
 </style>
