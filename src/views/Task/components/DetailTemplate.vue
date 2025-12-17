@@ -689,14 +689,26 @@ const handleCheckChange = (data, checked) => {
             v-for="plugin in plugins[module]"
             :key="plugin.hash"
             :class="['plugin-card', { 'plugin-card-enabled': plugin.enabled }]"
-            :body-style="{ padding: '0' }"
+            :style="{ '--card-accent-color': moduleColorMap[module] }"
+            :body-style="{ padding: '0', height: '100%', display: 'flex', flexDirection: 'column' }"
             shadow="hover"
           >
-            <div :class="['plugin-card-header', { 'plugin-card-header-enabled': plugin.enabled }]">
+            <div class="plugin-card-header">
               <div class="plugin-title">
-                <span class="plugin-name">{{ plugin.name }}</span>
+                <div class="plugin-name-wrapper">
+                  <span class="plugin-name" :title="plugin.name">{{ plugin.name }}</span>
+                </div>
+                <ElTooltip placement="top" effect="dark" :content="plugin.enabled ? t('common.enabled') : t('common.disabled')">
+                  <ElSwitch
+                    v-model="plugin.enabled"
+                    class="plugin-switch"
+                    style="--el-switch-on-color: var(--card-accent-color)"
+                  />
+                </ElTooltip>
+              </div>
+              <div class="plugin-desc" v-if="plugin.introduction">
                 <ElTooltip placement="top" effect="light" :content="plugin.introduction">
-                  <ElSwitch v-model="plugin.enabled" class="plugin-switch" />
+                  <span class="text-truncate">{{ plugin.introduction }}</span>
                 </ElTooltip>
               </div>
             </div>
@@ -986,70 +998,117 @@ const handleCheckChange = (data, checked) => {
 }
 
 .module-card {
-  margin-bottom: 20px; /* 卡片之间的间距 */
-  border-radius: 8px; /* 圆角 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-}
-.plugins-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px; /* 插件卡片之间的间距 */
-}
-.plugin-card {
-  flex: 0 0 calc(33.333% - 10px); /* 每行显示3个插件卡片，留出间距 */
-  min-width: 300px; /* 最小宽度，确保在小屏幕上也能正常显示 */
-  border-radius: 8px;
-  border: 1px solid #e4e7ed;
-  background-color: #ffffff;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  overflow: hidden;
 }
+
+.module-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.plugins-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.plugin-card {
+  border-radius: 12px;
+  border: 1px solid #eef0f5;
+  background-color: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible; /* Allow shadow to spill */
+  border-top: 4px solid var(--card-accent-color, #409eff);
+}
+
 .plugin-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-color: #409eff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+  border-color: transparent; /* Let the shadow define the edge */
 }
+
+.plugin-card-enabled {
+  background: linear-gradient(to bottom, #ffffff, #fafafa);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .plugin-card-header {
-  padding: 12px 15px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-bottom: 1px solid #e4e7ed;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f2f5;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
 }
+
 .plugin-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 }
-.plugin-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: #303133;
+
+.plugin-name-wrapper {
   flex: 1;
+  overflow: hidden;
+  margin-right: 12px;
 }
-.plugin-switch {
-  flex-shrink: 0;
-}
-.plugin-card-body {
-  padding: 15px;
-  background-color: #ffffff;
-}
-.plugin-card:hover .plugin-card-header {
-  background: linear-gradient(135deg, #ecf5ff 0%, #b3d8ff 100%);
-}
-.plugin-card-enabled {
-  border-color: #67c23a;
-  border-width: 2px;
-  box-shadow: 0 2px 8px rgba(103, 194, 58, 0.2);
-}
-.plugin-card-enabled:hover {
-  border-color: #67c23a;
-  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
-}
-.plugin-card-header-enabled {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e1f3d8 100%) !important;
-  border-bottom-color: #67c23a;
-}
-.plugin-card-enabled .plugin-name {
-  color: #67c23a;
+
+.plugin-name {
   font-weight: 700;
+  font-size: 16px;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.plugin-desc {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.4;
+}
+
+.text-truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plugin-card-body {
+  padding: 20px;
+  background-color: #ffffff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Customizing the parameter input area */
+.plugin-card-body :deep(.el-textarea__inner) {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  color: #475569;
+  box-shadow: none;
+}
+
+.plugin-card-body :deep(.el-textarea__inner:hover) {
+  border-color: #cbd5e1;
+}
+
+.plugin-card-body :deep(.el-button--small) {
+  padding: 8px 12px;
+  font-weight: 500;
 }
 </style>
