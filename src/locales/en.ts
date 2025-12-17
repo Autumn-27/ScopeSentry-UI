@@ -51,6 +51,8 @@ export default {
     config: 'Config',
     on: 'On',
     off: 'Off',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
     save: 'Save',
     true: 'true',
     false: 'false',
@@ -565,6 +567,7 @@ export default {
   },
   plugin: {
     name: 'Name',
+    status: 'Status',
     version: 'Version',
     parameter: 'Parameter',
     introduction: 'Introduction',
@@ -614,6 +617,8 @@ export default {
     confirmInstall: 'Are you sure you want to {action} plugin "{name}"?',
     installSuccess: '{action} request sent, please refresh the list later',
     installFailed: 'Failed to install plugin',
+    clientPlugin: 'Client Plugin',
+    serverPlugin: 'Server Plugin',
     pleaseSetKey: 'Please set plugin key first',
     priceStatus: 'Price Status',
     installStatus: 'Install Status'

@@ -16,9 +16,10 @@ interface PluginDeleteItem {
 export const getPluginDataApi = (
   search: string,
   pageIndex: number,
-  pageSize: number
+  pageSize: number,
+  type?: string
 ): Promise<IResponse<pluginDataResponse>> => {
-  return request.post({ url: '/api/plugin', data: { search, pageIndex, pageSize } })
+  return request.post({ url: '/api/plugin', data: { search, pageIndex, pageSize, type } })
 }
 
 export const getPluginDetailApi = (id: string): Promise<IResponse<pluginData>> => {
@@ -35,11 +36,24 @@ export const savePluginDataApi = (
   introduction: string,
   source: string,
   key: string,
-  parameterList?: string
+  parameterList?: string,
+  type?: string
 ): Promise<IResponse<commonRespData>> => {
   return request.post({
     url: '/api/plugin/save',
-    data: { id, name, version, module, parameter, help, introduction, source, key, parameterList }
+    data: {
+      id,
+      name,
+      version,
+      module,
+      parameter,
+      help,
+      introduction,
+      source,
+      key,
+      parameterList,
+      type
+    }
   })
 }
 
@@ -103,7 +117,10 @@ export const uninstallPluginApi = (
 
 // 获取本地已安装的插件列表
 export const getLocalPluginListApi = (): Promise<IResponse<pluginDataResponse>> => {
-  return request.post({ url: '/api/plugin', data: { search: '', pageIndex: 1, pageSize: 1000 } })
+  return request.post({
+    url: '/api/plugin',
+    data: { search: '', pageIndex: 1, pageSize: 1000, type: 'all' }
+  })
 }
 
 // 获取远程插件市场数据
@@ -155,6 +172,20 @@ export const importPluginApi = (
       source,
       isSystem,
       key
+    }
+  })
+}
+
+// 更新插件状态
+export const updatePluginStatusApi = (
+  id: string,
+  status: boolean
+): Promise<IResponse<commonRespData>> => {
+  return request.post({
+    url: '/api/plugin/status',
+    data: {
+      id,
+      status
     }
   })
 }

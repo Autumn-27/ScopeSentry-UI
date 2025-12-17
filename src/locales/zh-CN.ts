@@ -53,6 +53,8 @@ export default {
     config: '设置',
     on: '开启',
     off: '关闭',
+    enabled: '已启用',
+    disabled: '已禁用',
     save: '保存',
     required: '该项为必填项',
     loginOut: '退出系统',
@@ -561,6 +563,7 @@ export default {
   },
   plugin: {
     name: '插件名称',
+    status: '状态',
     version: '版本',
     parameter: '参数',
     introduction: '简介',
@@ -609,6 +612,8 @@ export default {
     installSuccess: '{action}请求已发送，请稍后刷新列表',
     installFailed: '安装插件失败',
     pleaseSetKey: '请先设置插件密钥',
+    clientPlugin: '扫描端插件',
+    serverPlugin: '服务端插件',
     priceStatus: '价格状态',
     installStatus: '安装状态'
   },

@@ -30,6 +30,7 @@ const props = defineProps<{
   closeDialog: () => void
   getList: () => void
   id: string
+  tp?: string
 }>()
 
 // 参数类型定义
@@ -72,7 +73,7 @@ const resetForm = () => {
 // 校验规则
 const rules = ref({
   name: [{ required: true, message: '', trigger: 'blur' }],
-  module: [{ required: true, message: '', trigger: 'change' }],
+  module: [{ required: props.tp == 'scan' ? true : false, message: '', trigger: 'change' }],
   source: [{ required: true, message: '', trigger: 'blur' }]
 })
 
@@ -283,7 +284,7 @@ const save = async () => {
     saveLoading.value = false // 结束加载状态
     return
   }
-  if (form.value.module == '') {
+  if (form.value.module == '' && props.tp == 'scan') {
     ElMessage.error('module 不能为空')
     saveLoading.value = false // 结束加载状态
     return
@@ -308,7 +309,8 @@ const save = async () => {
       form.value.introduction,
       content.value,
       pluginKey.value,
-      parameterListStr
+      parameterListStr,
+      props.tp
     )
     if (res.code == 505) {
       localStorage.removeItem('plugin_key')
@@ -338,7 +340,7 @@ const save = async () => {
           </ElCol>
 
           <!-- Module -->
-          <ElCol :span="12">
+          <ElCol :span="12" v-if="props.tp == 'scan'">
             <ElFormItem :label="t('plugin.module')" prop="module">
               <ElSelect v-model="form.module" :disabled="isSystem">
                 <ElOption
@@ -359,7 +361,7 @@ const save = async () => {
           </ElCol>
 
           <!-- Help -->
-          <ElCol :span="12">
+          <ElCol :span="12" v-if="props.tp == 'scan'">
             <ElFormItem :label="t('plugin.help')" prop="help">
               <ElInput v-model="form.help" />
             </ElFormItem>
@@ -373,7 +375,7 @@ const save = async () => {
           </ElCol>
 
           <!-- 参数配置 -->
-          <ElCol :span="24">
+          <ElCol :span="24" v-if="props.tp == 'scan'">
             <ElFormItem :label="t('plugin.parameterConfig')">
               <ElRow :gutter="20">
                 <template v-for="(param, index) in form.parameterList" :key="index">
@@ -515,7 +517,7 @@ const save = async () => {
           </ElCol>
 
           <!-- Parameter (只读，由参数配置自动生成) -->
-          <ElCol :span="24">
+          <ElCol :span="24" v-if="props.tp == 'scan'">
             <ElFormItem :label="t('plugin.parameter')" prop="parameter">
               <ElInput
                 v-model="form.parameter"

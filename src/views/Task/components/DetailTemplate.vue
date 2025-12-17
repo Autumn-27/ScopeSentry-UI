@@ -698,7 +698,11 @@ const handleCheckChange = (data, checked) => {
                 <div class="plugin-name-wrapper">
                   <span class="plugin-name" :title="plugin.name">{{ plugin.name }}</span>
                 </div>
-                <ElTooltip placement="top" effect="dark" :content="plugin.enabled ? t('common.enabled') : t('common.disabled')">
+                <ElTooltip
+                  placement="top"
+                  effect="dark"
+                  :content="plugin.enabled ? t('common.enabled') : t('common.disabled')"
+                >
                   <ElSwitch
                     v-model="plugin.enabled"
                     class="plugin-switch"
@@ -1002,12 +1006,16 @@ const handleCheckChange = (data, checked) => {
   border-radius: 12px;
   border: none;
   background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 10px 25px -5px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .module-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .plugins-container {
