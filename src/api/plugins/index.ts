@@ -147,10 +147,14 @@ export const getRemotePluginMarketApi = (): Promise<any> => {
 }
 
 // 获取插件导出数据
-export const getPluginExportDataApi = (hash: string): Promise<any> => {
+export const getPluginExportDataApi = (hash: string, token?: string): Promise<any> => {
   // 使用原生 axios 直接调用远程 API
+  let url = `https://api.scope-sentry.top/api/common/plugin/export-data/${hash}`
+  if (token) {
+    url += `?token=${token}`
+  }
   return axios
-    .get(`https://api.scope-sentry.top/api/common/plugin/export-data/${hash}`, {
+    .get(url, {
       headers: {
         'Content-Type': 'application/json'
       }

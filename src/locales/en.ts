@@ -84,6 +84,7 @@ export default {
     toolDes: 'Used to set up custom systems',
     query: 'Query',
     reset: 'Reset',
+    all: 'All',
     shrink: 'Put away',
     expand: 'Expand',
     delMessage: 'Delete the selected data?',
@@ -619,9 +620,15 @@ export default {
     installFailed: 'Failed to install plugin',
     clientPlugin: 'Client Plugin',
     serverPlugin: 'Server Plugin',
+    scanPlugin: 'Scan Plugin',
     pleaseSetKey: 'Please set plugin key first',
     priceStatus: 'Price Status',
-    installStatus: 'Install Status'
+    installStatus: 'Install Status',
+    token: 'Token',
+    tokenPlaceholder: 'Please enter plugin Token',
+    tokenRequired: 'Please enter Token',
+    scan: 'Scan',
+    server: 'Server'
   },
   workplace: {
     goodMorning: 'Good morning',

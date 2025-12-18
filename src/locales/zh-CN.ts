@@ -84,6 +84,7 @@ export default {
     toolDes: '用于设置定制系统',
     query: '查询',
     reset: '重置',
+    all: '全部',
     shrink: '收起',
     expand: '展开',
     delMessage: '是否删除所选中数据？',
@@ -614,8 +615,14 @@ export default {
     pleaseSetKey: '请先设置插件密钥',
     clientPlugin: '扫描端插件',
     serverPlugin: '服务端插件',
+    scanPlugin: '扫描端插件',
     priceStatus: '价格状态',
-    installStatus: '安装状态'
+    installStatus: '安装状态',
+    token: 'Token',
+    tokenPlaceholder: '请输入插件 Token',
+    tokenRequired: '请输入 Token',
+    scan: '扫描',
+    server: '服务端'
   },
   workplace: {
     goodMorning: '早安',

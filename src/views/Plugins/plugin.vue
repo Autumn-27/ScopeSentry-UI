@@ -73,7 +73,8 @@ const loadRemotePlugins = async () => {
           username: plugin.username || '',
           isInstalled,
           needUpdate,
-          isSystem
+          isSystem,
+          type: plugin.type || 'scan' // 空字符串视为 'scan'
         }
       })
     }
@@ -88,7 +89,7 @@ const loadRemotePlugins = async () => {
 }
 
 // 处理插件安装
-const handleInstallPlugin = async (plugin: RemotePluginData) => {
+const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => {
   try {
     const action =
       plugin.isInstalled && plugin.needUpdate ? t('plugin.update') : t('plugin.install')
@@ -101,16 +102,19 @@ const handleInstallPlugin = async (plugin: RemotePluginData) => {
       }
     }
 
-    const confirmMessage = t('plugin.confirmInstall', {
-      action,
-      name: pluginName
-    })
+    // 如果是收费插件且没有 token，不需要确认（已经在子组件中处理了 token 输入）
+    if (plugin.priceStatus === 0) {
+      const confirmMessage = t('plugin.confirmInstall', {
+        action,
+        name: pluginName
+      })
 
-    await ElMessageBox.confirm(confirmMessage, t('common.reminder'), {
-      confirmButtonText: t('common.ok'),
-      cancelButtonText: t('common.cancel'),
-      type: 'info'
-    })
+      await ElMessageBox.confirm(confirmMessage, t('common.reminder'), {
+        confirmButtonText: t('common.ok'),
+        cancelButtonText: t('common.cancel'),
+        type: 'info'
+      })
+    }
 
     const loadingMessage = ElMessage({
       message: `${action}中...`,
@@ -120,7 +124,7 @@ const handleInstallPlugin = async (plugin: RemotePluginData) => {
     })
 
     try {
-      const exportRes = await getPluginExportDataApi(plugin.hash)
+      const exportRes = await getPluginExportDataApi(plugin.hash, token)
 
       if (exportRes.status !== '200' || !exportRes.data) {
         loadingMessage.close()
