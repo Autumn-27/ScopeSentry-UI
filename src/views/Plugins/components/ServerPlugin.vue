@@ -18,7 +18,8 @@ import {
   ElDropdown,
   ElIcon,
   ElBadge,
-  ElSwitch
+  ElSwitch,
+  ElDrawer
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -447,18 +448,9 @@ const cleanLog = async () => {
       />
     </div>
   </ContentWrap>
-  <Dialog
-    v-model="dialogVisible"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-  >
-    <template #title>
-      <div style="display: flex; align-items: center; gap: 16px; width: 100%">
-        <span style="font-weight: 500; white-space: nowrap">{{ DialogTitle }}</span>
-      </div>
-    </template>
+  <ElDrawer v-model="dialogVisible" :title="DialogTitle" size="50%" direction="rtl">
     <detail :closeDialog="closeDialog" :getList="getList" :id="id" tp="server" />
-  </Dialog>
+  </ElDrawer>
   <Dialog
     v-model="logDialogVisible"
     :title="t('node.log')"

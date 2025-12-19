@@ -536,27 +536,27 @@ const save = async () => {
 
       <!-- 源码标签页 -->
       <ElTabPane :label="t('plugin.sourceCode')" name="source" v-if="!isSystem">
-        <ElFormItem :label="t('plugin.source')" prop="source">
+        <div class="code-editor-container">
           <codemirror
             v-model="content"
-            :style="{ height: '400px', width: '90%' }"
+            class="code-editor"
             :autofocus="true"
             :indent-with-tab="true"
             :tab-size="2"
             :extensions="extensions"
             :disabled="isSystem"
           />
-        </ElFormItem>
+        </div>
       </ElTabPane>
     </ElTabs>
 
-    <ElRow style="margin-top: 20px">
-      <ElCol :span="24" style="text-align: right">
-        <ElButton type="primary" @click="save" :loading="saveLoading">
-          {{ t('plugin.save') }}
-        </ElButton>
-      </ElCol>
-    </ElRow>
+    <!-- 固定在底部的操作栏 -->
+    <div class="action-bar">
+      <ElButton @click="props.closeDialog">{{ t('common.cancel') }}</ElButton>
+      <ElButton type="primary" @click="save" :loading="saveLoading">
+        {{ t('plugin.save') }}
+      </ElButton>
+    </div>
   </ElForm>
 </template>
 
@@ -566,5 +566,62 @@ const save = async () => {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* 源码编辑器容器 */
+.code-editor-container {
+  height: calc(100vh - 300px);
+  min-height: 500px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.code-editor {
+  height: 100%;
+  width: 100%;
+}
+
+/* 固定底部操作栏 */
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 0;
+  background: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color-light);
+  margin-top: 20px;
+  z-index: 10;
+}
+
+/* 确保标签页内容有足够的内边距 */
+:deep(.el-tabs__content) {
+  padding: 20px 0;
+}
+
+/* 改进代码编辑器样式 */
+:deep(.cm-editor) {
+  height: 100%;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+:deep(.cm-scroller) {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+:deep(.cm-focused) {
+  outline: none;
+}
+
+/* 响应式调整 */
+@media (max-height: 800px) {
+  .code-editor-container {
+    height: calc(100vh - 250px);
+    min-height: 400px;
+  }
 }
 </style>
