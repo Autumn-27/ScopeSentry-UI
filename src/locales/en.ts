@@ -100,7 +100,16 @@ export default {
     lengthRange: 'The length should be between {min} and {max}',
     notSpace: 'Spaces are not allowed',
     notSpecialCharacters: 'Special characters are not allowed',
-    isEqual: 'The two are not equal'
+    isEqual: 'The two are not equal',
+    search: 'Search',
+    autoScroll: 'Auto Scroll',
+    noData: 'No Data',
+    searchResult: 'Search Results',
+    lines: 'lines',
+    copy: 'Copy',
+    copySuccess: 'Copy Success',
+    copyFailed: 'Copy Failed',
+    success: 'Success'
   },
   export: {
     exportType: 'Export Type',

@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted, h, inject, computed, type Ref } from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, Search } from '@element-plus/icons-vue'
 import {
   ElButton,
   ElCol,
@@ -23,7 +23,9 @@ import {
   ElDropdown,
   ElIcon,
   ElBadge,
-  ElDrawer
+  ElDrawer,
+  ElSpace,
+  ElSwitch
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
@@ -365,22 +367,82 @@ const setMaxHeight = () => {
 const logDialogVisible = ref(false)
 const closeLogDialogVisible = () => {
   logDialogVisible.value = false
+  logSearchText.value = ''
 }
 const logContent = ref('')
+const logSearchText = ref('')
+const logScrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+const autoScroll = ref(true)
 
 const logModule = ref('')
 const logHash = ref('')
 const openLogDialogVisible = async (data) => {
   logModule.value = data.module
   logHash.value = data.hash
-  const res = await getPluginLogApi(data.module, data.hash)
-  logContent.value = res.data.data
+  await refreshLog()
   logDialogVisible.value = true
+  // 等待DOM更新后滚动到底部
+  setTimeout(() => {
+    scrollToBottom()
+  }, 100)
+}
+
+const refreshLog = async () => {
+  const res = await getPluginLogApi(logModule.value, logHash.value)
+  logContent.value = res.data.data
+  if (autoScroll.value) {
+    setTimeout(() => {
+      scrollToBottom()
+    }, 50)
+  }
 }
 
 const cleanLog = async () => {
   await cleanPluginLogApi(logModule.value, logHash.value)
   logContent.value = ''
+  ElMessage.success(t('common.cleanLog') + ' ' + t('common.success'))
+}
+
+const scrollToBottom = () => {
+  if (logScrollbarRef.value) {
+    const scrollbar = logScrollbarRef.value
+    const scrollbarEl = scrollbar.$el
+    const wrapEl = scrollbarEl?.querySelector('.el-scrollbar__wrap')
+    if (wrapEl) {
+      wrapEl.scrollTop = wrapEl.scrollHeight
+    }
+  }
+}
+
+const copyLog = async () => {
+  if (logContent.value) {
+    try {
+      await navigator.clipboard.writeText(logContent.value)
+      ElMessage.success(t('common.copySuccess'))
+    } catch (error) {
+      ElMessage.error(t('common.copyFailed'))
+    }
+  }
+}
+
+// 过滤后的日志内容（用于搜索高亮）
+const filteredLogContent = computed(() => {
+  if (!logSearchText.value || !logContent.value) {
+    return logContent.value
+  }
+  const searchText = logSearchText.value
+  const lines = logContent.value.split('\n')
+  return lines.filter((line) => line.toLowerCase().includes(searchText.toLowerCase())).join('\n')
+})
+
+// 高亮搜索关键词
+const highlightLog = (text: string) => {
+  if (!logSearchText.value || !text) {
+    return text
+  }
+  const searchText = logSearchText.value
+  const regex = new RegExp(`(${searchText})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
 }
 const userStore = useUserStore()
 const uploadHeaders = { Authorization: `${userStore.getToken}` }
@@ -524,21 +586,93 @@ defineExpose({
     </template>
     <detail :closeDialog="closeDialog" :getList="getList" :id="id" tp="scan" />
   </ElDrawer>
-  <Dialog
+  <ElDrawer
     v-model="logDialogVisible"
     :title="t('node.log')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    :maxHeight="maxHeight"
+    size="80%"
+    direction="rtl"
+    :with-header="true"
   >
-    <ElScrollbar>
-      <pre v-if="logContent">{{ logContent }}</pre>
-    </ElScrollbar>
-    <template #footer>
-      <BaseButton @click="cleanLog" type="danger">{{ t('common.cleanLog') }}</BaseButton>
-      <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
+    <template #header>
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%">
+        <span style="font-weight: 500">{{ t('node.log') }}</span>
+        <ElSpace>
+          <ElInput
+            v-model="logSearchText"
+            :placeholder="t('common.search')"
+            clearable
+            style="width: 200px"
+          >
+            <template #prefix>
+              <ElIcon><Search /></ElIcon>
+            </template>
+          </ElInput>
+          <ElSwitch v-model="autoScroll" :active-text="t('common.autoScroll')" inactive-text="" />
+        </ElSpace>
+      </div>
     </template>
-  </Dialog>
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <ElScrollbar ref="logScrollbarRef" style="flex: 1; height: 0">
+        <div
+          style="
+            padding: 16px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            min-height: 100%;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+          "
+        >
+          <div v-if="logSearchText && filteredLogContent">
+            <div
+              v-for="(line, index) in filteredLogContent.split('\n')"
+              :key="index"
+              v-html="highlightLog(line)"
+            ></div>
+          </div>
+          <div v-else-if="logContent">
+            {{ logContent }}
+          </div>
+          <div v-else style="color: #888; text-align: center; padding: 40px">
+            {{ t('common.noData') }}
+          </div>
+        </div>
+      </ElScrollbar>
+      <div
+        style="
+          padding: 16px;
+          border-top: 1px solid var(--el-border-color);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div style="color: var(--el-text-color-secondary); font-size: 12px">
+          <span v-if="logSearchText">
+            {{ t('common.searchResult') }}:
+            {{ filteredLogContent.split('\n').filter((l) => l).length }}
+            {{ t('common.lines') }}
+          </span>
+          <span v-else-if="logContent">
+            {{ logContent.split('\n').filter((l) => l).length }} {{ t('common.lines') }}
+          </span>
+        </div>
+        <ElSpace>
+          <BaseButton @click="refreshLog" type="primary">
+            {{ t('common.refresh') }}
+          </BaseButton>
+          <BaseButton @click="copyLog" type="info">
+            {{ t('common.copy') }}
+          </BaseButton>
+          <BaseButton @click="cleanLog" type="danger">{{ t('common.cleanLog') }}</BaseButton>
+          <BaseButton @click="closeLogDialogVisible">{{ t('common.off') }}</BaseButton>
+        </ElSpace>
+      </div>
+    </div>
+  </ElDrawer>
   <Dialog
     v-model="keyDialogVisible"
     :title="t('plugin.key')"

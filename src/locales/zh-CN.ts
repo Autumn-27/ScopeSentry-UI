@@ -100,7 +100,16 @@ export default {
     lengthRange: '长度在 {min} 到 {max} 个字符',
     notSpace: '不能包含空格',
     notSpecialCharacters: '不能包含特殊字符',
-    isEqual: '两次输入不一致'
+    isEqual: '两次输入不一致',
+    search: '搜索',
+    autoScroll: '自动滚动',
+    noData: '暂无数据',
+    searchResult: '搜索结果',
+    lines: '行',
+    copy: '复制',
+    copySuccess: '复制成功',
+    copyFailed: '复制失败',
+    success: '成功'
   },
   export: {
     exportType: '导出类型',
@@ -581,6 +590,10 @@ export default {
     reInstall: '重新install',
     reCheck: '重新check',
     uninstall: '卸载',
+    runOnce: '运行一次',
+    runOnceConfirm: '确定要运行此插件一次吗？',
+    runOnceSuccess: '插件运行成功',
+    runOnceFailed: '插件运行失败',
     parameterConfig: '参数配置',
     parameterName: '参数名称',
     parameterType: '类型',

@@ -70,8 +70,12 @@ export const checkKeyApi = (key: string): Promise<IResponse<LogRespData>> => {
   return request.post({ url: '/api/plugin/key/check', data: { key } })
 }
 
-export const getPluginLogApi = (module: string, hash: string): Promise<IResponse<LogRespData>> => {
-  return request.post({ url: '/api/plugin/log', data: { module, hash } })
+export const getPluginLogApi = (
+  module: string,
+  hash: string,
+  type?: string
+): Promise<IResponse<LogRespData>> => {
+  return request.post({ url: '/api/plugin/log', data: { module, hash, type } })
 }
 
 export const cleanPluginLogApi = (
@@ -190,6 +194,16 @@ export const updatePluginStatusApi = (
     data: {
       id,
       status
+    }
+  })
+}
+
+// 运行插件一次
+export const runPluginOnceApi = (hash: string): Promise<IResponse<commonRespData>> => {
+  return request.post({
+    url: '/api/plugin/run',
+    data: {
+      hash
     }
   })
 }
