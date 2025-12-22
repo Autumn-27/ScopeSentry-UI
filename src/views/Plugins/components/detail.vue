@@ -31,6 +31,7 @@ const props = defineProps<{
   getList: () => void
   id: string
   tp?: string
+  hash?: string
 }>()
 
 // 参数类型定义
@@ -310,7 +311,8 @@ const save = async () => {
       content.value,
       pluginKey.value,
       parameterListStr,
-      props.tp
+      props.tp,
+      props.hash
     )
     if (res.code == 505) {
       localStorage.removeItem('plugin_key')

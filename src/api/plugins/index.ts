@@ -37,7 +37,8 @@ export const savePluginDataApi = (
   source: string,
   key: string,
   parameterList?: string,
-  type?: string
+  type?: string,
+  hash?: string
 ): Promise<IResponse<commonRespData>> => {
   return request.post({
     url: '/api/plugin/save',
@@ -52,7 +53,8 @@ export const savePluginDataApi = (
       source,
       key,
       parameterList,
-      type
+      type,
+      hash
     }
   })
 }
@@ -80,9 +82,10 @@ export const getPluginLogApi = (
 
 export const cleanPluginLogApi = (
   module: string,
-  hash: string
+  hash: string,
+  type?: string
 ): Promise<IResponse<LogRespData>> => {
-  return request.post({ url: '/api/plugin/log/clean', data: { module, hash } })
+  return request.post({ url: '/api/plugin/log/clean', data: { module, hash, type } })
 }
 
 export const cleanAllPluginLogApi = (): Promise<IResponse<LogRespData>> => {

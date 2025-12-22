@@ -108,9 +108,34 @@ const taskColums = reactive<TableColumn[]>([
     }
   },
   {
+    field: 'lastTime',
+    label: t('task.lastTime'),
+    minWidth: 100,
+    formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
+      if (cellValue == '') {
+        return '-'
+      }
+      return cellValue
+    }
+  },
+  {
+    field: 'nextTime',
+    label: t('task.nextTime'),
+    minWidth: 100,
+    formatter: (row: Recordable, __: TableColumn, cellValue: string) => {
+      if (cellValue == '') {
+        return '-'
+      }
+      if (row.state == false) {
+        return '-'
+      }
+      return cellValue
+    }
+  },
+  {
     field: 'version',
     label: t('plugin.version'),
-    minWidth: 100
+    minWidth: 50
   },
   {
     field: 'introduction',
@@ -186,7 +211,7 @@ const taskColums = reactive<TableColumn[]>([
           >
             {t('common.cleanLog')}
           </BaseButton>
-          <BaseButton type="success" onClick={() => editPlugin(row.id)}>
+          <BaseButton type="success" onClick={() => editPlugin(row.id, row.hash)}>
             {t('common.edit')}
           </BaseButton>
           <BaseButton
@@ -268,7 +293,7 @@ const confirmCleanLog = async (hash: string, module: string) => {
     message: 'Are you sure you want to clean the logs?',
     draggable: true
   }).then(async () => {
-    await cleanPluginLogApi(module, hash)
+    await cleanPluginLogApi(module, hash, 'server')
   })
 }
 
@@ -333,9 +358,10 @@ const addPlugin = async () => {
 }
 
 const id = ref('')
-
-const editPlugin = async (data) => {
+const hash = ref('')
+const editPlugin = async (data, h) => {
   id.value = data
+  hash.value = h
   DialogTitle = t('common.edit')
   dialogVisible.value = true
 }
@@ -417,7 +443,7 @@ const refreshLog = async () => {
 }
 
 const cleanLog = async () => {
-  await cleanPluginLogApi(logModule.value, logHash.value)
+  await cleanPluginLogApi(logModule.value, logHash.value, 'server')
   logContent.value = ''
   ElMessage.success(t('common.cleanLog') + ' ' + t('common.success'))
 }
@@ -538,7 +564,7 @@ const highlightLog = (text: string) => {
     </div>
   </ContentWrap>
   <ElDrawer v-model="dialogVisible" :title="DialogTitle" size="50%" direction="rtl">
-    <detail :closeDialog="closeDialog" :getList="getList" :id="id" tp="server" />
+    <detail :closeDialog="closeDialog" :getList="getList" :id="id" tp="server" :hash="hash" />
   </ElDrawer>
   <ElDrawer
     v-model="logDialogVisible"
