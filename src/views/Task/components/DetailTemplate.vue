@@ -469,20 +469,20 @@ const onSubmit = async () => {
   }
 }
 const moduleColorMap = {
-  TargetHandler: '#2243dda6', // 浅红色
-  SubdomainScan: '#FF9B85', // 更深的浅橙色
-  SubdomainSecurity: '#FFFFBA', // 浅黄色
-  PortScanPreparation: '#BAFFB3', // 浅绿色
-  PortScan: '#BAE1FF', // 浅蓝色
-  AssetMapping: '#e3ffba', // 浅粉红色
-  URLScan: '#D1BAFF', // 浅紫色
-  WebCrawler: '#FFABAB', // 浅红
-  DirScan: '#3ccde6', // 选择浅桃色
-  VulnerabilityScan: '#FF677D', // 浅粉色
-  AssetHandle: '#B2E1FF', // 浅青色
-  PortFingerprint: '#ffb5e4', // 更亮的浅橙色
-  URLSecurity: '#FFE4BA', // 浅米色
-  PassiveScan: '#A2DFF7'
+  TargetHandler: '#409EFF',
+  SubdomainScan: '#E6A23C',
+  SubdomainSecurity: '#F56C6C',
+  PortScanPreparation: '#67C23A',
+  PortScan: '#00CED1',
+  AssetMapping: '#8A2BE2',
+  URLScan: '#C71585',
+  WebCrawler: '#FF4500',
+  DirScan: '#20B2AA',
+  VulnerabilityScan: '#DC143C',
+  AssetHandle: '#4682B4',
+  PortFingerprint: '#DAA520',
+  URLSecurity: '#9370DB',
+  PassiveScan: '#5F9EA0'
 }
 const templateName = ref('')
 interface TreeNode {
@@ -676,12 +676,24 @@ const handleCheckChange = (data, checked) => {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f2f5;
+            padding-bottom: 15px;
           "
         >
-          <ElTag :style="{ backgroundColor: moduleColorMap[module], color: '#000' }">
-            {{ t(`scanTemplate.${module}`) }}
-          </ElTag>
+          <div style="display: flex; align-items: center; gap: 10px">
+            <div
+              :style="{
+                width: '4px',
+                height: '16px',
+                backgroundColor: moduleColorMap[module],
+                borderRadius: '2px'
+              }"
+            ></div>
+            <span style="font-weight: 600; font-size: 16px; color: #303133">
+              {{ t(`scanTemplate.${module}`) }}
+            </span>
+          </div>
         </div>
 
         <div class="plugins-container">
@@ -1003,60 +1015,53 @@ const handleCheckChange = (data, checked) => {
 
 .module-card {
   margin-bottom: 24px;
-  border-radius: 12px;
-  border: none;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
   background: #ffffff;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 10px 25px -5px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: none;
 }
 
 .module-card:hover {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
 .plugins-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
 .plugin-card {
-  border-radius: 12px;
-  border: 1px solid #eef0f5;
+  border-radius: 4px;
+  border: 1px solid #e4e7ed;
   background-color: #ffffff;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease-in-out;
   position: relative;
-  overflow: visible; /* Allow shadow to spill */
-  border-top: 4px solid var(--card-accent-color, #409eff);
+  border-left: 4px solid var(--card-accent-color, #409eff);
 }
 
 .plugin-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
-  border-color: transparent; /* Let the shadow define the edge */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #c0c4cc;
 }
 
 .plugin-card-enabled {
-  background: linear-gradient(to bottom, #ffffff, #fafafa);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #fcfcfc;
 }
 
 .plugin-card-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f2f5;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f2f6fc;
   background: #fff;
-  border-radius: 12px 12px 0 0;
+  border-radius: 4px 4px 0 0;
 }
 
 .plugin-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .plugin-name-wrapper {
@@ -1066,9 +1071,9 @@ const handleCheckChange = (data, checked) => {
 }
 
 .plugin-name {
-  font-weight: 700;
-  font-size: 16px;
-  color: #1f2937;
+  font-weight: 600;
+  font-size: 14px;
+  color: #303133;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1078,7 +1083,7 @@ const handleCheckChange = (data, checked) => {
 .plugin-desc {
   font-size: 12px;
   color: #909399;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .text-truncate {
@@ -1091,15 +1096,18 @@ const handleCheckChange = (data, checked) => {
 }
 
 .plugin-card-body {
-  padding: 20px;
+  padding: 16px;
   background-color: #ffffff;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  border-radius: 0 0 12px 12px;
+  justify-content: flex-start;
+  border-radius: 0 0 4px 4px;
 }
 
+.plugin-switch {
+  --el-switch-on-color: var(--card-accent-color);
+}
 /* Customizing the parameter input area */
 .plugin-card-body :deep(.el-textarea__inner) {
   background-color: #f8fafc !important;

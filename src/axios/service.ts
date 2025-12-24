@@ -35,7 +35,11 @@ axiosInstance.interceptors.response.use(
     if (error.response?.data) {
       const responseData = error.response.data as { message: string; data: string }
       // 显示后端返回的具体错误消息
-      ElMessage.error(responseData.message + ':' + responseData.data || 'Request failed')
+      const errorMsg =
+        responseData.data && responseData.data !== ''
+          ? responseData.message + ':' + responseData.data
+          : responseData.message
+      ElMessage.error(errorMsg || 'Request failed')
       if (error.response?.status === 401) {
         const userStore = useUserStoreWithOut()
         userStore.logout()
