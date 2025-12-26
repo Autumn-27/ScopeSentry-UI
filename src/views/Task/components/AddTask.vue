@@ -654,7 +654,19 @@ getProjectList()
         >
           <ElRow>
             <ElCol :span="16">
-              <span style="float: left">{{ item.label }}</span>
+              <ElTooltip :content="item.label" placement="top">
+                <span
+                  style="
+                    float: left;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    width: 100%;
+                  "
+                >
+                  {{ item.label }}
+                </span>
+              </ElTooltip>
             </ElCol>
             <ElCol :span="8">
               <ElButton

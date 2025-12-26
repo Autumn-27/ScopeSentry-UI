@@ -35,6 +35,10 @@ const taskColums = reactive<TableColumn[]>([
     label: t('task.templateName')
   },
   {
+    field: 'id',
+    label: 'ID'
+  },
+  {
     field: 'action',
     label: t('tableDemo.action'),
     formatter: (row, __: TableColumn, _: number) => {
